@@ -1,0 +1,114 @@
+{% extends 'admin/base.html' %}
+
+{% block body %}
+{% if current_user.is_authenticated %}
+<h1>Xin chào {{ current_user.fullname }}</h1>
+{% else %}
+{% include 'admin/login.html' %}
+{% endif %}
+{% endblock %}
+
+{% block tail_js %}
+{{ super() }}
+<script>
+    const fields_login = {
+        email: {
+            input: document.getElementById("admin-email")
+        },
+        password: {
+            input: document.getElementById("admin-password")
+        }
+    };
+
+    function authModule() {
+        const fetch = window.fetch; 
+
+        const authOrigins = ["http://localhost:5000"];
+        let token = '';
+        
+        this.setToken = (value) => {
+            token = value
+        }
+
+        this.fetch = (resource, options) => {
+            let req = new Request(resource, options);
+            destOrigin = new URL(req.url).origin;
+            if (token) {
+                req.headers.set('Authorization', `Bearer ${token}`);
+            }
+            return fetch(req)
+        }
+    }
+
+    const auth = new authModule();
+
+    async function sendFormLogin(){
+        var url = 'http://127.0.0.1:5000/admin/admin-login'
+
+        data = {
+            'email': fields_login.email.input.value,
+            'password': fields_login.password.input.value
+        }
+
+        try {
+            const result = await postData(url, data);
+            if (result.code === -1){
+                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+                console.log("Đăng nhập thất bại");
+            }
+            else{
+                auth.setToken(result.data);
+                alert("Chuyển sang trang chủ");
+                sendToHome();
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function sendToHome(){
+        auth.fetch("http://127.0.0.1:5000/admin", {headers: {'Content-Type': 'application/json'}})
+        .then((response) => {
+            return response.text();
+        })
+        .then((html) => {
+            console.log('chuyển sang home');
+            document.documentElement.innerHTML = html;
+        });
+    }
+
+    async function postData(url, value) {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(value),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const message = `An error has occured: ${response.status}`;
+            throw new Error(message);
+        }
+
+        const data = await response.json();
+        return data;
+    }
+
+    async function getData(url = "") {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            const message = `An error has occured: ${response.status}`;
+            throw new Error(message);
+        }
+
+        return response.json();
+    }
+</script>
+{% endblock %}
