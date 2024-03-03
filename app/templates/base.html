@@ -310,7 +310,7 @@
     function authModule() {
         const fetch = window.fetch; 
 
-        const authOrigins = ["http://localhost:5000"];
+        const authOrigins = ["http://174.129.69.18"];
         let token = '';
         
         this.setToken = (value) => {
@@ -332,7 +332,7 @@
     async function sendFormLogin(){
         resetErrorInputOfFormLogin();
 
-        var url = 'http://127.0.0.1:5000/api/v1/login'
+        var url = 'http://174.129.69.18/api/v1/login'
 
         data = {
             'email': fields_login.email.input.value,
