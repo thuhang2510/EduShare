@@ -26,7 +26,7 @@ def momo():
     secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
     orderInfo = "Nap tien vao tai khoan"
     partnerCode = "MOMO"
-    redirectUrl = request.json.get("redirectUrl") 
+    redirectUrl = request.json.get("redirectUrl") + "?" + request.headers.get('Authorization')
 
     user_id = get_jwt_identity()
     ipnUrl = "http://174.129.69.18/momo/sendmail/" + str(user_id)
