@@ -10,13 +10,13 @@ from app.momo import bp
 from app.model.models import User
 from app.momo.email import send_email_field
 
-@bp.route("/sendmail/{id}", methods=["POST"])
+@bp.route("/sendmail/<int:id>", methods=["POST"])
 def guiMail(id):
     if id:
         user = User.find_by_id(id)
         send_email_field(user)
 
-    return None
+    return ''
 
 @bp.route("/callMoMo", methods=["POST"])
 @jwt_required()
