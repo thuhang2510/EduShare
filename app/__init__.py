@@ -38,6 +38,9 @@ def create_app(config_class=Config):
     from app.admin import bp as admin_bp
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
+    from app.momo import bp as momo_bp
+    app.register_blueprint(momo_bp, url_prefix='/momo')
+
     return app
 
 from app.model import models

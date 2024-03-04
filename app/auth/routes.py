@@ -47,6 +47,7 @@ def login():
         identity_changed.send(current_app._get_current_object(), identity=identity)
         '''
 
+        login_user(user)
         access_token = create_access_token(user.id)
         return jsonify({'message': msg, 'code': 0, 'data': access_token})
         
