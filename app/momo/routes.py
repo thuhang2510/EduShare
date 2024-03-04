@@ -3,7 +3,7 @@ from app.momo import bp
 from app.model.models import User
 from app.momo.email import send_email_field
 
-@bp.route("/sendmail", methods=["GET"])
+@bp.route("/sendmail", methods=["POST"])
 def guiMail():
     user = User()
     user.fullname = "ha"
