@@ -23,7 +23,7 @@
                 </ul>
                 <ul class="nav navbar-nav ms-auto w-100 justify-content-end">
                     <li class="nav-item">
-                        <button class="btn px-3 my-1 fw-bold me-2 border-2" type="submit" style="color: rgb(2, 126, 176); border: 2px solid rgb(2, 126, 176);">Nạp tiền</button>
+                        <button id="recharge" class="btn px-3 my-1 fw-bold me-2 border-2" type="submit" style="color: rgb(2, 126, 176); border: 2px solid rgb(2, 126, 176);" onclick="clickRecharge()">Nạp tiền</button>
                     </li>
                     <li class="nav-item">
                         <button class="btn me-3 px-4 fw-bold my-1" type="submit" style="background-color: rgb(2, 126, 176); color: white;">Tải lên</button>
@@ -152,6 +152,39 @@
         </div> 
       </div>
     </div>
+
+    <div id="form-recharge" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:absolute relative; top:0px; visibility:hidden;">
+        <div class="container d-flex justify-content-center" style="position: fixed;">   
+            <div class="register bg-white col-xl-5 p-4 rounded-3">
+            <div class="d-flex justify-content-end">
+                <button id="close-form-recharge" type="button" class="btn-close text-right" onclick="clickCloseRecharge()"></button>
+            </div>
+            <h3 class="mb-3">Nạp tiền vào tài khoản</h3>
+            <h5 class="mb-2" style="color: #0d6efd;">Thanh toán qua ví MoMo</h5>
+            <select id="select-amount" class="form-select" aria-label="Default select example">
+                <option selected>Lựa chọn số tiền cần nạp</option>
+                <option value="20000">20.000VNĐ</option>
+                <option value="50000">50.000VNĐ</option>
+                <option value="100000">100.000VNĐ</option>
+                <option value="150000">150.000VNĐ</option>
+                <option value="200000">200.000VNĐ</option>
+            </select>
+            <input class="btn btn-primary w-100 my-3 rounded-pill" id="reset-password-submit" onclick="sendFormRecharge()" name="submit" type="button" value="Nạp tiền">
+            </div> 
+            <div class="register bg-white p-3 rounded-3" style="z-index: 1; position:absolute; top:0px; right: 130px;">
+                <div class="d-flex flex-row bd-highlight mb-3">
+                    <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp" class="rounded-circle" style="width: 50px; height: 50px;"alt="Avatar" />
+                    <div class="d-flex flex-column bd-highlight">
+                        <div class="px-2 bd-highlight"><p class="mb-0" style="font-size: .98rem;">{{ current_user.fullname }}</p></div>
+                        <div class="px-2 bd-highlight"><p class="mb-0" style="font-size: .90rem;">{{ current_user.email }}</p></div>
+                        <div class="px-2 bd-highlight"><a class="text-center" style="font-size: .90rem;">Lịch sử giao dịch</a></div>
+                    </div>
+                </div>
+                <hr>
+                <p class="mb-0" style="font-size: 15px;">Tài khoản: <span class="mb-0" style="color: #0d6efd;">{{ current_user.coin }}</span></p>
+            </div>
+        </div> 
+    </div>
 </div>
 
 {% block app_content %}{% endblock %}
@@ -160,6 +193,8 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 <script>
+    const baseURL = "http://174.129.69.18"
+
     function clickRegister(){
         document.getElementById("form-register").style.visibility = "visible";
     }
@@ -235,7 +270,7 @@
     async function sendFormFegister(){  
         resetErrorInputOfFormRegister();
 
-        var url = 'http://127.0.0.1:5000/api/v1/register'
+        var url = baseURL + '/api/v1/register'
 
         data = {
             'fullname': fields_register.fullname.input.value,
@@ -310,11 +345,15 @@
     function authModule() {
         const fetch = window.fetch; 
 
-        const authOrigins = ["http://174.129.69.18"];
+        const authOrigins = [baseURL];
         let token = '';
         
         this.setToken = (value) => {
             token = value
+        }
+
+        this.getToken = () => {
+            return token
         }
 
         this.fetch = (resource, options) => {
@@ -332,7 +371,7 @@
     async function sendFormLogin(){
         resetErrorInputOfFormLogin();
 
-        var url = 'http://174.129.69.18/api/v1/login'
+        var url = baseURL + '/api/v1/login'
 
         data = {
             'email': fields_login.email.input.value,
@@ -365,7 +404,7 @@
     }
 
     function sendToHome(){
-        auth.fetch("http://127.0.0.1:5000/api/v1/", {headers: {'Content-Type': 'application/json'}})
+        auth.fetch(baseURL + "/api/v1/", {headers: {'Content-Type': 'application/json'}})
         .then((response) => {
             return response.text();
         })
@@ -398,7 +437,7 @@
     async function sendFormResetPassword(){
         resetErrorInputOfFormResetPw();
 
-        var url = 'http://127.0.0.1:5000/api/v1/resetpw'
+        var url = baseURL + '/api/v1/resetpw'
 
         data = {
             'email': fields_reset_fw.email.input.value
@@ -425,6 +464,43 @@
         } catch (error) {
             console.log(error.message);
         }
+    }
+
+    function clickRecharge(){
+        if (!auth.getToken()){
+            clickLogin();
+            document.getElementById("form-recharge").style.visibility = "hidden"
+        }
+        else{
+            document.getElementById("form-recharge").style.visibility = "visible";
+        }
+    }
+
+    function clickCloseRecharge(){
+        document.getElementById("form-recharge").style.visibility = "hidden"
+    }
+
+    async function sendFormRecharge(){
+        var url = baseURL + '/momo/callMoMo'
+
+        data = {
+            'amount': document.getElementById("select-amount").value,
+            'redirectUrl': window.location.href,
+            'token': auth.getToken()
+        }
+
+        auth.fetch(url, {
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify(data), 
+            method:'POST'
+        })
+        .then(response => {
+            if (response.ok) {
+                response.json().then(json => {
+                    window.location.replace(json["data"]);
+                });
+            }
+        });
     }
 
     async function postData(url, value) {
