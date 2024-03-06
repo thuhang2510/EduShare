@@ -364,7 +364,7 @@
     function authModule(token) {
         const fetch = window.fetch; 
 
-        const authOrigins = ["http://localhost:5000", "http://174.129.69.18"];
+        const authOrigins = ["http://174.129.69.18"];
 
         this.fetch = (resource, options) => {
             let req = new Request(resource, options);
