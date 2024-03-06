@@ -26,7 +26,7 @@
                         <button id="recharge" class="btn px-3 my-1 fw-bold me-2 border-2" type="submit" style="color: rgb(2, 126, 176); border: 2px solid rgb(2, 126, 176);" onclick="clickRecharge()">Nạp tiền</button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn me-3 px-4 fw-bold my-1" type="submit" style="background-color: rgb(2, 126, 176); color: white;">Tải lên</button>
+                        <button class="btn me-3 px-4 fw-bold my-1" type="submit" style="background-color: rgb(2, 126, 176); color: white;" onclick="clickUpload()">Tải lên</button>
                     </li>
                     {% if current_user.is_anonymous %}
                     <li class="nav-item">
@@ -193,7 +193,28 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 <script>
-    const baseURL = "http://174.129.69.18"
+    const baseURL = "http://127.0.0.1:5000"
+ 
+    window.onload = function()
+    {
+        if(localStorage.token)
+            sendToHome();
+    };
+
+    function clickUpload(){
+        auth.fetch(baseURL + "/momo/document", {headers: {'Content-Type': 'application/json'}})
+        .then((response) => {
+            return response.text();
+        })
+        .then((html) => {
+            clickCloseLogin();
+            document.documentElement.innerHTML = html;
+        });
+    }
+
+    function loadLogin(){
+        auth.fetch(baseURL + "/api/v1/", {headers: {'Content-Type': 'application/json'}})
+    }
 
     function clickRegister(){
         document.getElementById("form-register").style.visibility = "visible";
@@ -342,19 +363,10 @@
         }
     }
 
-    function authModule() {
+    function authModule(token) {
         const fetch = window.fetch; 
 
-        const authOrigins = [baseURL];
-        let token = '';
-        
-        this.setToken = (value) => {
-            token = value
-        }
-
-        this.getToken = () => {
-            return token
-        }
+        const authOrigins = ["http://localhost:5000"];
 
         this.fetch = (resource, options) => {
             let req = new Request(resource, options);
@@ -366,7 +378,7 @@
         }
     }
 
-    const auth = new authModule();
+    const auth = new authModule(localStorage.token);
 
     async function sendFormLogin(){
         resetErrorInputOfFormLogin();
@@ -393,7 +405,7 @@
                 console.log("Đăng nhập thất bại");
             }
             else{
-                auth.setToken(result.data);
+                localStorage.setItem("token", result.data)
                 alert("Chuyển sang trang chủ");
                 sendToHome();
                 resetValueInputOfFormLogin();
@@ -467,7 +479,7 @@
     }
 
     function clickRecharge(){
-        if (!auth.getToken()){
+        if (!localStorage.token){
             clickLogin();
             document.getElementById("form-recharge").style.visibility = "hidden"
         }
@@ -486,7 +498,7 @@
         data = {
             'amount': document.getElementById("select-amount").value,
             'redirectUrl': window.location.href,
-            'token': auth.getToken()
+            'token': localStorage.token
         }
 
         auth.fetch(url, {
