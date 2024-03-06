@@ -28,14 +28,12 @@
                     <li class="nav-item">
                         <button class="btn me-3 px-4 fw-bold my-1" type="submit" style="background-color: rgb(2, 126, 176); color: white;" onclick="clickUpload()">Tải lên</button>
                     </li>
-                    {% if current_user.is_anonymous %}
-                    <li class="nav-item">
+                    <li id="base-andanh" class="nav-item">
                         <button id="register" onclick="clickRegister()" class="btn mx-0 px-0 my-1" type="submit" style="color: rgb(2, 126, 176);">Đăng ký</button> / 
                         <button id="login" onclick="clickLogin()" class="btn mx-0 px-0 my-1" style="color: rgb(2, 126, 176);" type="submit">Đăng nhập</button>
                     </li>
-                    {% else %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"> {{ current_user.fullname }}</a>
+                    <li id="base-login" class="nav-item dropdown" style="display: none;">
+                        <a id="base-login-fullname" class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Nguyễn Mai Tú Nguyệt</a>
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarScrollingDropdown">
                             <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" href="#">Quản lý tài liệu</a></li>
@@ -48,7 +46,6 @@
                             <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
                         </ul>
                     </li>
-                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -175,13 +172,13 @@
                 <div class="d-flex flex-row bd-highlight mb-3">
                     <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp" class="rounded-circle" style="width: 50px; height: 50px;"alt="Avatar" />
                     <div class="d-flex flex-column bd-highlight">
-                        <div class="px-2 bd-highlight"><p class="mb-0" style="font-size: .98rem;">{{ current_user.fullname }}</p></div>
-                        <div class="px-2 bd-highlight"><p class="mb-0" style="font-size: .90rem;">{{ current_user.email }}</p></div>
+                        <div id="ls-base-fullname" class="px-2 bd-highlight"><p class="mb-0" style="font-size: .98rem;"></p></div>
+                        <div id="ls-base-email" class="px-2 bd-highlight"><p class="mb-0" style="font-size: .90rem;"></p></div>
                         <div class="px-2 bd-highlight"><a class="text-center" style="font-size: .90rem;">Lịch sử giao dịch</a></div>
                     </div>
                 </div>
                 <hr>
-                <p class="mb-0" style="font-size: 15px;">Tài khoản: <span class="mb-0" style="color: #0d6efd;">{{ current_user.coin }}</span></p>
+                <p class="mb-0" style="font-size: 15px;">Tài khoản: <span id="ls-base-coin" class="mb-0" style="color: #0d6efd;"></span></p>
             </div>
         </div> 
     </div>
@@ -198,22 +195,23 @@
     window.onload = function()
     {
         if(localStorage.token)
-            sendToHome();
+            getUser();
+        else
+            closeLogin();
     };
 
-    function clickUpload(){
-        auth.fetch(baseURL + "/momo/document", {headers: {'Content-Type': 'application/json'}})
-        .then((response) => {
-            return response.text();
-        })
-        .then((html) => {
-            clickCloseLogin();
-            document.documentElement.innerHTML = html;
-        });
+    function openLogin(){
+        document.getElementById("base-andanh").style.display = "none"
+        document.getElementById("base-login").style.display = "block";
     }
 
-    function loadLogin(){
-        auth.fetch(baseURL + "/api/v1/", {headers: {'Content-Type': 'application/json'}})
+    function closeLogin(){
+        document.getElementById("base-andanh").style.display = "block";
+            document.getElementById("base-login").style.display = "none";
+    }
+
+    function clickUpload(){
+        window.location.replace(baseURL + "/momo/document")
     }
 
     function clickRegister(){
@@ -407,7 +405,8 @@
             else{
                 localStorage.setItem("token", result.data)
                 alert("Chuyển sang trang chủ");
-                sendToHome();
+                getUser();
+                closeLogin();
                 resetValueInputOfFormLogin();
             }
         } catch (error) {
@@ -415,16 +414,31 @@
         }
     }
 
-    function sendToHome(){
-        auth.fetch(baseURL + "/api/v1/", {headers: {'Content-Type': 'application/json'}})
-        .then((response) => {
-            return response.text();
-        })
-        .then((html) => {
-            console.log('chuyển sang home');
-            clickCloseLogin();
-            document.documentElement.innerHTML = html;
-        });
+    user = {
+        lg_fullname: document.getElementById("base-login-fullname"),
+        email: document.getElementById("ls-base-email"),
+        ls_fullname: document.getElementById("ls-base-fullname"),
+        coin: document.getElementById("ls-base-coin")
+    }
+
+    async function getUser(){
+        url = baseURL + "/api/v1/user-token"
+
+        try {
+            const result = await getData(url);
+            if (result.code === -1){
+                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+            }
+            else{
+                user.lg_fullname.innerHTML = result.data["fullname"];
+                user.email.innerHTML = result.data["email"];
+                user.ls_fullname.innerHTML = result.data["fullname"];
+                user.coin.innerHTML = result.data["coin"];
+                openLogin();
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
     }
 
     const fields_reset_fw = {
@@ -516,12 +530,18 @@
     }
 
     async function postData(url, value) {
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (localStorage.token) {
+            headers["Authorization"] = `Bearer ${localStorage.token}`;
+        }
+
         const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(value),
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: headers
         });
 
         if (!response.ok) {
@@ -534,11 +554,17 @@
     }
 
     async function getData(url = "") {
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (localStorage.token) {
+            headers["Authorization"] = `Bearer ${localStorage.token}`;
+        }
+
         const response = await fetch(url, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
+            headers: headers
         });
 
         if (!response.ok) {

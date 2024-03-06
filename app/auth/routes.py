@@ -59,6 +59,23 @@ def login():
 def get_all_user():
     return "hihi"
 
+@bp.route('/user-token')
+@jwt_required()
+def get_user_by_token():
+    if current_user != None:
+        data = {
+            'id': current_user.id,
+            'fullname': current_user.fullname,
+            'email': current_user.email,
+            'number': current_user.number,
+            'coin': current_user.coin,
+            'address': current_user.address
+        }
+
+        return jsonify({'message': 'Lấy user thành công', 'code': 0, 'data': data})
+    
+    return jsonify({'message': 'User chưa đăng nhập', 'code': -1, 'data': None}) 
+
 @bp.route('/resetpw', methods=['POST'])
 def resetpw():
     if current_user.is_authenticated:

@@ -2,14 +2,12 @@ import hashlib
 import hmac
 import json
 import uuid
+from flask import request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 import requests
-from flask import render_template, request, redirect
-from flask_login import current_user
-from app.auth.forms import LoginForm, RegisterForm, ResetPasswordRequestForm
-from app.momo import bp
 from app.model.models import User
 from app.momo.email import send_email_field
+from app.momo import bp
 
 @bp.route("/sendmail/<int:id>", methods=["POST"])
 def guiMail(id):
@@ -27,7 +25,7 @@ def momo():
     secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
     orderInfo = "Nap tien vao tai khoan"
     partnerCode = "MOMO"
-    redirectUrl = request.json.get("redirectUrl") + "?api_key=" + request.headers.get('Authorization')
+    redirectUrl = request.json.get("redirectUrl")
 
     user_id = get_jwt_identity()
     ipnUrl = "http://174.129.69.18/momo/sendmail/" + str(user_id)
@@ -75,10 +73,3 @@ def momo():
     response = requests.post(endpoint, data=data, headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
 
     return {'message': 'thành công', 'code': 0, 'data': response.json()['payUrl']}
-
-@bp.route("/document", methods=["GET"])
-def document():
-    register = RegisterForm(meta={'csrf': False})
-    login = LoginForm(meta={'csrf': False})
-    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
-    return render_template('document/document_detail.html', title='Document',form=register, formlogin=login, formresetpw=resetpw)
