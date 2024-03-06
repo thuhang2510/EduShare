@@ -364,7 +364,7 @@
     function authModule(token) {
         const fetch = window.fetch; 
 
-        const authOrigins = ["http://174.129.69.18"];
+        const authOrigins = ["http://127.0.0.1:5000", "http://174.129.69.18"];
 
         this.fetch = (resource, options) => {
             let req = new Request(resource, options);
@@ -515,18 +515,17 @@
             'token': localStorage.token
         }
 
-        auth.fetch(url, {
-            headers: {'Content-Type': 'application/json'}, 
-            body: JSON.stringify(data), 
-            method:'POST'
-        })
-        .then(response => {
-            if (response.ok) {
-                response.json().then(json => {
-                    window.location.replace(json["data"]);
-                });
+        try {
+            const result = await postData(url, data);
+            if (result.code === -1){
+                alert("Có lỗi xảy ra vui lòng thử lại sau");    
             }
-        });
+            else{
+                window.location.replace(result.data);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
     }
 
     async function postData(url, value) {
