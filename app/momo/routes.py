@@ -5,15 +5,30 @@ import uuid
 from flask import request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 import requests
-from app.model.models import User
+from app.model.models import Account, Transaction
 from app.momo.email import send_email_field
 from app.momo import bp
+from constant import TransactionChoices
 
 @bp.route("/sendmail/<int:id>", methods=["POST"])
 def guiMail(id):
     if id:
-        user = User.find_by_id(id)
-        send_email_field(user)
+        user = Account.find_by_id(id)
+
+        amount = request.json.get("amount")
+        information = request.json.get("orderInfo")
+        type = TransactionChoices.RECHARGE.value
+        result = request.json.get("resultCode")
+        transaction = Transaction(information, type, amount, result, user.id)
+        transaction.set_datetime_from_timestamp(request.json.get("responseTime"))
+        transaction.set_wallet_balance()
+        transaction.save_to_db()
+
+        send_email_field(user, transaction)
+
+        if(int(request.json.get("resultCode")) == 0):
+            user.coin += amount
+            user.save_to_db()
 
     return ''
 

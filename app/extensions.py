@@ -31,18 +31,18 @@ def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
 
 @login.user_loader
 def load_user(user_id):
-    from app.model.models import User
+    from app.model.models import Account
 
-    return User.query.get(user_id)
+    return Account.query.get(user_id)
 
 @login.request_loader
 @jwt_required(optional=True)
 def load_user_from_request(request):
-    from app.model.models import User
+    from app.model.models import Account
 
     api_key = request.args.get('api_key')
     if api_key:
-        user = User.query.filter_by(api_key=api_key).first()
+        user = Account.query.filter_by(api_key=api_key).first()
         if user:
             return user
 
@@ -53,7 +53,7 @@ def load_user_from_request(request):
             print("User ID:", id)
         except TypeError:
             pass
-        user = User.query.filter_by(id=id).first()
+        user = Account.query.filter_by(id=id).first()
         if user:
             return user
 

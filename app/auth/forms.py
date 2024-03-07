@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, ValidationError
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
-from app.model.models import User
+from app.model.models import Account
  
 class RegisterForm(FlaskForm):
     fullname = StringField('Tên đầy đủ', validators=[DataRequired()])
@@ -12,12 +12,12 @@ class RegisterForm(FlaskForm):
     address = StringField('Địa chỉ')
 
     def validate_number(self, number):
-        user = User.query.filter_by(number=number.data).first()
+        user = Account.query.filter_by(number=number.data).first()
         if user is not None:
             raise ValidationError('Số điện thoại này đã tồn tại')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        user = Account.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Email này đã tồn tại')
         
@@ -27,7 +27,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Mật khẩu', validators=[DataRequired()])
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        user = Account.query.filter_by(email=email.data).first()
         if user is None:
             raise ValidationError('Email này chưa tồn tại')
 

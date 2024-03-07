@@ -1,32 +1,36 @@
+import datetime
 from flask_login import UserMixin
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-class UsersRoles(db.Model):
-    __tablename__ = 'users_roles'
-    id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey(
-        'users.id', ondelete='CASCADE'))
-    role_id = db.Column(db.Integer(), db.ForeignKey(
-        'roles.id', ondelete='CASCADE'))
+from constant import TransactionChoices
 
-class User(UserMixin, db.Model):
-    __tablename__ = 'users'
+class AccountPermission(db.Model):
+    __tablename__ = 'account_permission'
+    id = db.Column(db.Integer(), primary_key=True)
+    account_id = db.Column(db.Integer(), db.ForeignKey(
+        'account.id', ondelete='CASCADE'))
+    permission_id = db.Column(db.Integer(), db.ForeignKey(
+        'permission.id', ondelete='CASCADE'))
+
+class Account(UserMixin, db.Model):
+    __tablename__ = 'account'
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
     email = db.Column(db.String(64), unique=True, index=True)
     fullname = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(255))
     number = db.Column(db.String(11), unique=True, index=True)
-    active = db.Column(db.Boolean(), nullable=False, server_default='1')
+    status = db.Column(db.Boolean(), nullable=False, server_default='1')
     coin = db.Column(db.Integer , server_default='0')
     address = db.Column(db.String(255))
-    roles = db.relationship(
-        'Role',
-        secondary='users_roles',
-        backref=db.backref('users', lazy='dynamic'))
+    permission = db.relationship(
+        'Permission',
+        secondary='account_permission',
+        backref=db.backref('account', lazy='dynamic'))
+    transaction = db.relationship('Transaction', backref='account', lazy=True)
 
     def __repr__(self):
-        return '<User {}>'.format(self.fullname)
+        return '<Account {}>'.format(self.fullname)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -49,10 +53,10 @@ class User(UserMixin, db.Model):
                 setattr(self, field, data[field])
                 
         if new_user:
-            db_roles = Role.find_all()
+            db_roles = Permission.find_all()
             for role in db_roles:
                 if role.name != 'admin':
-                    self.roles.append(role)
+                    self.permission.append(role)
 
             if 'password' in data:
                 self.set_password(data['password'])
@@ -77,19 +81,18 @@ class User(UserMixin, db.Model):
         db.session.delete(self)
         db.session.commit()
 
-class Role(db.Model):
-    __tablename__ = 'roles'
+class Permission(db.Model):
+    __tablename__ = 'permission'
 
-    id = db.Column(db.String(45), primary_key=True)
+    id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
     name = db.Column(db.String(255), unique=True)
     description = db.Column(db.String(255))
 
-    def __init__(self, id, name):
-        self.id = id
+    def __init__(self, name):
         self.name = name
 
     def __repr__(self):
-        return "<Model Role `{}`>".format(self.name)
+        return "<Model Permission `{}`>".format(self.name)
     
     def __str__(self) -> str:
         return self.name
@@ -101,3 +104,48 @@ class Role(db.Model):
     @classmethod
     def find_all(cls):
         return cls.query.all()
+
+class Transaction(db.Model):
+    __tablename__ = 'transaction'
+
+    id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
+    date = db.Column(db.DateTime, server_default=str(datetime.datetime.utcnow))
+    information = db.Column(db.String(255))
+    type = db.Column(db.String(255))
+    status = db.Column(db.Boolean, nullable=False, server_default='1')
+    amount = db.Column(db.Integer)
+    wallet_balance = db.Column(db.Integer)
+    result = db.Column(db.Integer)
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
+        nullable=False)
+    
+    def __init__(self, information, type, amount, result, account_id):
+        self.information = information
+        self.type = type
+        self.amount = amount
+        self.result = result
+        self.account_id = account_id
+
+    def set_datetime_from_timestamp(self, timestamp):
+        self.date = datetime.datetime.fromtimestamp(timestamp/1000.0)
+
+    def set_datetime(self, datetime):
+        self.date = datetime
+
+    def set_wallet_balance(self):
+        user = Account.find_by_id(self.account_id)
+
+        if self.type == TransactionChoices.RECHARGE.value or self.type == TransactionChoices.RECEIVE_MONEY.value:
+            self.wallet_balance = user.coin + self.amount
+        else:
+            self.wallet_balance = user.coin - self.amount
+
+    def get_datetime(self):
+        return self.date.strftime("%d-%m-%Y %H:%M:%S")
+    
+    def get_amount(self):
+        return format(self.amount, ',d')
+    
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()

@@ -1,0 +1,13 @@
+<p>Kính gửi {{ user.fullname }}, </p>
+<p>Hy vọng bạn đang có một ngày tốt lành.</p>
+
+{% if transaction.result == 0 %}
+    <p>Tôi viết để thông báo rằng đã có một khoản tiền được nạp vào tài khoản của bạn. Số tiền là <strong>{{ transaction.get_amount() }}đ</strong> đã được ghi có thành công vào tài khoản của bạn vào ngày <strong>{{ transaction.get_datetime() }}</strong>.</p>
+    <p>Nếu bạn có bất kỳ câu hỏi hoặc cần thông tin thêm về khoản tiền này, đừng ngần ngại liên hệ với chúng tôi.</p>
+{% else %}
+    <p>Tôi viết để thông báo rằng việc nạp tiền vào tài khoản của bạn không thành công. Chúng tôi đã thực hiện quá trình nạp tiền nhưng có sự cố xảy ra.</p>
+    <p>Chúng tôi sẽ tiếp tục kiểm tra và xử lý vấn đề này ngay lập tức. Nếu bạn có bất kỳ câu hỏi hoặc cần thông tin thêm, vui lòng liên hệ với chúng tôi để được hỗ trợ.</p>
+    <p>Chúng tôi thành thật xin lỗi vì sự bất tiện này và rất mong nhận được sự thông cảm từ phía bạn.</p>
+{% endif %}
+
+<p>Cảm ơn bạn đã chú ý đến vấn đề này.</p>

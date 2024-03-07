@@ -1,9 +1,9 @@
-from app.model.models import User
+from app.model.models import Account
 
 class UserDataService():
     def create(self, data):
         try:
-            user = User()
+            user = Account()
             user.from_dict(data, True)
             user.save_to_db()
             
@@ -13,7 +13,7 @@ class UserDataService():
     
     def get_by_email(self, email):
         try:
-            user =  User.find_by_email(email)
+            user =  Account.find_by_email(email)
             if user is None:
                 return None, -1, "Get user fail"
             
@@ -23,7 +23,7 @@ class UserDataService():
     
     def update_password(self, id, pasword):
         try:
-            user = User.find_by_id(id)
+            user = Account.find_by_id(id)
             
             if user is None:
                 return None, -1, "Get user fail"
@@ -37,7 +37,7 @@ class UserDataService():
     
     def get_by_id(self, id):
         try:
-            user = User.find_by_id(id)
+            user = Account.find_by_id(id)
             if user is None:
                 return None, -1, "Get user fail"
             

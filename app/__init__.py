@@ -28,9 +28,9 @@ def create_app(config_class=Config):
         if hasattr(current_user, 'id'):
             identity.provides.add(UserNeed(current_user.id))
 
-        if hasattr(current_user, 'roles'):
-            for role in current_user.roles:
-                identity.provides.add(RoleNeed(role.name))
+        if hasattr(current_user, 'permission'):
+            for permission in current_user.permission:
+                identity.provides.add(RoleNeed(permission.name))
 
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api/v1')
