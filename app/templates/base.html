@@ -7,9 +7,9 @@
 {% block content %}
 
 <div style="position: relative;">
-    <nav class="navbar navbar-expand-lg justify-content-center border-bottom">
+    <nav class="navbar navbar-expand-lg justify-content-center border-bottom col-xl-12" style="position:fixed; top:0; background-color: white; z-index: 998;">
         <div class="container">
-            <a href="/" class="navbar-brand d-flex w-50 me-auto fs-3 fw-bold" style="color: rgb(2, 126, 176);">EduShare</a>
+            <a href="/api/v1" class="navbar-brand d-flex w-50 me-auto fs-3 fw-bold" style="color: rgb(2, 126, 176);">EduShare</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsingNavbar3">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -17,7 +17,7 @@
                 <ul class="navbar-nav w-100 justify-content-center">
                     <li class="nav-item col-xl-12 my-1">
                         <form role="search">
-                            <input class="form-control me-5 rounded-pill" style="border: 2px solid #ced4da;" type="search" placeholder="Tìm kiếm tài liệu" aria-label="Search">
+                            <input id="search" class="form-control me-5 rounded-pill" style="border: 2px solid #ced4da;" type="search" placeholder="Tìm kiếm tài liệu" aria-label="Search">
                         </form>
                     </li>
                 </ul>
@@ -26,7 +26,7 @@
                         <button id="recharge" class="btn px-3 my-1 fw-bold me-2 border-2" type="submit" style="color: rgb(2, 126, 176); border: 2px solid rgb(2, 126, 176);" onclick="clickRecharge()">Nạp tiền</button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn me-3 px-4 fw-bold my-1" type="submit" style="background-color: rgb(2, 126, 176); color: white;" onclick="clickUpload()">Tải lên</button>
+                        <button id="upload" class="btn me-3 px-4 fw-bold my-1" type="submit" style="background-color: rgb(2, 126, 176); color: white;" onclick="clickUpload()">Tải lên</button>
                     </li>
                     <li id="base-andanh" class="nav-item">
                         <button id="register" onclick="clickRegister()" class="btn mx-0 px-0 my-1" type="submit" style="color: rgb(2, 126, 176);">Đăng ký</button> / 
@@ -37,20 +37,22 @@
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarScrollingDropdown">
                             <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" href="#">Quản lý tài liệu</a></li>
-                            <li><a class="dropdown-item" href="#">Quản lý tài liệu</a></li>
+                            <li><a class="dropdown-item" href="#">Quản lý tài chính</a></li>
                             <li><a class="dropdown-item" href="#">Số dư: <span id="base-coin" class="mb-0" style="color: #0d6efd;"></span></a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+                            <li><a class="dropdown-item" onclick="clickLogout()">Đăng xuất</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-    
-    <div id="form-register" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:absolute; top:0px; visibility:hidden;">
+
+    {% block app_content %}{% endblock %}
+
+    <div id="form-register" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:absolute; top:0px; visibility:hidden;z-index: 999;">
         <div class="container d-flex justify-content-center" style="position: fixed;">   
         <div class="register bg-white col-xl-5 p-4 rounded-3">
           <div class="d-flex justify-content-end">
@@ -88,7 +90,7 @@
             {{ form.repassword(class_="form-control rounded-4 my-1", id_="repassword") }}
             <div id="repassword-error" class="invalid-feedback mb-1"></div>
             </div>
-            <input class="btn btn-primary w-100 my-3 rounded-pill" id="submit" name="submit" type="button" onclick="sendFormFegister()" value="Đăng ký">
+            <input class="btn btn-primary w-100 my-3 rounded-pill" id="submit" name="submit" type="button" onclick="sendFormRegister()" value="Đăng ký">
           </form>
           <p class="text-center">Đã có tài khoản?
             <a class="text-center" onclick="turnToLogin()"> Đăng nhập </a>
@@ -98,7 +100,7 @@
       </div>
     </div>
 
-    <div id="form-login" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:absolute; top:0px; visibility:hidden;">
+    <div id="form-login" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:absolute; top:0px; visibility:hidden; z-index: 999;">
         <div class="container d-flex justify-content-center" style="position: fixed;">   
         <div class="register bg-white col-xl-5 p-4 rounded-3">
           <div class="d-flex justify-content-end">
@@ -126,8 +128,8 @@
       </div>
     </div>
 
-    <div id="form-reset-password" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:absolute; top:0px; visibility:hidden;">
-        <div class="container d-flex justify-content-center" style="position: fixed;">   
+    <div id="form-reset-password" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:absolute; top:0px; visibility:hidden; z-index: 999;">
+       <div class="container d-flex justify-content-center" style="position: fixed;">   
         <div class="register bg-white col-xl-5 p-4 rounded-3">
           <div class="d-flex justify-content-end">
             <button id="close-form-reset-password" type="button" class="btn-close text-right" onclick="clickCloseResetPw()"></button>
@@ -139,6 +141,7 @@
             {{ formresetpw.email.label }}
             {{ formresetpw.email(class_="form-control rounded-4 my-1", id_="reset-password-email") }}
             <div id="reset-password-email-error" class="invalid-feedback mb-1"></div>
+            </div>
             <input class="btn btn-primary w-100 my-3 rounded-pill" id="reset-password-submit" name="submit" type="button" onclick="sendFormResetPassword()" value="Gửi yêu cầu">
           </form>
           <div class="text-center"><a class="text-center" onclick="turnToRegister()">Tạo tài khoản mới</a></div>
@@ -149,25 +152,25 @@
       </div>
     </div>
 
-    <div id="form-recharge" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:absolute relative; top:0px; visibility:hidden;">
+    <div id="form-recharge" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:absolute; top:0px; visibility:hidden; z-index: 999;">
         <div class="container d-flex justify-content-center" style="position: fixed;">   
             <div class="register bg-white col-xl-5 p-4 rounded-3">
-            <div class="d-flex justify-content-end">
-                <button id="close-form-recharge" type="button" class="btn-close text-right" onclick="clickCloseRecharge()"></button>
-            </div>
-            <h3 class="mb-3">Nạp tiền vào tài khoản</h3>
-            <h5 class="mb-2" style="color: #0d6efd;">Thanh toán qua ví MoMo</h5>
-            <select id="select-amount" class="form-select" aria-label="Default select example">
-                <option selected>Lựa chọn số tiền cần nạp</option>
-                <option value="20000">20.000VNĐ</option>
-                <option value="50000">50.000VNĐ</option>
-                <option value="100000">100.000VNĐ</option>
-                <option value="150000">150.000VNĐ</option>
-                <option value="200000">200.000VNĐ</option>
-            </select>
-            <input class="btn btn-primary w-100 my-3 rounded-pill" id="reset-password-submit" onclick="sendFormRecharge()" name="submit" type="button" value="Nạp tiền">
+                <div class="d-flex justify-content-end">
+                    <button id="close-form-recharge" type="button" class="btn-close text-right" onclick="clickCloseRecharge()"></button>
+                </div>
+                <h3 class="mb-3">Nạp tiền vào tài khoản</h3>
+                <h5 class="mb-2" style="color: #0d6efd;">Thanh toán qua ví MoMo</h5>
+                <select id="select-amount" class="form-select" aria-label="Default select example">
+                    <option selected>Lựa chọn số tiền cần nạp</option>
+                    <option value="20000">20.000VNĐ</option>
+                    <option value="50000">50.000VNĐ</option>
+                    <option value="100000">100.000VNĐ</option>
+                    <option value="150000">150.000VNĐ</option>
+                    <option value="200000">200.000VNĐ</option>
+                </select>
+                <input class="btn btn-primary w-100 my-3 rounded-pill" id="reset-password-submit" onclick="sendFormRecharge()" name="submit" type="button" value="Nạp tiền">
             </div> 
-            <div class="register bg-white p-3 rounded-3" style="z-index: 1; position:absolute; top:0px; right: 130px;">
+            <div class="register bg-white p-3 rounded-3 col-xl-3" style="z-index: 1; position:absolute; top:0px; left:922px">
                 <div class="d-flex flex-row bd-highlight mb-3">
                     <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp" class="rounded-circle" style="width: 50px; height: 50px;"alt="Avatar" />
                     <div class="d-flex flex-column bd-highlight">
@@ -183,7 +186,6 @@
     </div>
 </div>
 
-{% block app_content %}{% endblock %}
 {% endblock %}
 
 {% block scripts %}
@@ -206,11 +208,14 @@
 
     function closeLogin(){
         document.getElementById("base-andanh").style.display = "block";
-            document.getElementById("base-login").style.display = "none";
+        document.getElementById("base-login").style.display = "none";
     }
 
     function clickUpload(){
-        window.location.replace(baseURL + "/momo/document")
+        if (localStorage.token)
+            window.location.replace(baseURL + "/document/upload")
+        else
+            clickLogin();
     }
 
     function clickRegister(){
@@ -285,7 +290,7 @@
         }
     };
 
-    async function sendFormFegister(){  
+    async function sendFormRegister(){  
         resetErrorInputOfFormRegister();
 
         var url = baseURL + '/api/v1/register'
@@ -403,7 +408,6 @@
             }
             else{
                 localStorage.setItem("token", result.data)
-                alert("Chuyển sang trang chủ");
                 getUser();
                 clickCloseLogin();
                 resetValueInputOfFormLogin();
@@ -417,7 +421,8 @@
         lg_fullname: document.getElementById("base-login-fullname"),
         email: document.getElementById("ls-base-email"),
         ls_fullname: document.getElementById("ls-base-fullname"),
-        coin: document.getElementById("ls-base-coin")
+        coin: document.getElementById("ls-base-coin"),
+        base_coin: document.getElementById("base-coin")
     }
 
     async function getUser(){
@@ -425,18 +430,23 @@
 
         try {
             const result = await getData(url);
-            if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
-            }
-            else{
+            if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
                 user.email.innerHTML = result.data["email"];
                 user.ls_fullname.innerHTML = result.data["fullname"];
-                user.coin.innerHTML = result.data["coin"];
+                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 openLogin();
+            }
+            else{
+                alert(result.message);
+                localStorage.removeItem('token')
+                clickLogin();
             }
         } catch (error) {
             console.log(error.message);
+            localStorage.removeItem('token')
+            clickLogin();
         }
     }
 
@@ -492,12 +502,11 @@
     }
 
     function clickRecharge(){
-        if (!localStorage.token){
-            clickLogin();
-            document.getElementById("form-recharge").style.visibility = "hidden"
+        if (localStorage.token){
+            document.getElementById("form-recharge").style.visibility = "visible"
         }
         else{
-            document.getElementById("form-recharge").style.visibility = "visible";
+            clickLogin();
         }
     }
 
@@ -521,6 +530,23 @@
             }
             else{
                 window.location.replace(result.data);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    async function clickLogout(){
+        url = baseURL + "/api/v1/logout";
+
+        try {
+            const result = await deleteData(url);
+            if (result.code === 0){
+                localStorage.removeItem("token");
+                window.location.replace(baseURL + "/api/v1/")
+            }
+            else{
+                alert(result.message);
             }
         } catch (error) {
             console.log(error.message);
@@ -566,7 +592,29 @@
         });
 
         if (!response.ok) {
-            const message = `An error has occured: ${response.status}`;
+            const message = `Có lỗi xảy ra: ${response.status}`;
+            throw new Error(message);
+        }
+
+        return response.json();
+    }
+
+    async function deleteData(url = "") {
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (localStorage.token) {
+            headers["Authorization"] = `Bearer ${localStorage.token}`;
+        }
+
+        const response = await fetch(url, {
+            method: "DELETE",
+            headers: headers
+        });
+
+        if (!response.ok) {
+            const message = `Có lỗi xảy ra: ${response.status}`;
             throw new Error(message);
         }
 

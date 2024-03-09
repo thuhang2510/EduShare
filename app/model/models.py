@@ -149,3 +149,97 @@ class Transaction(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
+class Categories(db.Model):
+    __tablename__ = 'categories'
+
+    id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
+    name = db.Column(db.String(255), unique=True)
+    description = db.Column(db.String(255))
+    parent_id = db.Column(db.Integer)
+
+    @classmethod
+    def find_by_parent_id(cls, _parent_id):
+        return cls.query.filter_by(parent_id=_parent_id).all()
+    
+    @classmethod
+    def find_by_name(cls, _name):
+        return cls.query.filter_by(name=_name).first()
+    
+    @classmethod
+    def find_all_not_parent(cls):
+        return cls.query.filter_by(parent_id=None).all()
+    
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+        }
+        return data
+    
+    @classmethod
+    def list_to_dict(cls, categories):
+        data = []
+
+        for categorie in categories:
+            data.append(categorie.to_dict())
+
+        return data
+    
+class Documents(db.Model):
+    __tablename__ = 'documents'
+
+    id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
+    creation_date = db.Column(db.DateTime, server_default=str(datetime.datetime.utcnow))
+    modified_date = db.Column(db.DateTime)
+    document_name = db.Column(db.String(255))
+    type = db.Column(db.String(5))
+    description = db.Column(db.String(255))
+    view_count = db.Column(db.Integer, server_default='0')
+    download_count = db.Column(db.Integer, server_default='0')
+    price = db.Column(db.Integer, server_default='0')
+    status = db.Column(db.Boolean(), nullable=False, server_default='1')
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
+        nullable=False)
+    categories = db.relationship(
+        'Categories',
+        secondary='document_categories',
+        backref=db.backref('documents', lazy='dynamic'))
+    
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'document_name': self.document_name,
+            'description': self.description,
+            'view_count': self.view_count,
+            'download_count': self.download_count,
+            'price': self.price,
+            'type': self.type,
+            'account_id': self.account_id
+        }
+
+        return data
+    
+    def from_dict(self, data):
+        for field in ['document_name', 'description', 'price', 'type']:
+            if field in data:
+                setattr(self, field, data[field])
+    
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    @classmethod
+    def find_by_name(cls, _document_name):
+        return cls.query.filter_by(document_name=_document_name).first()
+
+class DocumentCategories(db.Model):
+    __tablename__ = 'document_categories'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    document_id = db.Column(db.Integer(), db.ForeignKey(
+        'documents.id', ondelete='CASCADE'))
+    category_id = db.Column(db.Integer(), db.ForeignKey(
+        'categories.id', ondelete='CASCADE'))

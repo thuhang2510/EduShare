@@ -41,6 +41,12 @@ def create_app(config_class=Config):
     from app.momo import bp as momo_bp
     app.register_blueprint(momo_bp, url_prefix='/momo')
 
+    from app.document import bp as document_bp
+    app.register_blueprint(document_bp, url_prefix='/document')
+
+    from app.categories import bp as categories_bp
+    app.register_blueprint(categories_bp, url_prefix='/categories')
+
     return app
 
 from app.model import models

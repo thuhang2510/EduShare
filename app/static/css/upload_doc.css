@@ -1,0 +1,45 @@
+:root {
+    --purple: #3645c9;
+    --secondary: #6e6e6e;
+    --yellow: #db9421;
+}
+
+body{
+    background-color: #f8f8f8;
+}
+
+.file__content {
+    display: flex;
+    align-items: center;
+}
+
+.file__title {
+    font-size: 1.1rem;
+    font-weight: 400;
+    max-width: 700px;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+
+.file__percent {
+    margin-left: auto;
+    color: var(--yellow);
+    font-size: 0.8rem;
+}
+
+.file__progress {
+    width: 100%;
+    height: 4px;
+    background-color: rgba(var(--secondary), 0.1);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.file__progress span {
+    display: block;
+    background-color: var(--purple);
+    width: 0;
+    height: 100%;
+    transition: all 300ms ease;
+}

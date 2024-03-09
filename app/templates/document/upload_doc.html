@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link href="/static/css/upload_doc.css" rel="stylesheet">
+{% endblock %}
+
+{% block app_content %}
+<div id="all-upload" class="justify-content-center" style="width:100vw; position:absolute; top:70px;">
+    <div class="container d-flex justify-content-center pt-3 col-7">
+        <div class="text-center">
+            <h2 class="mt-2 mb-3">Đăng và chia sẻ tài liệu lên EduShare</h2>
+            <div class="app">
+                <div class="app">
+                    <button id="btn_after_send_file" class="btn my-4 mb-5 px-5 py-2 fw-bold my-1" style="background-color: rgb(2, 126, 176); color: white; display: none;"  onclick="document.getElementById('fileInputAfter').click()">Tải thêm</button>
+                    <input type="file" id="fileInputAfter" style="display: none;" onchange="changeFile()" multiple>
+                </div>
+                <div id="btn_before_send_mail" class="mb-3"> 
+                    <div class="relative h-40 rounded-3 border-2 border-primary bg-white flex justify-center items-center hover:cursor-pointer p-5" style="border-style: dashed;">
+                        <div class="absolute">
+                            <div class="flex flex-col items-center "> 
+                            <h5>Chọn nút tải lên để chọn nhiều file từ máy tính của bạn hoặc kéo file thả vào đây</h5>                               
+                        </div>
+                        </div>
+                        <button class="btn my-4 px-5 py-2 fw-bold my-1" style="background-color: rgb(2, 126, 176); color: white;"  onclick="document.getElementById('fileInput').click()">Tải lên</button>
+                        <input type="file" id="fileInput" style="display: none;" onchange="changeFile()" accept=".doc, .docx,.pdf" multiple>
+                        <div class="flex justify-between items-center text-gray-400">
+                            <span>Chấp nhận file định dạng: .doc và .pdf</span>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="mb-4">Bằng cách tải tài liệu lên EduShare, bạn tuyên bố rằng bạn sở hữu bản quyền đối với tài liệu hoặc được chủ sở hữu bản quyền cho phép rõ ràng để sử dụng và tải tài liệu lên.</h6>
+                <div id="app__files">
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    window.onload = function()
+    {
+        document.getElementById("upload").style.visibility = "hidden"
+        document.getElementById("recharge").style.visibility = "hidden"
+        document.getElementById("search").style.visibility = "hidden"
+
+        if(localStorage.token){
+            getUser();
+            document.getElementById("all-upload").style.display = "inline"
+        }
+        else{
+            clickLogin();
+            document.getElementById("all-upload").style.display = "none"
+        }
+    };
+
+    async function getUser(){
+        url = baseURL + "/api/v1/user-token"
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                user.lg_fullname.innerHTML = result.data["fullname"];
+                user.email.innerHTML = result.data["email"];
+                user.ls_fullname.innerHTML = result.data["fullname"];
+                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                openLogin();
+                document.getElementById("all-upload").style.display = "inline"
+            }
+            else{
+                alert(result.message);
+                localStorage.removeItem('token')
+                clickLogin();
+                document.getElementById("all-upload").style.display = "none"
+            }
+        } catch (error) {
+            console.log(error.message);
+            localStorage.removeItem('token')
+            clickLogin();
+            document.getElementById("all-upload").style.display = "none"
+        }
+    }
+
+    function changeFile(){
+        const btn_after_send_file = document.getElementById('btn_after_send_file');
+        
+        var files = null;
+
+        if (btn_after_send_file.style.display == 'inline'){
+            files = document.getElementById("fileInputAfter").files
+        }
+        else{
+            files = document.getElementById("fileInput").files;
+        }
+        
+        for (let i = 0; i < files.length; i++) {
+            load(files[i]);
+        }
+
+        btn_after_send_file.style.display = 'inline';
+
+        const btn_befor_sen_mail = document.getElementById('btn_before_send_mail')
+        btn_befor_sen_mail.style.display = 'none'
+    }
+
+    function appendFile(fileId, fileName, type) {
+        const newFile = `
+            <div class="app__file__content">
+                <div class="file__content">
+                    <img width="30" height="30" src="https://findicons.com/files/icons/1579/devine/256/file.png" alt="File">
+                    <h2 class="file__title">Đang tải</h2> 
+                    <span class="file__percent">0%</span>
+                </div>  
+                <div class="file__progress" data-trigger="progress" data-progress="0">
+                    <span></span>
+                </div>
+                <div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-sm-2">
+                                    <h6 class="mb-0">Tên tài liệu</h6>
+                                </div>
+                                <div class="col-sm-10 text-secondary">
+                                    <input id="name-doc-${fileId}" type="text" class="form-control" value="${getOnlyFileName(fileName)}">
+                                    <div id="name-doc-${fileId}-error" class="invalid-feedback mb-1"></div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-2">
+                                    <h6 class="mb-0">Danh mục</h6>
+                                </div>
+                                <div id="root-select-${fileId}" class="col-sm-10 text-secondary">
+                                    <select id="danhmuc-${fileId}" class="form-select" aria-label="Default select example" onchange="changeDanhMuc('${fileId}')">
+                                        <option selected>--Danh mục--</option>
+                                    </select>
+                                    <select id="danhmuc2-${fileId}" class="form-select mt-2" aria-label="Default select example" style="display:none">
+                                        <option selected>--Danh mục--</option>
+                                    </select>
+                                    <div id="danhmuc-${fileId}-error" class="invalid-feedback mb-1"></div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-2">
+                                    <h6 class="mb-0">Mô tả</h6>
+                                </div>
+                                <div class="col-sm-10 text-secondary">
+                                    <input id="mota-${fileId}" type="text" class="form-control" value="">
+                                    <div id="mota-${fileId}-error" class="invalid-feedback mb-1"></div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-2">
+                                    <h6 class="mb-0">Giá bán</h6>
+                                </div>
+                                <div class="col-sm-10 text-secondary">
+                                    <select id="giaban-${fileId}" class="form-select" aria-label="Default select example" onchange="changeMoney('${fileId}')">
+                                        <option selected>Chọn giá bán</option>
+                                        <option value="free">Miễn phí</option>
+                                        <option value="20000">20.000VNĐ</option>
+                                        <option value="50000">50.000VNĐ</option>
+                                        <option value="100000">100.000VNĐ</option>
+                                        <option value="150000">150.000VNĐ</option>
+                                        <option value="200000">200.000VNĐ</option>
+                                        <option value="option">Tự ra giá</option>
+                                    </select>
+                                    <input id="option-money-${fileId}" type="text" class="form-control mt-2" value="" style="display: none">
+                                    <div id="giaban-${fileId}-error" class="invalid-feedback mb-1"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="text-secondary">
+                                    <input id="delete-${fileId}" type="button" class="btn btn-primary px-4 btn-secondary" value="Delete" onclick="deleteDocument('${fileName}', '${fileId}')">
+                                    <input id="save-${fileId}" type="button" class="btn btn-primary px-4" value="Save Changes" onclick="saveDocument('${fileId}', '${fileName}', '${type}')">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        
+        const div = document.createElement("DIV");
+        div.setAttribute("id", fileId);
+        div.classList.add("app__file");
+        div.classList.add("mb-4");
+        div.innerHTML = newFile;
+        
+        document.getElementById("app__files").append(div);
+        getDanhMuc(`danhmuc-${fileId}`);
+    }
+
+    let fields_upload_file = (fileId) => {
+        return {
+            document_name: {
+                input: document.getElementById(`name-doc-${fileId}`),
+                error: document.getElementById(`name-doc-${fileId}-error`),
+            },
+            description:{
+                input: document.getElementById(`mota-${fileId}`),
+                error: document.getElementById(`mota-${fileId}-error`),
+            },
+            price: {
+                input: document.getElementById(`giaban-${fileId}`),
+                error: document.getElementById(`giaban-${fileId}-error`),
+            },
+            categories: {
+                input: document.getElementById(`danhmuc-${fileId}`),
+                error: document.getElementById(`danhmuc-${fileId}-error`),
+            }
+        };
+    };
+
+    async function deleteDocument(fileName, fileId){
+        url = baseURL + "/document/delete-wait-file?fileName=" + fileName
+
+        try {
+            const result = await deleteData(url);
+            if (result.code === 0){
+                document.getElementById(fileId).style.display = 'none'
+            }
+            else{
+                alert(result.message);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    async function saveDocument(fileId, fileOldName, type){
+        var url = baseURL + '/document/upload-s3'
+
+        var price = document.getElementById(`giaban-${fileId}`).value;
+        var ipnOptionSelect = document.getElementById(`option-money-${fileId}`);
+        if(price === "option"){
+            price = ipnOptionSelect.value; 
+        }
+
+        data = {
+            'old_name': fileOldName,
+            'document_name': document.getElementById(`name-doc-${fileId}`).value + "." + type,
+            'description': document.getElementById(`mota-${fileId}`).value,
+            'price': price,
+            'categories': [document.getElementById(`danhmuc-${fileId}`).value, document.getElementById(`danhmuc2-${fileId}`).value],
+            'type': type
+        }
+
+        thu = fields_upload_file(fileId)
+
+        try {
+            const result = await postData(url, data);
+            if (result.code === -2){
+                const errors = result.data;
+                Object.keys(errors).forEach((key) => {
+                    fields_upload_file(fileId)[key]['input'].classList.add('is-invalid');
+                    fields_upload_file(fileId)[key]['error'].innerHTML = errors[key][0];
+                });
+            }
+            else if (result.code === -1){
+                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+            }
+            else{
+                alert("Chuyển sang trang đăng nhập");
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function changeDanhMuc(fileId){
+        danhmuc = document.getElementById(`danhmuc-${fileId}`)
+        danhmuc2 = document.getElementById(`danhmuc2-${fileId}`)
+        arrayOfOptions = danhmuc2.childNodes[1].childNodes;
+
+        if(arrayOfOptions.length <= 1){
+            parentId = danhmuc.options[danhmuc.selectedIndex].dataset.optionId;
+            getDanhMuc(`danhmuc2-${fileId}`, parentId)
+            document.getElementById(`danhmuc2-${fileId}`).style.display = 'block'
+        }
+    }
+
+    function changeMoney(fileId){
+        var value = document.getElementById(`giaban-${fileId}`).value;
+        var ipnOptionSelect = document.getElementById(`option-money-${fileId}`)
+        if(value === "option"){
+            ipnOptionSelect.style.display = 'block';
+        }
+        else{
+            ipnOptionSelect.style.display = 'none';
+        }
+    }
+
+    function addOptions(categories, fileId){
+        var x = document.getElementById(`${fileId}`);
+
+        categories.forEach(categorie => {
+            var option = document.createElement("option");
+            option.value = categorie.name;
+            option.text = categorie.name;
+            option.dataset.optionId = categorie.id;
+            x.add(option);
+        }); 
+    }
+
+    async function getDanhMuc(fileId, parentId = null){
+        url = baseURL + "/categories/"
+        if(parentId){
+            url += "?parentId=" + parentId
+        }
+
+        try {
+            const result = await getData(url);
+            if (result.code === -1){
+                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+            }
+            else{
+                addOptions(result.data, fileId)
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function fileProgressing(elementId, fileInfo, progressing) {
+        const fileRoot = document.querySelector(elementId);
+        const progressFile = fileRoot.querySelector(".file__progress");
+        const percent = fileRoot.querySelector(".file__percent");
+        const title = fileRoot.querySelector(".file__title");
+        
+        progressFile.querySelector("span").style.width = progressing + "%";
+        percent.textContent = progressing + "%";
+        title.textContent = fileInfo.name ?? "khong-ro";
+    }
+
+    function getTypeFile(type){
+        if (type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+           return "docx";
+        else if (type === "application/msword")
+            return "docx";
+        else
+            return "pdf";
+    }
+
+    function getOnlyFileName(fileName){
+        return fileName.split('.').slice(0, -1).join('.')
+    }
+
+    async function load(newFile) {
+        url = baseURL + "/document/check-file?fileName=" + newFile['name'];
+
+        try {
+            const result = await getData(url);
+            if (result.code === -1){
+                alert(result.message);    
+            }
+            else if(result.code === -3){
+                clickLogin();
+            }
+            else{
+                const type = getTypeFile(newFile.type)
+
+                const data = new FormData();
+                data.append("file", newFile);        
+
+                const randomId = document.querySelector("#app__files").childElementCount;
+                const elementId = `file-${randomId}`;
+                appendFile(elementId, newFile['name'], type);
+
+                const xhr = new XMLHttpRequest();
+                xhr.responseType = 'json';
+                xhr.open("POST", "http://127.0.0.1:5000/document/upload-multi", true);
+                xhr.setRequestHeader("Authorization", `Bearer ${localStorage.token}`)
+                
+                xhr.upload.addEventListener("progress", function(event) {
+                    const percent = Math.round((event.loaded / event.total) * 100);
+                    fileProgressing(`#${elementId}`, newFile, percent);
+                });
+                
+                xhr.send(data);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+</script>
+{% endblock %}

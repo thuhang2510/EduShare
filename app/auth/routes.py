@@ -1,4 +1,4 @@
-from flask import jsonify, render_template
+from flask import current_app, jsonify, render_template, session
 from app.auth import bp
 from app.auth.email import send_password_reset_email
 from app.auth.forms import RegisterForm, LoginForm, ResetPasswordRequestForm
@@ -7,6 +7,7 @@ from app.blacklist import BLACKLIST
 from flask_login import login_user, current_user
 from flask_jwt_extended import create_access_token, get_jwt, jwt_required
 from app.extensions import admin_permission, editter_permision
+from flask_principal import identity_changed, Identity, AnonymousIdentity
 
 @bp.route('/', methods=['GET'])
 def index():
@@ -42,10 +43,9 @@ def login():
         '''
         login_user(user)
         print(current_user)
-
+        '''
         identity=Identity(user.id)
         identity_changed.send(current_app._get_current_object(), identity=identity)
-        '''
         
         access_token = create_access_token(user.id)
         return jsonify({'message': msg, 'code': 0, 'data': access_token})
@@ -60,9 +60,8 @@ def get_all_user():
     return "hihi"
 
 @bp.route('/user-token')
-@jwt_required()
-def get_user_by_token():
-    if current_user != None:
+def get_user_by_token():    
+    if current_user.is_authenticated:
         data = {
             'id': current_user.id,
             'fullname': current_user.fullname,
@@ -71,7 +70,6 @@ def get_user_by_token():
             'coin': current_user.coin,
             'address': current_user.address
         }
-
         return jsonify({'message': 'Lấy user thành công', 'code': 0, 'data': data})
     
     return jsonify({'message': 'User chưa đăng nhập', 'code': -1, 'data': None}) 
@@ -97,6 +95,16 @@ def resetpw():
 @bp.route("/logout", methods=["DELETE"])
 @jwt_required()
 def logout():
-    jti = get_jwt()["jti"]
-    BLACKLIST.add(jti)
-    return jsonify(msg="Access token revoked")
+    try:
+        jti = get_jwt()["jti"]
+        BLACKLIST.add(jti)
+
+        for key in ('identity.name', 'identity.auth_type'):
+            session.pop(key, None)
+
+        identity_changed.send(current_app._get_current_object(),
+                            identity=AnonymousIdentity())
+        
+        return jsonify({'message': 'Đăng xuất thành công', 'code': 0, 'data': None})
+    except Exception as e:
+        return jsonify({'message': 'Đăng xuất thất bại', 'code': -1, 'data': None})
