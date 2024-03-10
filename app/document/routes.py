@@ -83,4 +83,4 @@ def upload_s3():
             
         return jsonify({'message': 'invalid input', 'code': -2, 'data': uploadDocument.errors})
         
-    return jsonify({'message': 'Hãy đăng nhập trước', 'code': -1, 'data': None})
+    return jsonify({'message': 'Hãy đăng nhập trước', 'code': -3, 'data': None})

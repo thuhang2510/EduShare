@@ -262,8 +262,13 @@
             else if (result.code === -1){
                 alert("Có lỗi xảy ra vui lòng thử lại sau");    
             }
+            else if(result.code === 0){
+                deleteDocument(fileOldName, fileId);
+                alert("Upload tài liệu thành công");
+            }
             else{
-                alert("Chuyển sang trang đăng nhập");
+                alert("Hãy đăng nhập trước")
+                window.location.replace(baseURL + "/api/v1")
             }
         } catch (error) {
             console.log(error.message);
