@@ -15,11 +15,12 @@
                 <div class="author-card pb-3">
                     <div class="author-card-cover"></div>
                     <div class="author-card-profile">
-                        <div class="author-card-avatar"><img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="Daniel Adams">
+                        <div class="author-card-avatar text-center bg-secondary">
+                            <span id="base-profile-img" class="h4 text-white">H</span>
                         </div>
                         <div class="author-card-details">
-                            <h4 class="author-card-name text-lg">Daniel Adams</h4>
-                            <span class="author-card-position">Email</span>
+                            <h4 id="base-profile-name" class="author-card-name text-lg">Daniel Adams</h4>
+                            <span id="base-profile-email" class="author-card-position">Email</span>
                         </div>
                     </div>
                     <div class="ps-4" style="display: none;"><h6>Tài liệu: <span>0</span></h5></div>
@@ -258,6 +259,10 @@
     async function getUser(){
         url = baseURL + "/api/v1/user-token"
 
+        var base_profile_img = document.getElementById("base-profile-img")
+        var base_profile_name = document.getElementById("base-profile-name")
+        var base_profile_email = document.getElementById("base-profile-email")
+
         try {
             const result = await getData(url);
             if (result.code === 0){
@@ -270,6 +275,9 @@
                 fields_account.address.input.value = result.data["address"];
                 fields_account.email.input.value = result.data["email"];
                 fields_account.number.input.value = result.data["number"];
+                base_profile_name.value = result.data["fullname"];
+                base_profile_email.value = result.data["email"]
+                base_profile_img.innerHTML = result.data["fullname"][0];
                 openLogin();
             }
             else{
