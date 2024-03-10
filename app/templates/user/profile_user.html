@@ -275,8 +275,8 @@
                 fields_account.address.input.value = result.data["address"];
                 fields_account.email.input.value = result.data["email"];
                 fields_account.number.input.value = result.data["number"];
-                base_profile_name.value = result.data["fullname"];
-                base_profile_email.value = result.data["email"]
+                base_profile_name.innerHTML = result.data["fullname"];
+                base_profile_email.innerHTML = result.data["email"]
                 base_profile_img.innerHTML = result.data["fullname"][0];
                 openLogin();
             }
