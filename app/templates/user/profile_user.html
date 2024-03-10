@@ -263,6 +263,8 @@
         var base_profile_name = document.getElementById("base-profile-name")
         var base_profile_email = document.getElementById("base-profile-email")
 
+        var base_img = document.getElementById("base-img")
+
         try {
             const result = await getData(url);
             if (result.code === 0){
@@ -271,6 +273,7 @@
                 user.ls_fullname.innerHTML = result.data["fullname"];
                 user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                base_img.innerHTML = result.data["fullname"][0];
                 fields_account.fullname.input.value = result.data["fullname"];
                 fields_account.address.input.value = result.data["address"];
                 fields_account.email.input.value = result.data["email"];
