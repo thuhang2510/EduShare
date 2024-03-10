@@ -42,6 +42,8 @@ class Account(UserMixin, db.Model):
         data = {
             'id': self.id,
             'fullname': self.fullname,
+            'address': self.address,
+            'number': self.number
         }
         if include_email:
             data['email'] = self.email

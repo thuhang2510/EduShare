@@ -23,7 +23,7 @@
     function authModule() {
         const fetch = window.fetch; 
 
-        const authOrigins = ["http://localhost:5000"];
+        const authOrigins = ["http://localhost:5000", "http://174.129.69.18"];
         let token = '';
         
         this.setToken = (value) => {
@@ -43,7 +43,7 @@
     const auth = new authModule();
 
     async function sendFormLogin(){
-        var url = 'http://127.0.0.1:5000/admin/admin-login'
+        var url = 'http://174.129.69.18/admin/admin-login'
 
         data = {
             'email': fields_login.email.input.value,
@@ -67,7 +67,7 @@
     }
 
     function sendToHome(){
-        auth.fetch("http://127.0.0.1:5000/admin", {headers: {'Content-Type': 'application/json'}})
+        auth.fetch("http://174.129.69.18/admin", {headers: {'Content-Type': 'application/json'}})
         .then((response) => {
             return response.text();
         })

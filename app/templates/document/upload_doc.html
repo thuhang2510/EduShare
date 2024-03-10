@@ -80,8 +80,6 @@
             }
         } catch (error) {
             console.log(error.message);
-            localStorage.removeItem('token')
-            clickLogin();
             document.getElementById("all-upload").style.display = "none"
         }
     }
@@ -373,7 +371,7 @@
 
                 const xhr = new XMLHttpRequest();
                 xhr.responseType = 'json';
-                xhr.open("POST", "http://127.0.0.1:5000/document/upload-multi", true);
+                xhr.open("POST", "http://174.129.69.18/document/upload-multi", true);
                 xhr.setRequestHeader("Authorization", `Bearer ${localStorage.token}`)
                 
                 xhr.upload.addEventListener("progress", function(event) {

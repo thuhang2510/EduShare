@@ -47,6 +47,9 @@ def create_app(config_class=Config):
     from app.categories import bp as categories_bp
     app.register_blueprint(categories_bp, url_prefix='/categories')
 
+    from app.user import bp as user_bp
+    app.register_blueprint(user_bp, url_prefix='/user')
+
     return app
 
 from app.model import models
