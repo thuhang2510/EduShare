@@ -50,6 +50,7 @@ def delete_file_wait():
     return jsonify({'message': 'Hãy đăng nhập trước', 'code': -3, 'data': None})
 
 @bp.route("/check-file", methods=['GET'])
+@uploader_permission.require()
 def check_file_exist():
     if current_user.is_authenticated:
         fileName = request.args.get("fileName")

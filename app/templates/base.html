@@ -449,6 +449,9 @@
             }
         } catch (error) {
             console.log(error.message);
+            alert("Đã hết thời gian truy cập. Hãy đăng nhập lại để tiếp tuc.")
+            localStorage.removeItem('token')
+            clickLogin();
         }
     }
 

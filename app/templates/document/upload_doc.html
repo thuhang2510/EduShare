@@ -374,9 +374,10 @@
                 const elementId = `file-${randomId}`;
                 appendFile(elementId, newFile['name'], type);
 
+                var url = baseURL + '/document/upload-multi'
                 const xhr = new XMLHttpRequest();
                 xhr.responseType = 'json';
-                xhr.open("POST", "http://174.129.69.18/document/upload-multi", true);
+                xhr.open("POST", url, true);
                 xhr.setRequestHeader("Authorization", `Bearer ${localStorage.token}`)
                 
                 xhr.upload.addEventListener("progress", function(event) {
@@ -387,6 +388,7 @@
                 xhr.send(data);
             }
         } catch (error) {
+            alert("Bạn không có quyền Upload tài liệu");
             console.log(error.message);
         }
     }

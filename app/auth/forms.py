@@ -1,3 +1,4 @@
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, ValidationError
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
@@ -30,6 +31,12 @@ class LoginForm(FlaskForm):
         user = Account.query.filter_by(email=email.data).first()
         if user is None:
             raise ValidationError('Email này chưa tồn tại')
+    
+    def validate_password(self, password):
+        user = Account.find_by_email(self.email.data)
+
+        if(user.check_password(password.data) is False):
+            raise ValidationError('Mật khẩu không đúng')
 
 class ResetPasswordRequestForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
