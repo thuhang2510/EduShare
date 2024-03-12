@@ -1,10 +1,10 @@
-from flask import current_app, jsonify, render_template, session
+from flask import abort, current_app, jsonify, render_template, session
 from app.auth import bp
 from app.auth.email import send_password_reset_email
 from app.auth.forms import RegisterForm, LoginForm, ResetPasswordRequestForm
 from app.auth.services import UserDataService
 from app.blacklist import BLACKLIST
-from flask_login import login_user, current_user
+from flask_login import current_user
 from flask_jwt_extended import create_access_token, get_jwt, jwt_required
 from app.extensions import admin_permission, editter_permision
 from flask_principal import identity_changed, Identity, AnonymousIdentity
@@ -40,10 +40,6 @@ def login():
         if user is None or not user.check_password(login.password.data):
             return jsonify({'message': msg, 'code': -1, 'data': None})
         
-        '''
-        login_user(user)
-        print(current_user)
-        '''
         identity=Identity(user.id)
         identity_changed.send(current_app._get_current_object(), identity=identity)
         

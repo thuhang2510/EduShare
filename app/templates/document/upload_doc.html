@@ -74,7 +74,6 @@
             }
             else{
                 alert(result.message);
-                localStorage.removeItem('token')
                 clickLogin();
                 document.getElementById("all-upload").style.display = "none"
             }
@@ -388,7 +387,6 @@
                 xhr.send(data);
             }
         } catch (error) {
-            alert("Bạn không có quyền Upload tài liệu");
             console.log(error.message);
         }
     }

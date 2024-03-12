@@ -53,7 +53,7 @@ def load_user_from_request(request):
             print("User ID:", id)
         except TypeError:
             pass
-        user = Account.query.filter_by(id=id).first()
+        user = Account.query.filter_by(id=id, status=True).first()
         if user:
             return user
 

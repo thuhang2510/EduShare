@@ -68,11 +68,11 @@ class Account(UserMixin, db.Model):
 
     @classmethod
     def find_by_email(cls, _email):
-        return cls.query.filter_by(email=_email).first()
+        return cls.query.filter_by(email=_email, status=True).first()
 
     @classmethod
     def find_by_id(cls, _id):
-        return cls.query.filter_by(id=_id).first()
+        return cls.query.filter_by(id=_id, status=True).first()
 
     def save_to_db(self):
         db.session.add(self)
@@ -235,7 +235,7 @@ class Documents(db.Model):
 
     @classmethod
     def find_by_name(cls, _document_name):
-        return cls.query.filter_by(document_name=_document_name).first()
+        return cls.query.filter_by(document_name=_document_name, status=True).first()
 
 class DocumentCategories(db.Model):
     __tablename__ = 'document_categories'
