@@ -23,6 +23,10 @@ class Account(UserMixin, db.Model):
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
     coin = db.Column(db.Integer , server_default='0')
     address = db.Column(db.String(255))
+    number_download = db.Column(db.Integer, server_default='0')
+    number_ask = db.Column(db.Integer, server_default='0')
+    datetime_week_reset = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    datetime_day_reset = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     permission = db.relationship(
         'Permission',
         secondary='account_permission',
