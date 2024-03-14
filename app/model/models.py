@@ -27,6 +27,7 @@ class Account(UserMixin, db.Model):
     number_ask = db.Column(db.Integer, server_default='0')
     datetime_week_reset = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     datetime_day_reset = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    violation_count = db.Column(db.Integer, server_default='0')
     permission = db.relationship(
         'Permission',
         secondary='account_permission',
