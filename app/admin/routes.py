@@ -13,13 +13,17 @@ class AccountView(ModelView):
     can_create = False
     can_delete = False
     column_hide_backrefs = False
-    column_list = ('id', 'email', 'fullname', 'number', 'permission', 'status')
+    column_list = ('id', 'email', 'fullname', 'number', 'permission', 'coin', 
+                   'number_download', 'number_ask', 'violation_count', 'status')
     column_searchable_list = ('email', 'fullname', 'number')
     page_size = 10
-    column_labels = dict(number='Số điện thoại', fullname='Họ và tên', permission='Quyền truy cập', status='Trạng thái')
-    form_excluded_columns = ('password_hash')
+    column_labels = dict(number='Số điện thoại', fullname='Họ và tên', permission='Quyền truy cập', status='Trạng thái', 
+                         coin='Số tiền', number_download='SL tải', number_ask='SL hỏi', violation_count='SL vi phạm',
+                         address='Địa chỉ', datetime_day_reset='Ngày bắt đầu', datetime_week_reset='Tuần bắt đầu')
+    form_excluded_columns = ('password_hash', 'transaction')
     column_details_exclude_list = ('password_hash')
-    column_details_list = ('id', 'email', 'fullname', 'number', 'permission', 'status')
+    column_details_list = ('id', 'email', 'fullname', 'number', 'permission', 'status', 'coin', 'address', 
+                   'number_download', 'number_ask', 'datetime_week_reset', 'datetime_day_reset', 'violation_count')
     column_editable_list = ('fullname', 'permission', 'status')
     form_widget_args = {
         'email': {
