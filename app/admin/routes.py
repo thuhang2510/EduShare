@@ -11,6 +11,7 @@ from app.auth.services import UserDataService
 class AccountView(ModelView):
     can_view_details = True
     can_create = False
+    can_delete = False
     column_hide_backrefs = False
     column_list = ('id', 'email', 'fullname', 'number', 'permission', 'status')
     column_searchable_list = ('email', 'fullname', 'number')
