@@ -3,7 +3,7 @@
 <p> Sau đây là các thông tin liên quan đến tài khoản: </p>
 <p> Họ và tên: {{user.fullname}}</p>
 <p> Quyền truy cập tài khoản: 
-    {% for item in user.roles %}
+    {% for item in user.permission %}
         {{ item.name }}  
     {% endfor %}
 </p>
