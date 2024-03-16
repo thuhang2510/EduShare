@@ -75,4 +75,32 @@ def upload_s3():
             return jsonify({'message': msg, 'code': -1, 'data': None})
         
     return jsonify({'message': 'invalid input', 'code': -2, 'data': uploadDocument.errors})
-        
+
+@bp.route("/get_all_new", methods=['GET'])
+def get_documents_new():
+    document, _, msg = DocumentsDataService().get_all_new()
+
+    if document is not None:
+        return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': document})
+    else:
+        return jsonify({'message': msg, 'code': -1, 'data': None})
+
+@bp.route("/get_all_saved", methods=['GET'])
+@jwt_required()
+
+def get_documents_saved():
+    document, _, msg = DocumentsDataService().get_all_saved(current_user.id)
+
+    if document is not None:
+        return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': document})
+    else:
+        return jsonify({'message': msg, 'code': -1, 'data': None})
+    
+@bp.route("/get_all_view", methods=['GET'])
+def get_documents_view():
+    document, _, msg = DocumentsDataService().get_all_view()
+
+    if document is not None:
+        return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': document})
+    else:
+        return jsonify({'message': msg, 'code': -1, 'data': None})

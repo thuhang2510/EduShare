@@ -1,5 +1,6 @@
 import datetime
 from flask_login import UserMixin
+from sqlalchemy import desc
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -33,6 +34,7 @@ class Account(UserMixin, db.Model):
         secondary='account_permission',
         backref=db.backref('account', lazy='dynamic'))
     transaction = db.relationship('Transaction', backref='account', lazy=True)
+    evaluate = db.relationship('Evaluate', backref='account', lazy=True)
 
     def __repr__(self):
         return '<Account {}>'.format(self.fullname)
@@ -198,7 +200,7 @@ class Documents(db.Model):
     __tablename__ = 'documents'
 
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    creation_date = db.Column(db.DateTime, server_default=str(datetime.datetime.utcnow))
+    creation_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     modified_date = db.Column(db.DateTime)
     document_name = db.Column(db.String(255))
     type = db.Column(db.String(5))
@@ -213,6 +215,7 @@ class Documents(db.Model):
         'Categories',
         secondary='document_categories',
         backref=db.backref('documents', lazy='dynamic'))
+    evaluate = db.relationship('Evaluate', backref='documents', lazy=True)
     
     def to_dict(self):
         data = {
@@ -223,7 +226,27 @@ class Documents(db.Model):
             'download_count': self.download_count,
             'price': self.price,
             'type': self.type,
-            'account_id': self.account_id
+            'account_id': self.account_id,
+            'evaluate': Evaluate.list_to_dict_tuple(self.evaluate)
+        }
+
+        return data
+    
+    @classmethod
+    def to_dict_tuple(self, tuple):
+        document = tuple[0]
+        fullname_account = tuple[1]
+        data = {
+            'id': document.id,
+            'document_name': document.document_name,
+            'description': document.description,
+            'view_count': document.view_count,
+            'download_count': document.download_count,
+            'price': document.price,
+            'type': document.type,
+            'account_id': document.account_id,
+            'evaluate': Evaluate.list_to_dict(document.evaluate),
+            'fullname': fullname_account
         }
 
         return data
@@ -232,6 +255,15 @@ class Documents(db.Model):
         for field in ['document_name', 'description', 'price', 'type']:
             if field in data:
                 setattr(self, field, data[field])
+
+    @classmethod
+    def list_to_dict(cls, documents):
+        data = []
+
+        for document in documents:
+            data.append(cls.to_dict_tuple(document))
+
+        return data
     
     def save_to_db(self):
         db.session.add(self)
@@ -241,6 +273,22 @@ class Documents(db.Model):
     @classmethod
     def find_by_name(cls, _document_name):
         return cls.query.filter_by(document_name=_document_name, status=True).first()
+    
+    @classmethod
+    def find_all_new(cls):
+        return cls.query.join(Account).filter(cls.status==True).order_by(desc(cls.creation_date)).add_column(Account.fullname).all()
+    
+    @classmethod
+    def find_all_view(cls):
+        return cls.query.join(Account).filter_by(status=True).order_by(desc(cls.view_count)).add_column(Account.fullname).all()
+    
+    @classmethod
+    def find_all_saved(cls, _account_id):
+        return cls.query.join(Evaluate, Evaluate.document_id==cls.id).\
+            join(Account, Account.id == cls.account_id).\
+            filter(Evaluate.type=='save', Documents.status==True, Evaluate.account_id==_account_id).\
+            add_columns(Account.fullname).\
+            all()
 
 class DocumentCategories(db.Model):
     __tablename__ = 'document_categories'
@@ -250,3 +298,69 @@ class DocumentCategories(db.Model):
         'documents.id', ondelete='CASCADE'))
     category_id = db.Column(db.Integer(), db.ForeignKey(
         'categories.id', ondelete='CASCADE'))
+
+class Evaluate(db.Model):
+    __tablename__ = 'evaluate'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    type = db.Column(db.String(50))
+    document_id = db.Column(db.Integer(), db.ForeignKey(
+        'documents.id', ondelete='CASCADE'))
+    account_id = db.Column(db.Integer(), db.ForeignKey(
+        'account.id', ondelete='CASCADE'))
+    
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'type': self.type,
+            'document_id': self.document_id,
+            'account_id': self.account_id
+        }
+
+        return data
+    
+    @classmethod
+    def list_to_dict(cls, evaluate):
+        data = []
+
+        for item in evaluate:
+            data.append(item.to_dict())
+
+        return data
+    
+    @classmethod
+    def list_to_dict_tuple(cls, evaluate):
+        data = []
+
+        for item in evaluate:
+            data.append(cls.to_dict_tuple(item))
+
+        return data
+    
+    @classmethod
+    def to_dict_tuple(self, tuple):
+        evaluate = tuple[0]
+        document = tuple[1]
+        fullname_account = tuple[2]
+        data = {
+            'id': evaluate.id,
+            'type': evaluate.type,
+            'document_id': evaluate.document_id,
+            'account_id': evaluate.account_id,
+            'document_name': document.document_name,
+            'description': document.description,
+            'view_count': document.view_count,
+            'download_count': document.download_count,
+            'price': document.price,
+            'fullname': fullname_account
+        }
+
+        return data
+    
+    @classmethod
+    def find_all_saved(cls, _account_id):
+        return cls.query.join(Documents, Documents.id == cls.document_id).\
+            join(Account, Account.id == cls.account_id).\
+            filter(Evaluate.type=='save', Documents.status==True, cls.account_id==_account_id).\
+            add_columns(Documents, Account.fullname).\
+            all()

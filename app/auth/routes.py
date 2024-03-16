@@ -14,7 +14,7 @@ def index():
     register = RegisterForm(meta={'csrf': False})
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
-    return render_template('auth/register.html', title='Đăng ký', form=register, formlogin=login, formresetpw=resetpw)
+    return render_template('home/trangchu.html', title='Đăng ký', form=register, formlogin=login, formresetpw=resetpw)
 
 @bp.route('/register', methods=['POST'])
 def register():
