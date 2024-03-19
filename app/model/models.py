@@ -1,3 +1,4 @@
+import base64
 import datetime
 from flask_login import UserMixin
 from sqlalchemy import desc
@@ -209,6 +210,7 @@ class Documents(db.Model):
     download_count = db.Column(db.Integer, server_default='0')
     price = db.Column(db.Integer, server_default='0')
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
+    image = db.Column(db.LargeBinary())
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
         nullable=False)
     categories = db.relationship(
@@ -227,7 +229,8 @@ class Documents(db.Model):
             'price': self.price,
             'type': self.type,
             'account_id': self.account_id,
-            'evaluate': Evaluate.list_to_dict_tuple(self.evaluate)
+            'categories': Categories.list_to_dict(self.categories),
+            'evaluate': Evaluate.list_to_dict(self.evaluate)
         }
 
         return data
@@ -236,6 +239,7 @@ class Documents(db.Model):
     def to_dict_tuple(self, tuple):
         document = tuple[0]
         fullname_account = tuple[1]
+
         data = {
             'id': document.id,
             'document_name': document.document_name,
@@ -245,9 +249,14 @@ class Documents(db.Model):
             'price': document.price,
             'type': document.type,
             'account_id': document.account_id,
+            'image': document.image,
+            'categories': Categories.list_to_dict(document.categories),
             'evaluate': Evaluate.list_to_dict(document.evaluate),
             'fullname': fullname_account
         }
+
+        if (document.image != None):
+            data['image'] = base64.b64encode(document.image).decode('utf-8')
 
         return data
     
@@ -289,6 +298,10 @@ class Documents(db.Model):
             filter(Evaluate.type=='save', Documents.status==True, Evaluate.account_id==_account_id).\
             add_columns(Account.fullname).\
             all()
+    
+    @classmethod
+    def find_by_id(cls, _id):
+        return cls.query.join(Account).filter(cls.id==_id, cls.status==True).add_column(Account.fullname).first()
 
 class DocumentCategories(db.Model):
     __tablename__ = 'document_categories'

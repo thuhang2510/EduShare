@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from config import Config
 from flask_login import current_user
 from flask_principal import identity_loaded, UserNeed, RoleNeed
@@ -9,6 +10,8 @@ def get_locale():
 
 def create_app(config_class=Config):
     app = Flask(__name__)
+    CORS(app)
+    
     app.config.from_object(config_class)
     
     db.init_app(app)

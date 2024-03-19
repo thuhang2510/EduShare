@@ -29,7 +29,8 @@
                         </div>
                     </div>
                 </div>
-                <h6 class="mb-4">Bằng cách tải tài liệu lên EduShare, bạn tuyên bố rằng bạn sở hữu bản quyền đối với tài liệu hoặc được chủ sở hữu bản quyền cho phép rõ ràng để sử dụng và tải tài liệu lên.</h6>
+                <h6 class="mb-4">Bằng cách tải tài liệu lên EduShare, bạn tuyên bố rằng bạn sở hữu bản quyền đối với tài liệu hoặc được chủ sở hữu bản quyền cho phép rõ ràng để sử dụng và tải tài liệu lên. 
+                    Bên cạnh đó, Bạn cam kết rằng chính bạn sẽ chịu hoàn toàn trách nghiệm đối với tài liệu đã tải lên</h6>
                 <div id="app__files">
                 </div>
             </div>
@@ -118,61 +119,79 @@
                 <div>
                     <div class="card" id="upload-file-wait-${fileId}" style="display: none">
                         <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-sm-2">
-                                    <h6 class="mb-0">Tên tài liệu</h6>
-                                </div>
-                                <div class="col-sm-10 text-secondary">
-                                    <input id="name-doc-${fileId}" type="text" class="form-control" value="${getOnlyFileName(fileName)}">
-                                    <div id="name-doc-${fileId}-error" class="invalid-feedback mb-1"></div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-sm-2">
-                                    <h6 class="mb-0">Danh mục</h6>
-                                </div>
-                                <div id="root-select-${fileId}" class="col-sm-10 text-secondary">
-                                    <select id="danhmuc-${fileId}" class="form-select" aria-label="Default select example" onchange="changeDanhMuc('${fileId}')">
-                                        <option selected>--Danh mục--</option>
-                                    </select>
-                                    <select id="danhmuc2-${fileId}" class="form-select mt-2" aria-label="Default select example" style="display:none">
-                                        <option selected>--Danh mục--</option>
-                                    </select>
-                                    <div id="danhmuc-${fileId}-error" class="invalid-feedback mb-1"></div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-sm-2">
-                                    <h6 class="mb-0">Mô tả</h6>
-                                </div>
-                                <div class="col-sm-10 text-secondary">
-                                    <input id="mota-${fileId}" type="text" class="form-control" value="">
-                                    <div id="mota-${fileId}-error" class="invalid-feedback mb-1"></div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-sm-2">
-                                    <h6 class="mb-0">Giá bán</h6>
-                                </div>
-                                <div class="col-sm-10 text-secondary">
-                                    <select id="giaban-${fileId}" class="form-select" aria-label="Default select example" onchange="changeMoney('${fileId}')">
-                                        <option selected>Chọn giá bán</option>
-                                        <option value="free">Miễn phí</option>
-                                        <option value="20000">20.000VNĐ</option>
-                                        <option value="50000">50.000VNĐ</option>
-                                        <option value="100000">100.000VNĐ</option>
-                                        <option value="150000">150.000VNĐ</option>
-                                        <option value="200000">200.000VNĐ</option>
-                                        <option value="option">Tự ra giá</option>
-                                    </select>
-                                    <input id="option-money-${fileId}" type="text" class="form-control mt-2" value="" style="display: none">
-                                    <div id="giaban-${fileId}-error" class="invalid-feedback mb-1"></div>
-                                </div>
-                            </div>
                             <div class="row">
-                                <div class="text-secondary">
-                                    <input id="delete-${fileId}" type="button" class="btn btn-primary px-4 btn-secondary" value="Delete" onclick="deleteDocument('${fileName}', '${fileId}')">
-                                    <input id="save-${fileId}" type="button" class="btn btn-primary px-4" value="Save Changes" onclick="saveDocument('${fileId}', '${fileName}', '${type}')">
+                                <div class="col-sm-3">
+                                    <div>
+                                        <div class="mb-4 d-flex justify-content-center">
+                                            <img id="selectedImage-${fileId}" src="https://mdbootstrap.com/img/Photos/Others/placeholder.jpg"
+                                            alt="example placeholder" style="width: 180px; height: 180px" />
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <div class="btn btn-primary btn-rounded">
+                                                <label class="form-label text-white m-1" for="customFile-${fileId}">Choose file</label>
+                                                <input type="file" class="form-control d-none" id="customFile-${fileId}" onchange="displaySelectedImage(event, 'selectedImage-${fileId}')" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-2">
+                                            <h6 class="mb-0">Tên tài liệu</h6>
+                                        </div>
+                                        <div class="col-sm-10 text-secondary">
+                                            <input id="name-doc-${fileId}" type="text" class="form-control" value="${getOnlyFileName(fileName)}">
+                                            <div id="name-doc-${fileId}-error" class="invalid-feedback mb-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-2">
+                                            <h6 class="mb-0">Danh mục</h6>
+                                        </div>
+                                        <div id="root-select-${fileId}" class="col-sm-10 text-secondary">
+                                            <select id="danhmuc-${fileId}" class="form-select" aria-label="Default select example" onchange="changeDanhMuc('${fileId}')">
+                                                <option selected>--Danh mục--</option>
+                                            </select>
+                                            <select id="danhmuc2-${fileId}" class="form-select mt-2" aria-label="Default select example" style="display:none">
+                                                <option selected>--Danh mục--</option>
+                                            </select>
+                                            <div id="danhmuc-${fileId}-error" class="invalid-feedback mb-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-2">
+                                            <h6 class="mb-0">Mô tả</h6>
+                                        </div>
+                                        <div class="col-sm-10 text-secondary">
+                                            <input id="mota-${fileId}" type="text" class="form-control" value="">
+                                            <div id="mota-${fileId}-error" class="invalid-feedback mb-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-2">
+                                            <h6 class="mb-0">Giá bán</h6>
+                                        </div>
+                                        <div class="col-sm-10 text-secondary">
+                                            <select id="giaban-${fileId}" class="form-select" aria-label="Default select example" onchange="changeMoney('${fileId}')">
+                                                <option selected>Chọn giá bán</option>
+                                                <option value="free">Miễn phí</option>
+                                                <option value="20000">20.000VNĐ</option>
+                                                <option value="50000">50.000VNĐ</option>
+                                                <option value="100000">100.000VNĐ</option>
+                                                <option value="150000">150.000VNĐ</option>
+                                                <option value="200000">200.000VNĐ</option>
+                                                <option value="option">Tự ra giá</option>
+                                            </select>
+                                            <input id="option-money-${fileId}" type="text" class="form-control mt-2" value="" style="display: none">
+                                            <div id="giaban-${fileId}-error" class="invalid-feedback mb-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="text-secondary">
+                                            <input id="delete-${fileId}" type="button" class="btn btn-primary px-4 btn-secondary" value="Delete" onclick="deleteDocument('${fileName}', '${fileId}')">
+                                            <input id="save-${fileId}" type="button" class="btn btn-primary px-4" value="Save Changes" onclick="saveDocument('${fileId}', '${fileName}', '${type}')">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -189,6 +208,24 @@
         
         document.getElementById("app__files").append(div);
         getDanhMuc(`danhmuc-${fileId}`);
+    }
+
+    var imageFile = null;
+
+    function displaySelectedImage(event, elementId) {
+        const selectedImage = document.getElementById(elementId);
+        const fileInput = event.target;
+
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                selectedImage.src = e.target.result;
+            };
+
+            reader.readAsDataURL(fileInput.files[0]);
+            imageFile = fileInput.files[0];
+        }
     }
 
     let fields_upload_file = (fileId) => {
@@ -237,19 +274,23 @@
             price = ipnOptionSelect.value; 
         }
 
-        data = {
-            'old_name': fileOldName,
-            'document_name': document.getElementById(`name-doc-${fileId}`).value + "." + type,
-            'description': document.getElementById(`mota-${fileId}`).value,
-            'price': price,
-            'categories': [document.getElementById(`danhmuc-${fileId}`).value, document.getElementById(`danhmuc2-${fileId}`).value],
-            'type': type
-        }
+        var customFile1 = document.getElementById(`customFile-${fileId}`);
+
+        const formData = new FormData();
+        formData.append('old_name', fileOldName);
+        formData.append('document_name', document.getElementById(`name-doc-${fileId}`).value + "." + type);
+        formData.append('description', document.getElementById(`mota-${fileId}`).value);
+        formData.append('price', price);
+
+        var arr = {'categories': [document.getElementById(`danhmuc-${fileId}`).value, document.getElementById(`danhmuc2-${fileId}`).value]};
+        formData.append('categories', JSON.stringify(arr));
+        formData.append('type', type);
+        formData.append('image', imageFile);
 
         thu = fields_upload_file(fileId)
 
         try {
-            const result = await postData(url, data);
+            const result = await postFormData(url, formData);
             if (result.code === -2){
                 const errors = result.data;
                 Object.keys(errors).forEach((key) => {

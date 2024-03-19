@@ -1,5 +1,5 @@
 import os
-from flask import jsonify, render_template, request, redirect
+from flask import jsonify, render_template, request, redirect, json
 from flask_jwt_extended import jwt_required
 from flask_login import current_user
 from app.auth.forms import LoginForm, RegisterForm, ResetPasswordRequestForm
@@ -29,6 +29,7 @@ def upload_multi():
             return jsonify({'message': f'Tài liệu {f.filename} đã có trong tạm thời', 'code': -1, 'data': None})
         
         f.save(os.path.join(DocumentS3.UPLOAD_FOLDER, f.filename))
+        f.close()
         
     return jsonify({'message': 'Tài liệu lưu vào tạm thời thành công', 'code': 0, 'data': None})
     
@@ -55,14 +56,20 @@ def check_file_exist():
         return jsonify({'message': f'Tài liệu {fileName} đã có trong tạm thời', 'code': -1, 'data': None})
         
     return jsonify({'message': f'Tài liệu {fileName} chưa có trong tạm thời', 'code': 0, 'data': None})
-    
+
 @bp.route("/upload-s3", methods=['POST'])
 @jwt_required()
 @uploader_permission.require(http_exception=403)
 def upload_s3():
-    uploadDocument = UploadDocumentForm(meta={'csrf': False})
+    files = request.files.getlist("image")
 
-    for entry in request.json.get('categories'):
+    for f in files: 
+        f.save(os.path.join("app/static/images/" + f.filename))
+        f.close()
+
+    uploadDocument = UploadDocumentForm(meta={'csrf': False})
+    _categories = json.loads(request.form.get('categories'))["categories"]
+    for entry in _categories:
         uploadDocument.categories.append_entry(entry)
 
     if uploadDocument.validate():
@@ -70,6 +77,7 @@ def upload_s3():
 
         if document is not None:
             upload(f"upload_files/{uploadDocument.old_name.data}", DocumentS3.BUCKET, uploadDocument.document_name.data)
+            os.remove(os.path.join("app/static/images/" + files[0].filename))
             return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': None})
         else:
             return jsonify({'message': msg, 'code': -1, 'data': None})
@@ -104,3 +112,14 @@ def get_documents_view():
         return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': document})
     else:
         return jsonify({'message': msg, 'code': -1, 'data': None})
+    
+@bp.route("/<int:id>", methods=['GET'])
+def get_document_detail(id):
+    register = RegisterForm(meta={'csrf': False})
+    login = LoginForm(meta={'csrf': False})
+    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
+
+    document, _, msg = DocumentsDataService().get_by_id(id)
+    document["document_name"] = document["document_name"].split(".")[0]
+
+    return render_template('document/document_detail.html', form=register, formlogin=login, formresetpw=resetpw, document=document)

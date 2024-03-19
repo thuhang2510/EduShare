@@ -94,7 +94,7 @@
                 var carouselNewControls_carouselInner = document.querySelector("#carouselNewControls .carousel-inner")
                 html = "";
                 result.data.forEach(document => {
-                    html += showDocument(document["document_name"], document["fullname"], document["download_count"], document["evaluate"]);
+                    html += showDocument(document);
                 });
                 carouselNewControls_carouselInner.innerHTML = html;
 
@@ -122,7 +122,7 @@
                 var carouselSavedControls_carouselInner = document.querySelector("#carouselSavedControls .carousel-inner")
                 html = "";
                 result.data.forEach(document => {
-                    html += showDocument(document["document_name"], document["fullname"], document["download_count"], document["evaluate"]);
+                    html += showDocument(document);
                 });
                 carouselSavedControls_carouselInner.innerHTML = html;
 
@@ -150,7 +150,7 @@
                 var carouselViewControls_carouselInner = document.querySelector("#carouselViewControls .carousel-inner")
                 html = "";
                 result.data.forEach(document => {
-                    html += showDocument(document["document_name"], document["fullname"], document["download_count"], document["evaluate"]);
+                    html += showDocument(document);
                 });
                 carouselViewControls_carouselInner.innerHTML = html;
 
@@ -246,31 +246,39 @@
         return fileName.split('.').slice(0, -1).join('.')
     }
 
-    function showDocument(document_name, document_user, download_count, evaluate){
-        var carouselNewControls = document.getElementById("carouselNewControls");
-        html = `<div class="carousel-item active">
-                    <div class="card">
-                        <div class="img-wrapper"><img src="/static/images/anh1.png" class="d-block img-detail" alt="..."> </div>
-                        <div class="card-body">
-                            <h5 class="card-title">${getOnlyFileName(document_name)}</h5>
-                            <p class="card-text">Được thêm bởi ${document_user}</p>
-                        </div>
-                        <div class="card-footer">
-                            <div class="d-flex bd-highlight">`
+    function showDocument(document){
+        html = `<div class="carousel-item active" onclick="openDocumentDetail(${document["id"]})">
+                    <div class="card">`
+
+        if(document["image"] != null)
+            html += `<div class="img-wrapper"><div style="width: 132px; height:174px;position: absolute;top: 24px;"><img src="data:image/png;base64,${document["image"]}" class="d-block img-detail" alt="..."> </div></div>`
+        else
+            html += `<div class="img-wrapper"><div style="width: 132px; height:174px;position: absolute;top: 24px"><img src="/static/images/anh11.png" class="d-block img-detail" alt="..."> </div></div>`
+                        
+        html += `<div class="card-body">
+                    <h5 class="card-title">${getOnlyFileName(document["document_name"])}</h5>
+                    <p class="card-text">Được thêm bởi ${document["fullname"]}</p>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex bd-highlight">`
         
-        if(checkDocumentSaved(evaluate))
+        if(checkDocumentSaved(document["evaluate"]))
             html += `<div class="p-2 flex-grow-1 bd-highlight"><i class="bi bi-bookmark-fill"></i></div>`
         else
             html += `<div class="p-2 flex-grow-1 bd-highlight"><i class="bi bi-bookmark"></i></div>`
 
-        html += `       <div class="p-2 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>${calculateLikePercentage(evaluate)}%</span></div>
-                        <div class="p-2 bd-highlight"><i class="bi bi-download"></i><span>${download_count}</span></div>
+        html += `       <div class="p-2 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>${calculateLikePercentage(document["evaluate"])}%</span></div>
+                        <div class="p-2 bd-highlight"><i class="bi bi-download"></i><span>${document["download_count"]}</span></div>
                     </div>
                   </div>
               </div>
           </div>`
 
         return html;
+    }
+
+    function openDocumentDetail(id){
+        window.location.replace(baseURL + "/document/" + id)
     }
 </script>
 {% endblock %}

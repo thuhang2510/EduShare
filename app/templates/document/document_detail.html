@@ -1,6 +1,477 @@
 {% extends 'base.html' %}
 
-{% block app_content %}
+{% block styles %}
 {{ super() }}
-<h1>Xin chào</h1>
+<link href="/static/css/document_detail.css" rel="stylesheet">
+{% endblock %}
+
+{% block app_content %}
+<div class="justify-content-center" style="margin-bottom: 80px; width:100%; position:relative; top:70px;">
+    <div>
+        <div class="row">
+          <div class="col-4 p-0">
+            <nav class="navbar navbar-expand-lg px-3">
+                <div class="container-md">
+                  <a id="selectDetail" class="navbar-brand col-6 text-center" onclick="clickInfoDetail()" style="color: rgb(2, 126, 176); border-color: rgb(2, 126, 176); border-bottom: 5px solid rgb(2, 126, 176);">Thông tin</a>
+                  <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()">Hỏi AI</a>
+                </div>
+            </nav>
+            <div id="infor-detail" class="px-5" data-bs-spy="scroll" style="width:100%;height:690px;overflow-y:scroll;">
+                <h3>{{ document["document_name"] }}</h3>
+                <p>{{ document["description"] }}</p>
+                <p>Danh mục: 
+                    {% for value in document["categories"] %}
+                        <a style="color: var(--bs-link-color); text-decoration: underline;">{{ value["name"] }}</a>
+                    {% endfor %}
+                </p>
+                <p>Được tải lên bởi <a style="color: var(--bs-link-color); text-decoration: underline;"> {{ document["fullname"] }} </a></p>
+                <div id="dexuat">
+                    <h5>Đề xuất cho bạn</h5>
+                    <div class="row mt-3 mb-3">
+                        <div class="col-2 pe-0">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                            alt="Generic placeholder image" class="img-fluid p-0"
+                            style="width: 70px; border-radius: 10px;">
+                        </div>  
+                        <div class="col-10">
+                            <h6 class="m-0">Tên tài liệu</h6>
+                            <p class="m-0">Người upload</p>
+                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3">
+                        <div class="col-2 pe-0">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                            alt="Generic placeholder image" class="img-fluid p-0"
+                            style="width: 70px; border-radius: 10px;">
+                        </div>  
+                        <div class="col-10">
+                            <h6 class="m-0">Tên tài liệu</h6>
+                            <p class="m-0">Người upload</p>
+                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3">
+                        <div class="col-2 pe-0">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                            alt="Generic placeholder image" class="img-fluid p-0"
+                            style="width: 70px; border-radius: 10px;">
+                        </div>  
+                        <div class="col-10">
+                            <h6 class="m-0">Tên tài liệu</h6>
+                            <p class="m-0">Người upload</p>
+                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3">
+                        <div class="col-2 pe-0">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                            alt="Generic placeholder image" class="img-fluid p-0"
+                            style="width: 70px; border-radius: 10px;">
+                        </div>  
+                        <div class="col-10">
+                            <h6 class="m-0">Tên tài liệu</h6>
+                            <p class="m-0">Người upload</p>
+                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3">
+                        <div class="col-2 pe-0">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                            alt="Generic placeholder image" class="img-fluid p-0"
+                            style="width: 70px; border-radius: 10px;">
+                        </div>  
+                        <div class="col-10">
+                            <h6 class="m-0">Tên tài liệu</h6>
+                            <p class="m-0">Người upload</p>
+                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="lienquan">
+                    <h5>Tài liệu liên quan</h5>
+                    <div class="row mt-3 mb-3">
+                        <div class="col-2 pe-0">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                            alt="Generic placeholder image" class="img-fluid p-0"
+                            style="width: 70px; border-radius: 10px;">
+                        </div>  
+                        <div class="col-10">
+                            <h6 class="m-0">Tên tài liệu</h6>
+                            <p class="m-0">Người upload</p>
+                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3">
+                        <div class="col-2 pe-0">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                            alt="Generic placeholder image" class="img-fluid p-0"
+                            style="width: 70px; border-radius: 10px;">
+                        </div>  
+                        <div class="col-10">
+                            <h6 class="m-0">Tên tài liệu</h6>
+                            <p class="m-0">Người upload</p>
+                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3">
+                        <div class="col-2 pe-0">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                            alt="Generic placeholder image" class="img-fluid p-0"
+                            style="width: 70px; border-radius: 10px;">
+                        </div>  
+                        <div class="col-10">
+                            <h6 class="m-0">Tên tài liệu</h6>
+                            <p class="m-0">Người upload</p>
+                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="ai-detail" class="px-3" style="height:650px; overflow-y:scroll; display: none;">
+                <div class="chat-container">
+                    <div class="d-flex bd-highlight mb-3 chat outgoing">
+                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight"></div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
+                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight span-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat outgoing">
+                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight"></div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
+                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight span-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat outgoing">
+                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight"></div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
+                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight span-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat outgoing">
+                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight"></div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
+                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight span-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat outgoing">
+                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight"></div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
+                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight span-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat outgoing">
+                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight"></div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
+                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight span-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
+                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <div class="typing-animation">
+                                <div class="typing-dot" style="--delay: 0.2s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                      </svg>
+                                </div>
+                                <div class="typing-dot" style="--delay: 0.3s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                      </svg>
+                                </div>
+                                <div class="typing-dot" style="--delay: 0.4s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                      </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-auto p-2 bd-highlight span-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="typing-container col-4">
+                    <div class="input-group" style="padding: 5px 20px 5px 5px">
+                        <input type="text" class="form-control me-2" placeholder="Nhập câu hỏi vào đây">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+                            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
+                        </svg>                          
+                    </div>
+                </div>
+            </div>
+          </div>
+          <div class="col-8 p-0" style="background-color: #f8f9fa; position: relative;">
+            <div class="d-flex bd-highlight ps-2 pt-1 pe-3">
+                <div class="p-2 flex-grow-1 bd-highlight">
+                    <button type="button" class="btn rounded-pill fw-normal p-2 px-3 fs-6" style="background-color: rgb(2, 126, 176); color: white;"><i class="bi bi-download"></i> Tải xuống</button>
+                </div>
+                <div class="p-2 bd-highlight">
+                    <button type="button" class="btn btn-outline-success rounded-pill"><i class="bi bi-hand-thumbs-up"></i> 0</button>
+                </div>
+                <div class="p-2 bd-highlight">
+                    <button type="button" class="btn btn-outline-danger rounded-pill"><i class="bi bi-hand-thumbs-down"></i> 11</button>
+                </div>
+                <div class="p-2 bd-highlight">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-bookmark"></i> Lưu</button>
+                </div>
+                <div class="p-2 bd-highlight">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-share-fill"></i></button>
+                </div>
+              </div>
+            <div id="pdf-container" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="10" style="width:100%;height:690px;overflow-y:scroll; background-color: #f8f9fa;">
+            </div>
+            <div class="d-flex justify-content-around bd-highlight mb-3 col-5 rounded-pill mx-auto" style="background-color: #2f3e4e; position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);">
+                <div class="p-2 bd-highlight">
+                    <svg onclick="clickUp()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d3d9e0" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/>
+                    </svg>
+                    <span class="me-2"></span>
+                    <svg onclick="clickDown()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d3d9e0" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
+                    </svg>
+                </div>
+                <div class="p-2 bd-highlight">
+                    <input id="input_page" type="text" style="background-color: #2f3e4e; color: #d3d9e0;border: 1px solid #d3d9e0; border-radius: 12px; width: 45px;">
+                    <span class="ps-2" style="color: #d3d9e0;">/ 11</span>
+                </div>
+                <div class="p-2 bd-highlight">
+                    <svg onclick="click_zoom_in()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d3d9e0" class="bi bi-zoom-out" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11M13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0"/>
+                        <path d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1 6.5 6.5 0 0 1-1.398 1.4z"/>
+                        <path fill-rule="evenodd" d="M3 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
+                    </svg>
+                    <span class="me-2"></span>
+                    <svg onclick="click_zoom_out()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d3d9e0" class="bi bi-zoom-in" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11M13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0"/>
+                        <path d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1 6.5 6.5 0 0 1-1.398 1.4z"/>
+                        <path fill-rule="evenodd" d="M6.5 3a.5.5 0 0 1 .5.5V6h2.5a.5.5 0 0 1 0 1H7v2.5a.5.5 0 0 1-1 0V7H3.5a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 .5-.5"/>
+                      </svg>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script>
+    document.getElementById("footer").style.display = "none";
+    let pdfTT = null;
+    let currentScale = 1.5;
+    let currentPage = 1;
+    let pageNumber = 0;
+
+    init();
+
+    function init() {
+        if (pdfTT === null) {
+            pdfTT = pdfjsLib.getDocument('https://edushare-s3.s3.amazonaws.com/19A10010013.pdf');
+        }
+
+        pdfTT.promise.then((pdf) => {
+            let pdf_container = document.getElementById("pdf-container");
+            pdf_container.innerHTML = ""; 
+
+            console.log("Hiện có " + pdf.numPages + " trang");
+            pageNumber = pdf.numPages;
+
+            for (let i = 1; i <= pdf.numPages; ++i) {
+                pdf.getPage(i).then(page => {
+                    let divContext = document.createElement("div");
+                    divContext.style.position = "relative";
+                    divContext.setAttribute("id", "thu" + i)
+
+                    let pdfCanvas = document.createElement("canvas");
+                    let context = pdfCanvas.getContext("2d");
+                    let pageViewPort = page.getViewport({ scale: currentScale });
+                    pdfCanvas.style.marginBottom = "10px";
+                    pdfCanvas.style.marginTop = "10px";
+                    pdfCanvas.style.marginLeft = "auto"
+                    pdfCanvas.style.marginRight = "auto"
+                    pdfCanvas.style.display = "block"
+                    pdfCanvas.width = pageViewPort.width;
+                    pdfCanvas.height = pageViewPort.height;
+                    divContext.appendChild(pdfCanvas);
+
+                    if(i > 1){
+                        pdfCanvas.style.filter = "blur(5px)"
+                        let notify = document.createElement("div")
+                        notify.style.position = "absolute";
+                        notify.style.top = "50%";
+                        notify.style.left = "50%"
+                        notify.style.transform = "translateX(-50%)";
+                        notify.innerHTML = `<table width="60%" border="0" align="center" cellpadding="0" cellspacing="0" style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 1px 3px 0 rgba(0, 0, 0, 0.16), 0 1px 3px 0 rgba(0, 0, 0, 0.12);-moz-box-shadow:0 1px 3px 0 rgba(0, 0, 0, 0.16), 0 1px 3px 0 rgba(0, 0, 0, 0.12);box-shadow:0 1px 3px 0 rgba(0, 0, 0, 0.16), 0 1px 3px 0 rgba(0, 0, 0, 0.12)">
+                                                <tbody><tr>
+                                                    <td style="height:40px;">&nbsp;</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding:0 15px;">
+                                                            <h1 class="fw-bold" style="color:rgb(2, 126, 176); font-weight:400; margin:0;font-size:30px;">EduShare</h1>
+                                                            <span style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
+                                                            <h6 style="color:#171f23de; font-size:15px;line-height:24px; margin:0;">
+                                                                Bạn đang đọc bản xem trước. Hãy mua tài liệu để có thể đọc toàn bộ tài liệu.
+                                                            </h6>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height:40px;">&nbsp;</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>`
+                        divContext.appendChild(notify);
+                    }
+
+                    page.render({
+                        canvasContext: context,
+                        viewport: pageViewPort
+                    });
+                    pdf_container.append(divContext);
+                }).catch(pageErr => {
+                    console.log(pageErr);
+                });
+            }
+        });
+    }
+
+    function clickUp() {
+        if (currentPage > 1) {
+            currentPage -= 1;
+        }
+        location.href = "#thu" + currentPage;
+    }
+
+    function clickDown() {
+        if (currentPage < pageNumber) {
+            currentPage += 1;
+        }
+        location.href = "#thu" + currentPage;
+    }
+
+    function click_zoom_in(){
+        currentScale -= 0.5;
+        init();
+    }
+
+    function click_zoom_out(){
+        currentScale += 0.5;
+        init();
+    }
+
+    var input = document.getElementById("input_page");
+    input.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            location.href = "#thu" + input.value;
+        }
+    });
+
+    function clickInfoDetail(){
+        document.getElementById("infor-detail").style.display = "block";
+        document.getElementById("ai-detail").style.display = "none";
+
+        var selectAI = document.getElementById("selectAI");
+        selectAI.style.borderColor = null;
+        selectAI.style.borderBottom = null;
+        selectAI.style.color = null;
+
+        var selectDetail = document.getElementById("selectDetail")
+        selectDetail.style.borderColor = "rgb(2, 126, 176)";
+        selectDetail.style.borderBottom = "5px solid rgb(2, 126, 176)";
+        selectDetail.style.color = "rgb(2, 126, 176)";
+    }
+
+    function clickAI(){
+        document.getElementById("ai-detail").style.display = "block";
+        document.getElementById("infor-detail").style.display = "none";
+
+        var selectAI = document.getElementById("selectAI");
+        selectAI.style.borderColor = "#f064fc";
+        selectAI.style.borderBottom = "5px solid #f064fc";
+        selectAI.style.color = "#f064fc"
+
+        var selectDetail = document.getElementById("selectDetail")
+        selectDetail.style.borderColor = null;
+        selectDetail.style.borderBottom = null;
+        selectDetail.style.color = null;
+    }
+
+</script>
 {% endblock %}
