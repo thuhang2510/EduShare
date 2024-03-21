@@ -10,6 +10,10 @@ from constant import DocumentS3
 from s3_helper import upload
 from app.extensions import uploader_permission
 
+@bp.app_template_filter()
+def numberFormat(value):
+    return format(int(value), ',d')
+
 @bp.route("/upload", methods=["GET"])
 def index():
     register = RegisterForm(meta={'csrf': False})
@@ -86,7 +90,12 @@ def upload_s3():
 
 @bp.route("/get_all_new", methods=['GET'])
 def get_documents_new():
-    document, _, msg = DocumentsDataService().get_all_new()
+    limit = None
+
+    if 'limit' in request.args:
+        limit = request.args.get("limit")
+
+    document, _, msg = DocumentsDataService().get_all_new(limit)
 
     if document is not None:
         return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': document})
@@ -95,7 +104,6 @@ def get_documents_new():
 
 @bp.route("/get_all_saved", methods=['GET'])
 @jwt_required()
-
 def get_documents_saved():
     document, _, msg = DocumentsDataService().get_all_saved(current_user.id)
 
@@ -114,12 +122,42 @@ def get_documents_view():
         return jsonify({'message': msg, 'code': -1, 'data': None})
     
 @bp.route("/<int:id>", methods=['GET'])
-def get_document_detail(id):
+def get_document_form(id):
     register = RegisterForm(meta={'csrf': False})
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
 
     document, _, msg = DocumentsDataService().get_by_id(id)
-    document["document_name"] = document["document_name"].split(".")[0]
 
-    return render_template('document/document_detail.html', form=register, formlogin=login, formresetpw=resetpw, document=document)
+    if(document is not None):
+        document["document_name"] = document["document_name"].split(".")[0]
+        
+        like, dislike, save = DocumentsDataService().count_evaluate(document)
+        document["like"] = like
+        document["save"] = save
+        document["dislike"] = dislike
+
+    return render_template('document/document_detail.html', form=register, formlogin=login, 
+                           formresetpw=resetpw, document=document)
+
+
+@bp.route("/<int:id>/detail", methods=['GET'])
+def get_document_detail(id):
+    document, _, msg = DocumentsDataService().get_by_purchase(id, current_user.id)
+
+    if document is not None:
+        document["document_name"] = document["document_name"].split(".")[0]
+
+        return jsonify({'message': 'Lấy tài liệu lên thành công', 'code': 0, 'data': document})
+    else:
+        return jsonify({'message': msg, 'code': -1, 'data': None})
+    
+@bp.route("/category", methods=["GET"])
+def get_documents_by_category():
+    category_name = request.args.get('category_name')
+    categories, _, msg = DocumentsDataService().get_by_category(category_name, limit=5)
+
+    if categories is None:
+        return jsonify({'message': msg, 'code': -1, 'data': None})
+        
+    return jsonify({'message': 'Lấy danh mục thành công', 'code': 0, 'data': categories})

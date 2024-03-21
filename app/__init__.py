@@ -53,6 +53,12 @@ def create_app(config_class=Config):
     from app.user import bp as user_bp
     app.register_blueprint(user_bp, url_prefix='/user')
 
+    from app.evaluate import bp as evaluate_bp
+    app.register_blueprint(evaluate_bp, url_prefix='/document/<int:document_id>/evaluate')
+
+    from app.purchase import bp as purchase_bp
+    app.register_blueprint(purchase_bp, url_prefix='/document/purchase')
+
     return app
 
 from app.model import models

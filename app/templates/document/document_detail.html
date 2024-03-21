@@ -16,7 +16,7 @@
                   <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()">Hỏi AI</a>
                 </div>
             </nav>
-            <div id="infor-detail" class="px-5" data-bs-spy="scroll" style="width:100%;height:690px;overflow-y:scroll;">
+            <div id="infor-detail" class="px-5" style="width:100%; height:690px; overflow-y:scroll;">
                 <h3>{{ document["document_name"] }}</h3>
                 <p>{{ document["description"] }}</p>
                 <p>Danh mục: 
@@ -25,251 +25,20 @@
                     {% endfor %}
                 </p>
                 <p>Được tải lên bởi <a style="color: var(--bs-link-color); text-decoration: underline;"> {{ document["fullname"] }} </a></p>
-                <div id="dexuat">
-                    <h5>Đề xuất cho bạn</h5>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-2 pe-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                            alt="Generic placeholder image" class="img-fluid p-0"
-                            style="width: 70px; border-radius: 10px;">
-                        </div>  
-                        <div class="col-10">
-                            <h6 class="m-0">Tên tài liệu</h6>
-                            <p class="m-0">Người upload</p>
-                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-2 pe-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                            alt="Generic placeholder image" class="img-fluid p-0"
-                            style="width: 70px; border-radius: 10px;">
-                        </div>  
-                        <div class="col-10">
-                            <h6 class="m-0">Tên tài liệu</h6>
-                            <p class="m-0">Người upload</p>
-                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-2 pe-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                            alt="Generic placeholder image" class="img-fluid p-0"
-                            style="width: 70px; border-radius: 10px;">
-                        </div>  
-                        <div class="col-10">
-                            <h6 class="m-0">Tên tài liệu</h6>
-                            <p class="m-0">Người upload</p>
-                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-2 pe-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                            alt="Generic placeholder image" class="img-fluid p-0"
-                            style="width: 70px; border-radius: 10px;">
-                        </div>  
-                        <div class="col-10">
-                            <h6 class="m-0">Tên tài liệu</h6>
-                            <p class="m-0">Người upload</p>
-                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-2 pe-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                            alt="Generic placeholder image" class="img-fluid p-0"
-                            style="width: 70px; border-radius: 10px;">
-                        </div>  
-                        <div class="col-10">
-                            <h6 class="m-0">Tên tài liệu</h6>
-                            <p class="m-0">Người upload</p>
-                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
-                        </div>
-                    </div>
+                <h5>Đề xuất cho bạn</h5>
+                <div id="de-xuat">
                 </div>
+                <h5>Tài liệu liên quan</h5>
                 <div id="lienquan">
-                    <h5>Tài liệu liên quan</h5>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-2 pe-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                            alt="Generic placeholder image" class="img-fluid p-0"
-                            style="width: 70px; border-radius: 10px;">
-                        </div>  
-                        <div class="col-10">
-                            <h6 class="m-0">Tên tài liệu</h6>
-                            <p class="m-0">Người upload</p>
-                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-2 pe-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                            alt="Generic placeholder image" class="img-fluid p-0"
-                            style="width: 70px; border-radius: 10px;">
-                        </div>  
-                        <div class="col-10">
-                            <h6 class="m-0">Tên tài liệu</h6>
-                            <p class="m-0">Người upload</p>
-                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-2 pe-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                            alt="Generic placeholder image" class="img-fluid p-0"
-                            style="width: 70px; border-radius: 10px;">
-                        </div>  
-                        <div class="col-10">
-                            <h6 class="m-0">Tên tài liệu</h6>
-                            <p class="m-0">Người upload</p>
-                            <div class="p-0 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>100%</span></div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div id="ai-detail" class="px-3" style="height:650px; overflow-y:scroll; display: none;">
                 <div class="chat-container">
-                    <div class="d-flex bd-highlight mb-3 chat outgoing">
-                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight"></div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
-                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight span-copy">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
-                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat outgoing">
-                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight"></div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
-                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight span-copy">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
-                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat outgoing">
-                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight"></div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
-                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight span-copy">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
-                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat outgoing">
-                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight"></div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
-                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight span-copy">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
-                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat outgoing">
-                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight"></div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
-                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight span-copy">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
-                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat outgoing">
-                        <div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight"></div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
-                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <p class="mb-0" style="user-select: none;">ghsdfj jshdfj hjhdfj jhsdfj hjsjd sd sdfsdjhsdfhjh sdhjh sdfhjh sdf jhsd jhd sdjh dj dj ddj </p>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight span-copy">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
-                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="d-flex bd-highlight mb-3 chat incoming border" style="background-color: #f8f9fa">
-                        <div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <div class="typing-animation">
-                                <div class="typing-dot" style="--delay: 0.2s">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                      </svg>
-                                </div>
-                                <div class="typing-dot" style="--delay: 0.3s">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                      </svg>
-                                </div>
-                                <div class="typing-dot" style="--delay: 0.4s">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                      </svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ms-auto p-2 bd-highlight span-copy">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
-                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-                            </svg>
-                        </div>
-                    </div>
                 </div>
                 <div class="typing-container col-4">
                     <div class="input-group" style="padding: 5px 20px 5px 5px">
-                        <input type="text" class="form-control me-2" placeholder="Nhập câu hỏi vào đây">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+                        <textarea id="chat-input" type="text" class="form-control me-2" placeholder="Nhập câu hỏi vào đây"></textarea>
+                        <svg onclick="sendAsk()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
                             <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
                         </svg>                          
                     </div>
@@ -279,22 +48,35 @@
           <div class="col-8 p-0" style="background-color: #f8f9fa; position: relative;">
             <div class="d-flex bd-highlight ps-2 pt-1 pe-3">
                 <div class="p-2 flex-grow-1 bd-highlight">
-                    <button type="button" class="btn rounded-pill fw-normal p-2 px-3 fs-6" style="background-color: rgb(2, 126, 176); color: white;"><i class="bi bi-download"></i> Tải xuống</button>
+                    <button type="button" class="btn rounded-pill fw-normal p-2 px-3 fs-6" style="background-color: rgb(2, 126, 176); color: white;" onclick="downloadDocument()">
+                        <i class="bi bi-download"></i> 
+                        {% if document["price"] > 0 %}
+                            Tải xuống ({{ document["price"] | numberFormat }} đ)
+                        {% else %}
+                            Tải xuống
+                        {% endif %}
+                    </button>
+                </div>
+                <div id="btn-document-payment" class="p-2 bd-highlight">
+                    <button type="button" class="btn btn-danger rounded-pill" onclick="buyDocument(`{{ document['document_name'] }}`, `{{ document['price'] | numberFormat }}`)">Mua tài liệu</button>
                 </div>
                 <div class="p-2 bd-highlight">
-                    <button type="button" class="btn btn-outline-success rounded-pill"><i class="bi bi-hand-thumbs-up"></i> 0</button>
+                    <button id="doc_like" type="button" class="btn btn-outline-success rounded-pill" data-count="{{ document['like'] }}" onclick="likeDocument()"><i class="bi bi-hand-thumbs-up"></i> {{ document["like"] }}</button>
                 </div>
                 <div class="p-2 bd-highlight">
-                    <button type="button" class="btn btn-outline-danger rounded-pill"><i class="bi bi-hand-thumbs-down"></i> 11</button>
+                    <button id="doc_dislike" type="button" class="btn btn-outline-warning rounded-pill" data-count="{{ document['dislike'] }}" onclick="dislikeDocument()"><i class="bi bi-hand-thumbs-down"></i> {{ document["dislike"] }}</button>
                 </div>
                 <div class="p-2 bd-highlight">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-bookmark"></i> Lưu</button>
+                    <button id="doc_save" type="button" class="btn btn-outline-secondary rounded-pill" onclick="saveDocument()"><i class="bi bi-bookmark"></i> Lưu</button>
                 </div>
                 <div class="p-2 bd-highlight">
                     <button type="button" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-share-fill"></i></button>
                 </div>
+                <div class="p-2 bd-highlight">
+                    <button id="doc_dislike" type="button" class="btn btn-danger rounded-pill" onclick="reportDocument()"><i class="bi bi-hand-thumbs-down"></i> Báo cáo</button>
+                </div>
               </div>
-            <div id="pdf-container" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="10" style="width:100%;height:690px;overflow-y:scroll; background-color: #f8f9fa;">
+            <div id="pdf-container" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="10" style="width:100%;height:690px;overflow-y:scroll; background-color: #f8f9fa;" onscroll="scrollPage()">
             </div>
             <div class="d-flex justify-content-around bd-highlight mb-3 col-5 rounded-pill mx-auto" style="background-color: #2f3e4e; position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);">
                 <div class="p-2 bd-highlight">
@@ -308,7 +90,7 @@
                 </div>
                 <div class="p-2 bd-highlight">
                     <input id="input_page" type="text" style="background-color: #2f3e4e; color: #d3d9e0;border: 1px solid #d3d9e0; border-radius: 12px; width: 45px;">
-                    <span class="ps-2" style="color: #d3d9e0;">/ 11</span>
+                    <span id="number_page" class="ps-2" style="color: #d3d9e0;"></span>
                 </div>
                 <div class="p-2 bd-highlight">
                     <svg onclick="click_zoom_in()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d3d9e0" class="bi bi-zoom-out" viewBox="0 0 16 16">
@@ -328,23 +110,114 @@
         </div>
       </div>
 </div>
+<div id="form-notify-payment" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
+    <div class="container d-flex justify-content-center" style="position: fixed;">   
+    <div class="register bg-white col-xl-7 p-4 rounded-3">
+      <div class="d-flex justify-content-end">
+        <button id="close-form-login" type="button" class="btn-close text-right" onclick="clickCloseNotifyPayment()"></button>
+      </div>
+      <h3 class="text-center mb-3">Thông báo</h3>
+      <div class="border border-secondary rounded py-2 px-4">
+        <p><span class="fw-bold">Số dư trong tài khoản EduShare</span> của bạn <span class="text-danger fw-bold">không đủ</span> để mua tài liệu này.</p>
+        <p>Bạn cần nạp thêm vào tài khoản để tiếp tục.</p>
+        <p>Bạn có thể <span class="fw-bold">sử dụng số tiền dư </span>sau khi mua tài liệu này để <span class="fw-bold">mua các tài liệu về sau.</span></p>
+      </div>
+      <div>
+        <input class="btn btn-primary w-100 my-3 rounded-pill" name="submit" type="button" onclick="clickRecharge()" value="Nạp tiền">
+      </div>
+    </div> 
+  </div>
+</div>
+<div id="form-confirm-payment" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
+    <div class="container d-flex justify-content-center" style="position: fixed;">   
+    <div class="register bg-white col-xl-6 p-4 rounded-3">
+      <div class="d-flex justify-content-end">
+        <button id="close-form-login" type="button" class="btn-close text-right" onclick="clickCloseConfirmPayment()"></button>
+      </div>
+      <h3 class="text-center mb-3">Xác nhận thanh toán tài liệu</h3>
+      <div id="content-form-confirm-payment" class="border-top border-secondary py-2">
+      </div>
+      <div>
+        <input class="btn btn-primary w-100 my-3 rounded-pill" name="submit" type="button" onclick="clickConfirmPayment(`{{ document['id'] }}`, `{{ document['price'] }}`, `{{ document['account_id'] }}`)" value="Đồng ý">
+      </div>
+    </div> 
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <script>
-    document.getElementById("footer").style.display = "none";
+    let nameFile = null;
     let pdfTT = null;
     let currentScale = 1.5;
     let currentPage = 1;
     let pageNumber = 0;
+    let price = 0;
+    let bought=false;
 
-    init();
+    window.onload = function()
+    {
+        if(localStorage.token){
+            getUser();
+            getDocumentDetail();
+        }
+        else
+            closeLogin();
 
-    function init() {
+        document.getElementById("footer").style.display = "none";
+        nameFile = `{{document["document_name"] | safe}}` + `.` + `{{document["type"] | safe}}`;
+        price = `{{document["price"]}}`
+
+        initPdf();
+        getDocDeXuat();
+        getDocLienQuan(`{{document["categories"][1]["name"]}}`);
+    };
+
+    async function getDocumentDetail(){
+        url = window.location.href + "/detail";
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                document.getElementById("btn-document-payment").style.visibility = "hidden"
+                nameFile = result.data["document_name"] + "." + result.data["type"];
+                price = result.data["price"];
+                bought = true;
+                initPdf();
+
+                urlEvaluate = window.location.href + "/evaluate"
+                const resultEvaluate = await getData(urlEvaluate);
+                if (resultEvaluate.code === 0 && resultEvaluate.data !== null){
+                    for(var i = 0; i < resultEvaluate.data.length; ++i){
+                        var type = resultEvaluate.data[i]["type"];
+                        if(type === "like"){
+                            var documentLike = document.getElementById("doc_like").getElementsByTagName("i")
+                            documentLike[0].classList.remove("bi-hand-thumbs-up");
+                            documentLike[0].classList.add("bi-hand-thumbs-up-fill");
+                        }
+                        else if (type === "dislike"){
+                            var documentLike = document.getElementById("doc_dislike").getElementsByTagName("i")
+                            documentLike[0].classList.remove("bi-hand-thumbs-down");
+                            documentLike[0].classList.add("bi-hand-thumbs-down-fill");
+                        }
+                        else{
+                            var documentLike = document.getElementById("doc_save").getElementsByTagName("i")
+                            documentLike[0].classList.remove("bi-bookmark");
+                            documentLike[0].classList.add("bi-bookmark-fill");
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function initPdf() {
         if (pdfTT === null) {
-            pdfTT = pdfjsLib.getDocument('https://edushare-s3.s3.amazonaws.com/19A10010013.pdf');
+            pdfTT = pdfjsLib.getDocument('https://edushare-s3.s3.amazonaws.com/' + nameFile);
         }
 
         pdfTT.promise.then((pdf) => {
@@ -353,6 +226,7 @@
 
             console.log("Hiện có " + pdf.numPages + " trang");
             pageNumber = pdf.numPages;
+            document.getElementById("number_page").innerHTML = "/" + pageNumber;
 
             for (let i = 1; i <= pdf.numPages; ++i) {
                 pdf.getPage(i).then(page => {
@@ -372,7 +246,7 @@
                     pdfCanvas.height = pageViewPort.height;
                     divContext.appendChild(pdfCanvas);
 
-                    if(i > 1){
+                    if(price > 0 && i > (pdf.numPages / 100 * 20) && bought == false){
                         pdfCanvas.style.filter = "blur(5px)"
                         let notify = document.createElement("div")
                         notify.style.position = "absolute";
@@ -428,12 +302,12 @@
 
     function click_zoom_in(){
         currentScale -= 0.5;
-        init();
+        initPdf();
     }
 
     function click_zoom_out(){
         currentScale += 0.5;
-        init();
+        initPdf();
     }
 
     var input = document.getElementById("input_page");
@@ -473,5 +347,456 @@
         selectDetail.style.color = null;
     }
 
+    function scrollPage(){
+
+    }
+
+    function createElement(html, className){
+        const chatDiv = document.createElement("div");
+        chatDiv.classList.add("d-flex", "bd-highlight", "mb-3", "chat", className);
+        chatDiv.innerHTML = html;
+        return chatDiv;
+    }
+
+    const getChatResponse = async(incomingChatDiv) => {
+        const API_URL = "https://api.openai.com/v1/chat/completions";
+
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer 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`
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [{"role": "user", "content": `${userText}`}]
+            })
+        }
+
+        let response = null;
+
+        try{
+            response = await(await fetch(API_URL, requestOptions)).json();
+            console.log(response);
+        } catch(error){
+            response = "Có chuyện gì đó xảy ra khi nhận phản hồi. Xin vui lòng thử lại sau";
+        }
+
+        incomingChatDiv.innerHTML = showResponse(response.choices[0].message.content);
+    }
+
+    const showResponse = (response) => {
+        const html = `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <p class="mb-0" style="user-select: none;">${response}</p>
+                        </div>
+                        <div onclick="copyResponse(this)" class="ms-auto p-2 bd-highlight span-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                            </svg>
+                        </div>`
+        return html;
+    }
+
+    function copyResponse(copyBtn){
+        const responseTextElement = copyBtn.parentElement.querySelector("p");
+        navigator.clipboard.writeText(responseTextElement.textContent);
+        copyBtn.innerHTML = "done"
+        setTimeout(() => copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                            </svg>`, 1000);
+    }
+
+    const showTypingAnimation = () => {
+        const html = `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <div class="typing-animation">
+                                <div class="typing-dot" style="--delay: 0.2s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                      </svg>
+                                </div>
+                                <div class="typing-dot" style="--delay: 0.3s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                      </svg>
+                                </div>
+                                <div class="typing-dot" style="--delay: 0.4s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                      </svg>
+                                </div>
+                            </div>
+                        </div>`
+
+        const incomingChatDiv = createElement(html, "incoming");
+        incomingChatDiv.style.backgroundColor = "#f8f9fa";
+        var chatContainer = document.getElementsByClassName("chat-container")[0];
+        chatContainer.appendChild(incomingChatDiv);
+
+        getChatResponse(incomingChatDiv);
+    }
+
+    let userText = null;
+
+    function sendAsk(){
+        var chatInput = document.getElementById("chat-input");
+        userText = chatInput.value.trim();
+        const html = `<div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
+                    <div class="p-2 bd-highlight">
+                        <p class="mb-0"></p>
+                    </div>
+                    <div class="ms-auto p-2 bd-highlight"></div>`
+        const outgoingChatDiv = createElement(html, "outgoing");
+        outgoingChatDiv.querySelector("p").textContent = userText;
+        var chatContainer = document.getElementsByClassName("chat-container")[0];
+        chatContainer.appendChild(outgoingChatDiv);
+        setTimeout(showTypingAnimation, 500);
+    }
+
+    async function getDocDeXuat(){
+        var url = baseURL + "/document/get_all_new?limit=5"
+
+        try {
+            const result = await getDataNoAuthorization(url);
+            if (result.code === 0){
+                var divDeXuat = document.getElementById("de-xuat")
+                var html = "";
+                for (var i = 0; i < result.data.length; ++i){
+                    html += createDocuments(result.data[i])
+                }
+                divDeXuat.innerHTML = html
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    async function getDocLienQuan(category_name){
+        var url = baseURL + `/document/category?category_name=${category_name}`
+
+        try {
+            const result = await getDataNoAuthorization(url);
+            if (result.code === 0){
+                var divLienQuan = document.getElementById("lienquan")
+                var html = "";
+                for (var i = 0; i < result.data.length; ++i){
+                    html += createDocuments(result.data[i])
+                }
+                divLienQuan.innerHTML = html
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function createDocuments(document){
+        html = `<div class="row mt-3 mb-3">
+                    <div class="col-2 pe-0">
+                        <img src="data:image/png;base64,${document["image"]}"
+                        alt="Generic placeholder image" class="img-fluid p-0"
+                        style="width: 70px; height: 70px; border-radius: 10px;">
+                    </div>  
+                    <div class="col-10">
+                        <h6 class="m-0">${getOnlyFileName(document["document_name"])}</h6>
+                        <p class="m-0">${document["fullname"]}</p>
+                        <div class="p-0 bd-highlight">
+                            <i class="bi bi-hand-thumbs-up"></i>`
+
+        html += `<span>${calculateLikePercentage(document["evaluate"])}%</span>
+                </div>
+            </div>
+        </div>`
+
+        return html;
+    }
+
+    function getOnlyFileName(fileName){
+        return fileName.split('.').slice(0, -1).join('.')
+    }
+
+    function calculateLikePercentage(evaluate){
+        var sum = 0;
+        var like = 0;
+
+        evaluate.forEach(data => {
+            if(data["type"] === "like"){
+                sum += 1;
+                like += 1;
+            }
+            else if(data["type"] === "dislike"){
+                sum += 1;
+            }
+        });
+
+        if(sum == 0)
+            return 0;
+
+        var result = like / sum * 100
+        if (isFloat(result))
+            return result.toFixed(2)
+
+        return result;
+    }
+
+    function isFloat(n){
+        return Number(n) === n && n % 1 !== 0;
+    }
+
+    async function likeDocument(){
+        var url = window.location.href + "/evaluate?type=like";
+
+        try {
+            const result = await postData(url);
+            if (result.code === -1){
+                alert(result.message);
+            }
+            else{
+                getDocDeXuat();
+                getDocLienQuan(`{{document["categories"][1]["name"]}}`);
+
+                if (result.data === null){
+                    var documentLike = document.getElementById("doc_like");
+                    var count = parseInt(documentLike.dataset.count) - 1;
+                    documentLike.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> ${count}`
+                    documentLike.dataset.count = count;
+                }
+                else {
+                    var documentLike = document.getElementById("doc_like");
+                    var count = parseInt(documentLike.dataset.count) + 1;
+                    documentLike.innerHTML = `<i class="bi bi-hand-thumbs-up-fill"></i> ${count}`
+                    documentLike.dataset.count = count;
+
+                    var documentDisLike = document.getElementById("doc_dislike");
+                    var countDisLike = parseInt(documentDisLike.dataset.count);
+                    
+                    if (documentDisLike.getElementsByTagName("i")[0].classList.contains("bi-hand-thumbs-down-fill")){
+                        countDisLike -= 1;
+                        documentDisLike.dataset.count = countDisLike;
+                    }
+                    documentDisLike.innerHTML = `<i class="bi bi-hand-thumbs-down"></i> ${countDisLike}`
+                }
+            }
+        } catch (error) {
+            alert("Có lỗi xảy ra vui lòng thử lại sau");
+            console.log(error.message);
+        }
+    }
+
+    async function dislikeDocument(){
+        var url = window.location.href + "/evaluate?type=dislike";
+
+        try {
+            const result = await postData(url);
+            if (result.code === -1){
+                alert(result.message);
+            }
+            else{
+                getDocDeXuat();
+                getDocLienQuan(`{{document["categories"][1]["name"]}}`);
+
+                if (result.data === null){
+                    var documentDisLike = document.getElementById("doc_dislike");
+                    var count = parseInt(documentDisLike.dataset.count) - 1;
+                    documentDisLike.dataset.count = count;
+                    documentDisLike.innerHTML = `<i class="bi bi-hand-thumbs-down"></i> ${count}`
+                }
+                else {
+                    var documentDisLike = document.getElementById("doc_dislike");
+                    var count = parseInt(documentDisLike.dataset.count) + 1;
+                    documentDisLike.dataset.count = count;
+                    documentDisLike.innerHTML = `<i class="bi bi-hand-thumbs-down-fill"></i> ${count}`
+
+                    var documentLike = document.getElementById("doc_like");
+                    var countLike = parseInt(documentLike.dataset.count);
+                    
+                    if (documentLike.getElementsByTagName("i")[0].classList.contains("bi-hand-thumbs-up-fill")){
+                        countLike -= 1;
+                        documentLike.dataset.count = countLike;
+                    }
+                    documentLike.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> ${countLike}`
+                }
+            }
+        } catch (error) {
+            alert("Có lỗi xảy ra vui lòng thử lại sau");
+            console.log(error.message);
+        }
+    }
+
+    async function saveDocument(){
+        var url = window.location.href + "/evaluate?type=save";
+
+        try {
+            const result = await postData(url);
+            if (result.code === -1){
+                alert(result.message);
+            }
+            else{
+                var documentSave = document.getElementById("doc_save");
+                if (result.data === null){
+                    var documentSave = document.getElementById("doc_save");
+                    documentSave.innerHTML = `<i class="bi bi-bookmark"></i> Lưu`
+                }
+                else {
+                    documentSave.innerHTML = `<i class="bi bi-bookmark-fill"></i> Lưu`
+                }
+            }
+        } catch (error) {
+            alert("Có lỗi xảy ra vui lòng thử lại sau");
+            console.log(error.message);
+        }
+    }
+
+    async function postData(url, value) {
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (localStorage.token) {
+            headers["Authorization"] = `Bearer ${localStorage.token}`;
+        }
+
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(value),
+            headers: headers
+        });
+
+        return response.json();
+    }
+
+    async function sendFormLogin(){
+        resetErrorInputOfFormLogin();
+
+        var url = baseURL + '/api/v1/login'
+
+        data = {
+            'email': fields_login.email.input.value,
+            'password': fields_login.password.input.value
+        }
+
+        try {
+            const result = await postDataNoAuthorization(url, data);
+            if (result.code === -2){
+                const errors = result.data;
+
+                Object.keys(errors).forEach((key) => {
+                    fields_login[key].input.classList.add('is-invalid');
+                    fields_login[key].error.innerHTML = errors[key][0];
+                });
+            }
+            else if (result.code === -1){
+                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+                console.log("Đăng nhập thất bại");
+            }
+            else{
+                localStorage.setItem("token", result.data)
+                getUser();
+                clickCloseLogin();
+                getDocumentDetail();
+                resetValueInputOfFormLogin();
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    async function downloadDocument(){
+        url = baseURL + "/api/v1/user-token"
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                
+            }
+            else{
+                alert("Hãy đăng nhập để thực hiện tải xuống");
+                clickLogin();
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    async function buyDocument(document_name, price){
+        var url = baseURL + "/api/v1/user-token"
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                if(result.data["coin"] < document["price"])
+                    show_insufficient_funds();
+                else {
+                    show_confirm_document_payment(document_name, price, result.data["coin"]);
+                }
+            }
+            else{
+                alert("Hãy đăng nhập để thực hiện mua tài liệu");
+                clickLogin();
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function show_insufficient_funds(){
+        var form_notify_payment = document.getElementById("form-notify-payment");
+        form_notify_payment.style.visibility = "visible";
+    }
+
+    async function clickRecharge(){
+        url = baseURL + "/api/v1/user-token"
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                document.getElementById("form-recharge").style.visibility = "visible";
+                document.getElementById("form-notify-payment").style.visibility = "hidden";
+            }
+            else{
+                alert("Hãy đăng nhập để thực hiện nạp tiền");
+                clickLogin();
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function clickCloseNotifyPayment(){
+        document.getElementById("form-notify-payment").style.visibility = "hidden";
+    }
+
+    function clickCloseConfirmPayment(){
+        document.getElementById("form-confirm-payment").style.visibility = "hidden";
+    }
+
+    function show_confirm_document_payment(document_name, price, coin){
+        document.getElementById("form-confirm-payment").style.visibility = "visible"
+        document.getElementById("content-form-confirm-payment").innerHTML = `<h5>Bạn đang thanh toán tài liệu</h5>
+                                                                <h4 style="color: rgb(2, 126, 176);"> ${document_name}</h4>
+                                                                <p>Giá bán: <span class="fw-bold"> ${ price } đ</span></p>
+                                                                <p>Số dư hiện tại của bạn: <span class="fw-bold">${coin.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span></p>`
+    }
+
+    async function clickConfirmPayment(documentId, amount, documentAccountId){
+        url = baseURL + "/document/purchase"
+
+        data = {
+            "document_id": documentId,
+            "amount": amount,
+            "account_id": documentAccountId
+        }
+
+        const resultBuyDoc = await postData(url, data);
+        if (resultBuyDoc.code === 0){
+            clickCloseConfirmPayment();
+            document.getElementById("btn-document-payment").style.visibility = "hidden"
+            getDocumentDetail();
+            getUser();
+        }
+        else {
+            alert("Có lỗi xảy ra hãy thử lại sau");
+        }
+    }
 </script>
 {% endblock %}

@@ -36,6 +36,7 @@ class Account(UserMixin, db.Model):
         backref=db.backref('account', lazy='dynamic'))
     transaction = db.relationship('Transaction', backref='account', lazy=True)
     evaluate = db.relationship('Evaluate', backref='account', lazy=True)
+    purchase = db.relationship('Purchase', backref='account', lazy=True)
 
     def __repr__(self):
         return '<Account {}>'.format(self.fullname)
@@ -51,7 +52,9 @@ class Account(UserMixin, db.Model):
             'id': self.id,
             'fullname': self.fullname,
             'address': self.address,
-            'number': self.number
+            'number': self.number,
+            'coin': self.coin,
+            'purchase': Purchase.list_to_dict(self.purchase)
         }
         if include_email:
             data['email'] = self.email
@@ -91,6 +94,13 @@ class Account(UserMixin, db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    @classmethod
+    def find_by_permission(cls, permission_name):
+        return cls.query.join(AccountPermission, AccountPermission.account_id == cls.id).\
+            join(Permission, Permission.id == AccountPermission.permission_id).\
+            filter(Permission.name==permission_name, cls.status==True).\
+            first()
+
 class Permission(db.Model):
     __tablename__ = 'permission'
 
@@ -119,7 +129,7 @@ class Transaction(db.Model):
     __tablename__ = 'transaction'
 
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    date = db.Column(db.DateTime, server_default=str(datetime.datetime.utcnow))
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     information = db.Column(db.String(255))
     type = db.Column(db.String(255))
     status = db.Column(db.Boolean, nullable=False, server_default='1')
@@ -218,6 +228,7 @@ class Documents(db.Model):
         secondary='document_categories',
         backref=db.backref('documents', lazy='dynamic'))
     evaluate = db.relationship('Evaluate', backref='documents', lazy=True)
+    purchase = db.relationship('Purchase', backref='documents', lazy=True)
     
     def to_dict(self):
         data = {
@@ -230,7 +241,8 @@ class Documents(db.Model):
             'type': self.type,
             'account_id': self.account_id,
             'categories': Categories.list_to_dict(self.categories),
-            'evaluate': Evaluate.list_to_dict(self.evaluate)
+            'evaluate': Evaluate.list_to_dict(self.evaluate),
+            'purchase': Purchase.list_to_dict(self.purchase)
         }
 
         return data
@@ -284,8 +296,13 @@ class Documents(db.Model):
         return cls.query.filter_by(document_name=_document_name, status=True).first()
     
     @classmethod
-    def find_all_new(cls):
-        return cls.query.join(Account).filter(cls.status==True).order_by(desc(cls.creation_date)).add_column(Account.fullname).all()
+    def find_all_new(cls, limit=None):
+        query = cls.query.join(Account).filter(cls.status==True).order_by(desc(cls.creation_date)).add_column(Account.fullname)
+
+        if limit != None:
+            query = query.limit(limit)
+
+        return query.all()
     
     @classmethod
     def find_all_view(cls):
@@ -300,8 +317,30 @@ class Documents(db.Model):
             all()
     
     @classmethod
-    def find_by_id(cls, _id):
+    def find_by_id_tuple(cls, _id):
         return cls.query.join(Account).filter(cls.id==_id, cls.status==True).add_column(Account.fullname).first()
+    
+    @classmethod
+    def find_by_id(cls, _id):
+        return cls.query.join(Account).filter(cls.id==_id, cls.status==True).first()
+    
+    @classmethod
+    def find_by_purchase(cls, _id, _account_id):
+        return cls.query.join(Purchase, Purchase.document_id==cls.id).\
+            join(Account, Account.id==Purchase.account_id).\
+            filter(Purchase.account_id==_account_id, cls.id==_id, cls.status==True).\
+            add_column(Account.fullname).\
+            first()
+    
+    @classmethod
+    def find_by_category(cls, _category_name, limit):
+        return cls.query.join(Account, Account.id==cls.account_id).\
+            join(DocumentCategories, DocumentCategories.document_id==cls.id).\
+            join(Categories, Categories.id == DocumentCategories.category_id).\
+            filter(Categories.name==_category_name, cls.status==True).\
+            add_column(Account.fullname).\
+            limit(limit).\
+            all()
 
 class DocumentCategories(db.Model):
     __tablename__ = 'document_categories'
@@ -371,9 +410,59 @@ class Evaluate(db.Model):
         return data
     
     @classmethod
-    def find_all_saved(cls, _account_id):
-        return cls.query.join(Documents, Documents.id == cls.document_id).\
-            join(Account, Account.id == cls.account_id).\
-            filter(Evaluate.type=='save', Documents.status==True, cls.account_id==_account_id).\
-            add_columns(Documents, Account.fullname).\
-            all()
+    def find_by_type(cls, _document_id, _account_id, _type):
+        return cls.query.filter_by(document_id=_document_id, account_id=_account_id, type=_type).first()
+    
+    @classmethod
+    def find(cls, _document_id, _account_id):
+        return cls.query.filter_by(document_id=_document_id, account_id=_account_id).all()
+    
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+class Purchase(db.Model):
+    __tablename__ = 'purchase'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    status = db.Column(db.Boolean(), nullable=False, server_default='1')
+    amount = db.Column(db.Integer())
+    document_id = db.Column(db.Integer(), db.ForeignKey(
+        'documents.id', ondelete='CASCADE'))
+    account_id = db.Column(db.Integer(), db.ForeignKey(
+        'account.id', ondelete='CASCADE'))
+    
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'date': self.date,
+            'document_id': self.document_id,
+            'account_id': self.account_id,
+            'amount': self.amount
+        }
+
+        return data
+    
+    @classmethod
+    def list_to_dict(cls, purchase):
+        data = []
+
+        for item in purchase:
+            data.append(item.to_dict())
+
+        return data
+    
+    @classmethod
+    def find(cls, _document_id, _account_id):
+        return cls.query.filter(cls.document_id==_document_id, cls.account_id==_account_id).order_by(desc(cls.date)).first()
+    
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
