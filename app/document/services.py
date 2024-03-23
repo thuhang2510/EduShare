@@ -1,18 +1,13 @@
 import os
-from app.model.models import Documents, Categories, Evaluate
+from app.model.models import Documents, Categories
 
 class DocumentsDataService():
-    def convert_data(self, file_name):
-        with open(file_name, 'rb') as file:
-            binary_data = file.read()
-        return binary_data
-
-    def create(self, account_id, data):
+    def create(self, account_id, data, direction_file):
         try:
             documents = Documents()
             documents.from_dict(data)
             documents.account_id = account_id
-            documents.image = self.convert_data(os.path.join("app/static/images", data["image"].filename))
+            documents.image = direction_file
 
             for category_name in data['categories']:
                 category = Categories.find_by_name(category_name)
@@ -32,17 +27,17 @@ class DocumentsDataService():
         except Exception as e:
             return None, -1, "Get document fail"
         
-    def get_all_saved(self, account_id):
+    def get_all_saved(self, account_id, limit=None):
         try:
-            documents = Documents.find_all_saved(account_id)
+            documents = Documents.find_all_saved(account_id, limit)
             
             return Documents.list_to_dict(documents), 0, "Get document success"
         except Exception as e:
             return None, -1, "Get document fail"
         
-    def get_all_view(self):
+    def get_all_view(self, limit=None):
         try:
-            documents = Documents.find_all_view()
+            documents = Documents.find_all_view(limit)
             
             return Documents.list_to_dict(documents), 0, "Get document success"
         except Exception as e:
@@ -59,7 +54,6 @@ class DocumentsDataService():
     def get_by_id(self, id):
         try:
             documents = Documents.find_by_id_tuple(id)
-            documents[0].view_count += 1
             documents[0].save_to_db()
             
             return Documents.to_dict_tuple(documents), 0, "Get document success"
@@ -71,6 +65,14 @@ class DocumentsDataService():
             documents = Documents.find_by_category(category_name, limit)
             
             return Documents.list_to_dict(documents), 0, "Get document success"
+        except Exception as e:
+            return None, -1, "Get document fail"
+        
+    def get_by_category_with_paginate(self, category_name, pre_page, page):
+        try:
+            documents = Documents.find_by_category_with_paginate(category_name, page, pre_page)
+            
+            return documents, 0, "Get document success"
         except Exception as e:
             return None, -1, "Get document fail"
         
@@ -96,6 +98,25 @@ class DocumentsDataService():
 
             documents.save_to_db()
             
-            return documents.to_dict(), 0, "Get document success"
+            return documents.to_dict(), 0, "Update document success"
+        except Exception as e:
+            return None, -1, "Update document fail"
+        
+    def update_download(self, document_id):
+        try:
+            documents = Documents.find_by_id(document_id)
+            documents.download_count += 1
+
+            documents.save_to_db()
+            
+            return documents.to_dict(), 0, "Update document success"
+        except Exception as e:
+            return None, -1, "Update document fail"
+        
+    def search_documents(self, page, query):
+        try:
+            documents = Documents.search(page, 25, query)
+            
+            return documents, 0, "Get document success"
         except Exception as e:
             return None, -1, "Get document fail"

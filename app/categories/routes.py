@@ -1,8 +1,10 @@
 import os
 from flask import jsonify, render_template, request, redirect
 from flask_login import current_user
+from app.auth.forms import LoginForm, RegisterForm, ResetPasswordRequestForm
 from app.categories import bp
 from app.categories.services import CategoriesDataService
+from app.document.services import DocumentsDataService
 
 @bp.route("/", methods=["GET"])
 def index():
@@ -15,3 +17,27 @@ def index():
         return jsonify({'message': msg, 'code': -1, 'data': None})
         
     return jsonify({'message': 'Lấy danh mục thành công', 'code': 0, 'data': categories})
+
+@bp.route("/all", methods=["GET"])
+def get_all():
+    register = RegisterForm(meta={'csrf': False})
+    login = LoginForm(meta={'csrf': False})
+    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
+
+    categories, _, _ = CategoriesDataService().get_all()
+
+    return render_template('categories/all_categories.html', form=register, 
+                           formlogin=login, formresetpw=resetpw, categories=categories)
+
+@bp.route("/khongtontai", methods=["GET"])
+def get_category_by_name():
+    register = RegisterForm(meta={'csrf': False})
+    login = LoginForm(meta={'csrf': False})
+    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
+
+    name = request.args.get("name")
+
+    documents, _, _ = DocumentsDataService().get_by_category_with_paginate(name, 30, 1)
+
+    return render_template('categories/field_categories.html', form=register, 
+                           formlogin=login, formresetpw=resetpw, documents=documents)

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+<link href="/static/css/all_document.css" rel="stylesheet">
+{% endblock %}
+
+{% block app_content %}
+<div class="justify-content-center" style="width:100vw; position:relative; top:70px;">
+    <div class="container mt-2">
+        <div class="d-flex flex-row bd-highlight mb-3">
+            {% for category in categories %}
+                {% if category["parent_id"] is none %}
+                    <div class="p-2 bd-highlight">
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ category["name"] }}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    {% for categoryItem in categories %}
+                        {% if categoryItem["parent_id"] is not none and category["id"] == categoryItem["parent_id"] %}
+                            <li><a class="dropdown-item" href="/categories/cha/{{ categoryItem['name'] }}">{{ categoryItem["name"] }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                            </ul>
+                        </div>
+                    </div> 
+                {% endif %}
+            {% endfor %} 
+            <div class="align-self-center p-2">
+                <a class="dropdown-item" href="/categories/all">Xem toàn bộ danh mục</a>
+            </div>
+        </div>  
+
+        <p class="text-right mt-3">
+            {{ documents.first }} - {{ documents.last }} trong {{documents.total}} kết quả
+        </p>
+        <div id="all_document" class="d-flex bd-highlight flex-wrap">
+            {% for document in documents.items %}
+            <div class="carousel-item mb-5" onclick="openDocumentDetail('{{document[0].id}}')">
+                <div class="card">
+                    <div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px"><img src="{{ document[0].image }}" class="d-block img-detail" alt="..."> </div></div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ document[0].document_name | get_only_document_name }}</h5>
+                        <p class="card-text">Được thêm bởi {{ document[1] }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex bd-highlight">
+                            <div id="save_doc_{{ document[0].id }}" class="p-2 flex-grow-1 bd-highlight"><i class="bi bi-bookmark"></i></div>
+                            <div class="p-2 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>{{ document[0].evaluate | count_evaluate }}%</span></div>
+                            <div class="p-2 bd-highlight"><i class="bi bi-download"></i><span>{{ document[0].download_count }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-right">
+            <a href="{{ url_for('search.search_documents_route', query=query, page=documents.prev_num) }}"
+               class="btn btn-outline-dark {% if documents.page == 1 %}disabled{% endif %}">
+                &laquo;
+            </a>
+            {% for page_num in documents.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if documents.page == page_num %}
+                        <a href="{{ url_for('search.search_documents_route', query=query, page=page_num) }}"
+                        class="btn btn-dark">
+                            {{ page_num }}
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('search.search_documents_route', query=query, page=page_num) }}"
+                        class="btn btn-outline-dark">
+                            {{ page_num }}
+                        </a>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
+            {% endfor %}
+
+            <a href=" {{ url_for('search.search_documents_route', query=query, page=documents.next_num) }}"
+                class="btn btn-outline-dark 
+                {% if documents.page == documents.pages %}disabled{% endif %}">
+                    &raquo;
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    window.onload = function()
+    {
+        if(localStorage.token){
+            getUser();
+        }
+        else
+            closeLogin();
+    };
+
+    async function getUser(){
+        url = baseURL + "/api/v1/user-token"
+        var base_img = document.getElementById("base-img")
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                user.lg_fullname.innerHTML = result.data["fullname"];
+                user.email.innerHTML = result.data["email"];
+                user.ls_fullname.innerHTML = result.data["fullname"];
+                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                base_img.innerHTML = result.data["fullname"][0];
+                openLogin();
+                userCurrentId = result.data["id"]
+                getAllDocSaved();
+            }
+            else{
+                userCurrentId = null;
+                alert(result.message);
+                clickLogin();
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    async function getAllDocSaved(){
+        url = baseURL + "/document/get_all_saved"
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                for(var i = 0; i < result.data.length; ++i){
+                    var save_doc = document.getElementById('save_doc_' + result.data[i].id);
+                    if(save_doc != null)
+                        save_doc.innerHTML = `<i class="bi bi-bookmark-fill"></i>`
+                }
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function openDocumentDetail(id){
+        window.location.replace(baseURL + "/document/" + id)
+    }
+
+</script>
+{% endblock %}

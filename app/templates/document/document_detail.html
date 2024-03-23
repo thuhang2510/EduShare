@@ -18,6 +18,14 @@
             </nav>
             <div id="infor-detail" class="px-5" style="width:100%; height:690px; overflow-y:scroll;">
                 <h3>{{ document["document_name"] }}</h3>
+                <p>
+                    <span class="me-2">
+                        <i class="bi bi-eye"></i> {{ document["view_count"]}}
+                    </span>
+                    <span id="download_count">
+                        <i class="bi bi-download"></i> {{ document["download_count"]}}
+                    </span>
+                </p>
                 <p>{{ document["description"] }}</p>
                 <p>Danh mục: 
                     {% for value in document["categories"] %}
@@ -57,7 +65,7 @@
                         {% endif %}
                     </button>
                 </div>
-                <div id="btn-document-payment" class="p-2 bd-highlight">
+                <div id="btn-document-payment" class="p-2 bd-highlight" data-timebuy="">
                     <button type="button" class="btn btn-danger rounded-pill" onclick="buyDocument(`{{ document['document_name'] }}`, `{{ document['price'] | numberFormat }}`)">Mua tài liệu</button>
                 </div>
                 <div class="p-2 bd-highlight">
@@ -176,22 +184,23 @@
     };
 
     async function getDocumentDetail(){
-        url = window.location.href + "/detail";
+        url = baseURL + "/document/" + `{{document["id"]}}` + "/detail";
 
         try {
             const result = await getData(url);
             if (result.code === 0){
-                document.getElementById("btn-document-payment").style.visibility = "hidden"
+                var btn_document_payment = document.getElementById("btn-document-payment");
+                btn_document_payment.style.visibility = "hidden"
+                btn_document_payment.dataset.
                 nameFile = result.data["document_name"] + "." + result.data["type"];
                 price = result.data["price"];
                 bought = true;
+                document.getElementById("download_count").innerHTML = `<i class="bi bi-download"></i> ${result.data["download_count"]}`
                 initPdf();
 
-                urlEvaluate = window.location.href + "/evaluate"
-                const resultEvaluate = await getData(urlEvaluate);
-                if (resultEvaluate.code === 0 && resultEvaluate.data !== null){
-                    for(var i = 0; i < resultEvaluate.data.length; ++i){
-                        var type = resultEvaluate.data[i]["type"];
+                if (result.data["evaluate"].length > 0){
+                    for(var i = 0; i < result.data["evaluate"].length; ++i){
+                        var type = result.data["evaluate"][i]["type"];
                         if(type === "like"){
                             var documentLike = document.getElementById("doc_like").getElementsByTagName("i")
                             documentLike[0].classList.remove("bi-hand-thumbs-up");
@@ -359,7 +368,7 @@
     }
 
     const getChatResponse = async(incomingChatDiv) => {
-        const API_URL = "";
+        const API_URL = "https://api.openai.com/v1/chat/completions";
 
         const requestOptions = {
             method: "POST",
@@ -492,21 +501,25 @@
 
     function createDocuments(document){
         html = `<div class="row mt-3 mb-3">
-                    <div class="col-2 pe-0">
-                        <img src="data:image/png;base64,${document["image"]}"
-                        alt="Generic placeholder image" class="img-fluid p-0"
-                        style="width: 70px; height: 70px; border-radius: 10px;">
-                    </div>  
+                    <div class="col-2 pe-0">`
+                        if(document["image"] != null)
+                            html += `<img src="${document["image"]}"
+                                alt="Generic placeholder image" class="img-fluid p-0"
+                                style="width: 70px; height: 70px; border-radius: 10px;">`
+                        else
+                            html += `<img src="/static/images/anh11.png"
+                                    alt="Generic placeholder image" class="img-fluid p-0"
+                                    style="width: 70px; height: 70px; border-radius: 10px;">`
+        html += `   </div>  
                     <div class="col-10">
                         <h6 class="m-0">${getOnlyFileName(document["document_name"])}</h6>
                         <p class="m-0">${document["fullname"]}</p>
                         <div class="p-0 bd-highlight">
-                            <i class="bi bi-hand-thumbs-up"></i>`
-
-        html += `<span>${calculateLikePercentage(document["evaluate"])}%</span>
-                </div>
-            </div>
-        </div>`
+                            <i class="bi bi-hand-thumbs-up"></i>
+                            <span>${calculateLikePercentage(document["evaluate"])}%</span>
+                        </div>
+                    </div>
+                </div>`
 
         return html;
     }
@@ -701,21 +714,80 @@
         }
     }
 
-    async function downloadDocument(){
-        url = baseURL + "/api/v1/user-token"
+    async function downloadDocFree(){
+        var lg_fullname = document.getElementById("base-login-fullname")
+        number_download = parseInt(lg_fullname.dataset.countdownload)
 
-        try {
-            const result = await getData(url);
-            if (result.code === 0){
-                
-            }
-            else{
-                alert("Hãy đăng nhập để thực hiện tải xuống");
-                clickLogin();
-            }
-        } catch (error) {
-            console.log(error.message);
+        if(number_download >= 5)
+            alert("Tuần này bạn đã hết lượt tải cho tài liệu miễn phí");
+        else {
+            fetch(window.location.href + "/download")
+            .then(response => {
+                if (response.ok){
+                    updateCountDownloadAPI(number_download + 1, false);;
+
+                    response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement("a")
+                        a.href = url;
+                        a.download = `{{document["document_name"]}}`
+                        a.click();
+                        window.URL.revokeObjectURL(url)
+                        getDocumentDetail();
+                    });
+                }
+                else {
+                    console.error('Có lỗi xảy ra khi tải xuống tệp');
+                }
+            })
         }
+    }
+
+    async function downloadDocNotFree(documentId){
+        if (bought == false)
+            alert("Hãy mua tài liệu trước khi thực hiện tải xuống");
+        else{
+            const result = await getData(baseURL + "/document/purchase?document_id=" + `{{document["id"]}}` );
+            if (result.code === 0){
+                var currentDate = new Date();
+                var time_buy = new Date(result.data["date"])
+                time_buy = Math.abs(currentDate.getTime() - time_buy.getTime()) / (1000 * 60 * 60);
+
+                if (time_buy < 24){
+                    fetch(window.location.href + "/download")
+                    .then(response => {
+                        if (response.ok){
+                            response.blob().then(blob => {
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement("a")
+                                a.href = url;
+                                a.download = `{{document["document_name"]}}`
+                                a.click();
+                                window.URL.revokeObjectURL(url)
+                                getDocumentDetail();
+                            });
+                        }
+                        else {
+                            console.error('Có lỗi xảy ra khi tải xuống tệp');
+                        }
+                    })
+                }
+                else{
+                    alert("Bạn đã hết thời gian tải xuống")
+                    show_confirm_document_payment(`{{document["document_name"]}}`, price, null);
+                }
+            }
+            else {
+                alert("Có lỗi xảy ra hãy thử lại sau");
+            }
+        }
+    }
+
+    function downloadDocument(){
+        if (`{{document["price"]}}` == 0)
+            downloadDocFree();
+        else
+            downloadDocNotFree();
     }
 
     async function buyDocument(document_name, price){
@@ -770,12 +842,14 @@
         document.getElementById("form-confirm-payment").style.visibility = "hidden";
     }
 
-    function show_confirm_document_payment(document_name, price, coin){
+    function show_confirm_document_payment(document_name, price, coin=null){
         document.getElementById("form-confirm-payment").style.visibility = "visible"
         document.getElementById("content-form-confirm-payment").innerHTML = `<h5>Bạn đang thanh toán tài liệu</h5>
                                                                 <h4 style="color: rgb(2, 126, 176);"> ${document_name}</h4>
-                                                                <p>Giá bán: <span class="fw-bold"> ${ price } đ</span></p>
-                                                                <p>Số dư hiện tại của bạn: <span class="fw-bold">${coin.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span></p>`
+                                                                <p>Giá bán: <span class="fw-bold"> ${ price } đ</span></p>`
+
+        if(coin !== null)
+            document.getElementById("content-form-confirm-payment").innerHTML += `<p>Số dư hiện tại của bạn: <span class="fw-bold">${coin.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span></p>`
     }
 
     async function clickConfirmPayment(documentId, amount, documentAccountId){
@@ -783,7 +857,7 @@
 
         data = {
             "document_id": documentId,
-            "amount": amount,
+            "amount": parseInt(amount),
             "account_id": documentAccountId
         }
 

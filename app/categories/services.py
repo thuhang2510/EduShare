@@ -20,3 +20,13 @@ class CategoriesDataService():
             return Categories.list_to_dict(categories), 0, "Get categories success"
         except Exception as e:
             return None, -1, "Get categories fail " + str(e)
+        
+    def get_all(self):
+        try:
+            categories =  Categories.find_all()
+            if categories is None:
+                return None, -1, "Get categories fail"
+            
+            return categories, 0, "Get categories success"
+        except Exception as e:
+            return None, -1, "Get categories fail " + str(e)

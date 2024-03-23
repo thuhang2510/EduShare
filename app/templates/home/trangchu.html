@@ -27,7 +27,8 @@
       </div>
     </div>
   </div>
-  </div>{% endblock %}
+  </div>
+{% endblock %}
 
 {% block scripts %}
 {{ super() }}
@@ -86,7 +87,7 @@
     }
 
     async function getAllDocNew(){
-        url = baseURL + "/document/get_all_new"
+        url = baseURL + "/document/get_all_new?limit=30"
 
         try {
             const result = await getDataNoAuthorization(url);
@@ -110,7 +111,7 @@
     }
 
     async function getAllDocSaved(){
-        url = baseURL + "/document/get_all_saved"
+        url = baseURL + "/document/get_all_saved?limit=30"
 
         try {
             const result = await getData(url);
@@ -142,7 +143,7 @@
     }
 
     async function getAllDocView(){
-        url = baseURL + "/document/get_all_view"
+        url = baseURL + "/document/get_all_view?limit=30"
 
         try {
             const result = await getDataNoAuthorization(url);
@@ -251,9 +252,9 @@
                     <div class="card">`
 
         if(document["image"] != null)
-            html += `<div class="img-wrapper"><div style="width: 132px; height:174px;position: absolute;top: 24px;"><img src="data:image/png;base64,${document["image"]}" class="d-block img-detail" alt="..."> </div></div>`
+            html += `<div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px;"><img src="${document["image"]}" class="d-block img-detail" alt="..."> </div></div>`
         else
-            html += `<div class="img-wrapper"><div style="width: 132px; height:174px;position: absolute;top: 24px"><img src="/static/images/anh11.png" class="d-block img-detail" alt="..."> </div></div>`
+            html += `<div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px"><img src="/static/images/anh11.png" class="d-block img-detail" alt="..."> </div></div>`
                         
         html += `<div class="card-body">
                     <h5 class="card-title">${getOnlyFileName(document["document_name"])}</h5>

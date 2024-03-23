@@ -8,12 +8,14 @@ from app.purchase import bp
 @jwt_required()
 def create():
     data = request.get_json()
-    evaluate, code, msg = PurchaseDataService().create(data["document_id"], data["account_id"], current_user.id, data["amount"])
-    return jsonify({'message': msg, 'code': code, 'data': evaluate})
+    purchase, code, msg = PurchaseDataService().create(data["document_id"], data["account_id"], current_user.id, data["amount"])
+    return jsonify({'message': msg, 'code': code, 'data': purchase})
 
 @bp.route("", methods=["GET"])
 @jwt_required()
-def get(document_id):
-    evaluate, code, msg = PurchaseDataService().get(document_id, current_user.id)
-    return jsonify({'message': msg, 'code': code, 'data': evaluate})
+def get():
+    document_id = request.args.get("document_id")
+
+    purchase, code, msg = PurchaseDataService().get(document_id, current_user.id)
+    return jsonify({'message': msg, 'code': code, 'data': purchase})
     

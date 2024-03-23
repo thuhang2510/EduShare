@@ -8,7 +8,7 @@ def upload(file_name, bucket, object_name):
 
 def download(file_name, bucket):
     s3 = boto3.resource('s3')
-    output = f"download_files/{file_name}"
+    output = f"app/download_files/{file_name}"
     s3.Bucket(bucket).download_file(file_name, output)
     return output
 

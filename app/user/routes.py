@@ -38,3 +38,13 @@ def update_password():
             return jsonify({'message': 'Cập nhật tài khoản không thành công', 'code': -1, 'data': None})
         return jsonify({'message': 'Cập nhật tài khoản thành công', 'code': 0, 'data': user})
     return jsonify({'message': 'invalid input', 'code': -2, 'data': updatePassword.errors})
+
+@bp.route("/upload-count-download", methods=["POST"])
+@jwt_required()
+def update_download():
+    data = request.json
+
+    user, _, msg = UserDataService().update_download(current_user.id, data["number_download"], data["week_reset"])
+    if user is None:
+        return jsonify({'message': 'Cập nhật tài khoản không thành công', 'code': -1, 'data': None})
+    return jsonify({'message': 'Cập nhật tài khoản thành công', 'code': 0, 'data': user})

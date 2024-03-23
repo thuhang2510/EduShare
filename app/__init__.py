@@ -59,6 +59,9 @@ def create_app(config_class=Config):
     from app.purchase import bp as purchase_bp
     app.register_blueprint(purchase_bp, url_prefix='/document/purchase')
 
+    from app.search import bp as search_bp
+    app.register_blueprint(search_bp, url_prefix='')
+
     return app
 
 from app.model import models

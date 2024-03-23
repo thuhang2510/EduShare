@@ -1,5 +1,4 @@
 from app.model.models import Transaction, db, Purchase, Account, Documents
-from app.transaction.services import TransactionDataService
 
 class PurchaseDataService():        
     def create(self, document_id, account_id, current_user_id, amount):

@@ -14,7 +14,7 @@ def index():
     register = RegisterForm(meta={'csrf': False})
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
-    return render_template('home/trangchu.html', title='Đăng ký', form=register, formlogin=login, formresetpw=resetpw)
+    return render_template('home/trangchu.html', title='Trang chủ', form=register, formlogin=login, formresetpw=resetpw)
 
 @bp.route('/register', methods=['POST'])
 def register():
@@ -64,7 +64,11 @@ def get_user_by_token():
             'email': current_user.email,
             'number': current_user.number,
             'coin': current_user.coin,
-            'address': current_user.address
+            'address': current_user.address,
+            'datetime_week_reset': current_user.datetime_week_reset,
+            'datetime_day_reset': current_user.datetime_day_reset,
+            'number_download': current_user.number_download,
+            'number_ask': current_user.number_ask
         }
         return jsonify({'message': 'Lấy user thành công', 'code': 0, 'data': data})
     

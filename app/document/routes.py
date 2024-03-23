@@ -1,5 +1,5 @@
 import os
-from flask import jsonify, render_template, request, redirect, json
+from flask import jsonify, render_template, request, redirect, json, send_file, send_from_directory
 from flask_jwt_extended import jwt_required
 from flask_login import current_user
 from app.auth.forms import LoginForm, RegisterForm, ResetPasswordRequestForm
@@ -7,8 +7,13 @@ from app.document import bp
 from app.document.forms import UploadDocumentForm
 from app.document.services import DocumentsDataService
 from constant import DocumentS3
-from s3_helper import upload
+from ultil.custom_random import generate_random_string
+from ultil.file_helper import save
+from ultil.s3_helper import download, upload
 from app.extensions import uploader_permission
+from werkzeug.utils import secure_filename
+
+PATH = "app/static/images/"
 
 @bp.app_template_filter()
 def numberFormat(value):
@@ -65,10 +70,13 @@ def check_file_exist():
 @jwt_required()
 @uploader_permission.require(http_exception=403)
 def upload_s3():
-    files = request.files.getlist("image")
+    imgs = request.files.getlist("image")
+    fileName = ""
 
-    for f in files: 
-        f.save(os.path.join("app/static/images/" + f.filename))
+    for f in imgs: 
+        fileName = f"anh{generate_random_string(8)}.{f.filename.split('.')[-1]}"
+        path_img = os.path.join(PATH, fileName)
+        f.save(path_img)
         f.close()
 
     uploadDocument = UploadDocumentForm(meta={'csrf': False})
@@ -76,12 +84,12 @@ def upload_s3():
     for entry in _categories:
         uploadDocument.categories.append_entry(entry)
 
-    if uploadDocument.validate():
-        document, _, msg = DocumentsDataService().create(current_user.id, uploadDocument.data)
+    if uploadDocument.validate():        
+        document, _, msg = DocumentsDataService().create(current_user.id, uploadDocument.data, "/static/images/" + fileName)
 
         if document is not None:
             upload(f"upload_files/{uploadDocument.old_name.data}", DocumentS3.BUCKET, uploadDocument.document_name.data)
-            os.remove(os.path.join("app/static/images/" + files[0].filename))
+
             return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': None})
         else:
             return jsonify({'message': msg, 'code': -1, 'data': None})
@@ -105,7 +113,12 @@ def get_documents_new():
 @bp.route("/get_all_saved", methods=['GET'])
 @jwt_required()
 def get_documents_saved():
-    document, _, msg = DocumentsDataService().get_all_saved(current_user.id)
+    limit = None
+
+    if 'limit' in request.args:
+        limit = request.args.get("limit")
+
+    document, _, msg = DocumentsDataService().get_all_saved(current_user.id, limit)
 
     if document is not None:
         return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': document})
@@ -114,7 +127,12 @@ def get_documents_saved():
     
 @bp.route("/get_all_view", methods=['GET'])
 def get_documents_view():
-    document, _, msg = DocumentsDataService().get_all_view()
+    limit = None
+
+    if 'limit' in request.args:
+        limit = request.args.get("limit")
+
+    document, _, msg = DocumentsDataService().get_all_view(limit)
 
     if document is not None:
         return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': document})
@@ -127,7 +145,8 @@ def get_document_form(id):
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
 
-    document, _, msg = DocumentsDataService().get_by_id(id)
+    DocumentsDataService().update_view(id)
+    document, _, _ = DocumentsDataService().get_by_id(id)
 
     if(document is not None):
         document["document_name"] = document["document_name"].split(".")[0]
@@ -161,3 +180,16 @@ def get_documents_by_category():
         return jsonify({'message': msg, 'code': -1, 'data': None})
         
     return jsonify({'message': 'Lấy danh mục thành công', 'code': 0, 'data': categories})
+
+@bp.route("/<int:id>/download", methods=["GET"])
+def download_document(id):
+    document, code, msg = DocumentsDataService().update_download(id)
+
+    if not document:
+        return jsonify({'message': msg, 'code': -1, 'data': None})
+    
+    document_name = document["document_name"]
+    download(document_name, DocumentS3.BUCKET)
+
+    return send_file(f"./download_files/{document_name}")
+

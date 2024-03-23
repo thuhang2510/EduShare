@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.model.models import Account
 
 class UserDataService():        
@@ -24,6 +25,24 @@ class UserDataService():
                 return None, -1, "Get user fail"
             
             user.set_password(password)
+            user.save_to_db()
+            
+            return user.to_dict(True), 0, "Update password success"
+        except Exception as e:
+            return None, -1, "Update password fail " + str(e)
+        
+    def update_download(self, id, count_download, reset_week=False):
+        try:
+            user = Account.find_by_id(id)
+            
+            if user is None:
+                return None, -1, "Get user fail"
+            
+            user.number_download = count_download
+
+            if(reset_week):
+                user.datetime_week_reset = datetime.now()
+
             user.save_to_db()
             
             return user.to_dict(True), 0, "Update password success"

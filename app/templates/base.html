@@ -22,9 +22,7 @@
             <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
                 <ul class="navbar-nav w-100 justify-content-center">
                     <li class="nav-item col-xl-12 my-1">
-                        <form role="search">
-                            <input id="search" class="form-control me-5 rounded-pill" style="border: 2px solid #ced4da;" type="search" placeholder="Tìm kiếm tài liệu" aria-label="Search">
-                        </form>
+                        <input id="search" class="form-control me-5 rounded-pill" style="border: 2px solid #ced4da;" type="text" placeholder="Tìm kiếm tài liệu">
                     </li>
                 </ul>
                 <ul class="nav navbar-nav ms-auto w-100 justify-content-end">
@@ -39,7 +37,7 @@
                         <button id="login" onclick="clickLogin()" class="btn mx-0 px-0 my-1" style="color: rgb(2, 126, 176);" type="submit">Đăng nhập</button>
                     </li>
                     <li id="base-login" class="nav-item dropdown" style="display: none;">
-                        <a id="base-login-fullname" class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Nguyễn Mai Tú Nguyệt</a>
+                        <a id="base-login-fullname" class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-id="0" data-countdownload="0" data-countask="0" data-bs-toggle="dropdown" aria-expanded="false">Nguyễn Mai Tú Nguyệt</a>
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarScrollingDropdown">
                             <li><a class="dropdown-item" href="/user/thong-tin-ca-nhan">Thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" href="#">Quản lý tài liệu</a></li>
@@ -200,7 +198,7 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 <script>
-    const baseURL = "http://174.129.69.18"
+    const baseURL = "http://127.0.0.1:5000"
  
     window.onload = function()
     {
@@ -434,14 +432,57 @@
                 base_img.innerHTML = result.data["fullname"][0];
                 openLogin();
                 userCurrentId = result.data["id"]
+
+                updateCountDownload(result);
+                updateCountAsk(result);
             }
             else{
+                userCurrentId = null;
                 alert(result.message);
                 clickLogin();
             }
         } catch (error) {
             console.log(error.message);
         }
+    }
+
+    async function updateCountDownloadAPI(number_download, week_reset){
+        data = {
+            "number_download": number_download,
+            "week_reset": week_reset
+        }
+
+        try {
+            const result = await postData("/user/upload-count-download", data);
+            if (result.code == 0){
+                user.lg_fullname.dataset.countdownload = number_download;
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function updateCountDownload(result){
+        var currentDate = new Date();
+        datetime_week_reset = new Date(result.data["datetime_week_reset"])
+        datetime_week_reset = Math.abs(currentDate.getTime() - datetime_week_reset.getTime()) / (1000 * 60 * 60 *24);
+        if (datetime_week_reset > 7){
+            updateCountDownloadAPI(0, true)
+        }
+        else
+            user.lg_fullname.dataset.countdownload = result.data["number_download"]
+    }
+
+    function updateCountAsk(result){
+        var currentDate = new Date();
+        datetime_day_reset = new Date(result.data["datetime_day_reset"])
+        datetime_day_reset = Math.abs(currentDate.getTime() - datetime_day_reset.getTime()) / (1000 * 60 * 60 *24);
+        if (datetime_day_reset > 3){
+            //update ngày ở db
+            user.lg_fullname.dataset.countask = 0
+        }
+        else
+            user.lg_fullname.dataset.countask = result.data["number_ask"]
     }
 
     const fields_reset_fw = {
@@ -554,6 +595,13 @@
             console.log(error.message);
         }
     }
+
+    const input_search = document.getElementById('search');
+    input_search.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            window.location.replace(baseURL + "/search-documents?query=" + input_search.value);
+        }
+    });
 
     async function postData(url, value) {
         const headers = {

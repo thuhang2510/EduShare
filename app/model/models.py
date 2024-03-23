@@ -1,5 +1,5 @@
 import base64
-import datetime
+from datetime import datetime
 from flask_login import UserMixin
 from sqlalchemy import desc
 from app import db
@@ -27,8 +27,8 @@ class Account(UserMixin, db.Model):
     address = db.Column(db.String(255))
     number_download = db.Column(db.Integer, server_default='0')
     number_ask = db.Column(db.Integer, server_default='0')
-    datetime_week_reset = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    datetime_day_reset = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    datetime_week_reset = db.Column(db.DateTime, default=datetime.utcnow)
+    datetime_day_reset = db.Column(db.DateTime, default=datetime.utcnow)
     violation_count = db.Column(db.Integer, server_default='0')
     permission = db.relationship(
         'Permission',
@@ -54,6 +54,8 @@ class Account(UserMixin, db.Model):
             'address': self.address,
             'number': self.number,
             'coin': self.coin,
+            'datetime_week_reset': self.datetime_week_reset,
+            'datetime_day_reset': self.datetime_day_reset,
             'purchase': Purchase.list_to_dict(self.purchase)
         }
         if include_email:
@@ -129,7 +131,7 @@ class Transaction(db.Model):
     __tablename__ = 'transaction'
 
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
     information = db.Column(db.String(255))
     type = db.Column(db.String(255))
     status = db.Column(db.Boolean, nullable=False, server_default='1')
@@ -190,11 +192,16 @@ class Categories(db.Model):
     def find_all_not_parent(cls):
         return cls.query.filter_by(parent_id=None).all()
     
+    @classmethod
+    def find_all(cls):
+        return cls.query.all()
+    
     def to_dict(self):
         data = {
             'id': self.id,
             'name': self.name,
             'description': self.description,
+            'parent_id': self.parent_id
         }
         return data
     
@@ -211,8 +218,8 @@ class Documents(db.Model):
     __tablename__ = 'documents'
 
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    creation_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    modified_date = db.Column(db.DateTime)
+    creation_date = db.Column(db.DateTime, default=datetime.utcnow)
+    modified_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
     document_name = db.Column(db.String(255))
     type = db.Column(db.String(5))
     description = db.Column(db.String(255))
@@ -220,7 +227,7 @@ class Documents(db.Model):
     download_count = db.Column(db.Integer, server_default='0')
     price = db.Column(db.Integer, server_default='0')
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
-    image = db.Column(db.LargeBinary())
+    image = db.Column(db.String(255))
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
         nullable=False)
     categories = db.relationship(
@@ -240,6 +247,7 @@ class Documents(db.Model):
             'price': self.price,
             'type': self.type,
             'account_id': self.account_id,
+            'image': self.image,
             'categories': Categories.list_to_dict(self.categories),
             'evaluate': Evaluate.list_to_dict(self.evaluate),
             'purchase': Purchase.list_to_dict(self.purchase)
@@ -266,9 +274,6 @@ class Documents(db.Model):
             'evaluate': Evaluate.list_to_dict(document.evaluate),
             'fullname': fullname_account
         }
-
-        if (document.image != None):
-            data['image'] = base64.b64encode(document.image).decode('utf-8')
 
         return data
     
@@ -297,7 +302,7 @@ class Documents(db.Model):
     
     @classmethod
     def find_all_new(cls, limit=None):
-        query = cls.query.join(Account).filter(cls.status==True).order_by(desc(cls.creation_date)).add_column(Account.fullname)
+        query = cls.query.filter(cls.status==True).order_by(desc(cls.creation_date)).join(Account).add_column(Account.fullname)
 
         if limit != None:
             query = query.limit(limit)
@@ -305,16 +310,24 @@ class Documents(db.Model):
         return query.all()
     
     @classmethod
-    def find_all_view(cls):
-        return cls.query.join(Account).filter_by(status=True).order_by(desc(cls.view_count)).add_column(Account.fullname).all()
+    def find_all_view(cls, limit=None):
+        query = cls.query.filter_by(status=True).order_by(desc(cls.view_count)).join(Account).add_column(Account.fullname)
+        if limit != None:
+            query = query.limit(limit)
+
+        return query.all()
     
     @classmethod
-    def find_all_saved(cls, _account_id):
-        return cls.query.join(Evaluate, Evaluate.document_id==cls.id).\
+    def find_all_saved(cls, _account_id, limit=None):
+        query= cls.query.join(Evaluate, Evaluate.document_id==cls.id).\
             join(Account, Account.id == cls.account_id).\
             filter(Evaluate.type=='save', Documents.status==True, Evaluate.account_id==_account_id).\
-            add_columns(Account.fullname).\
-            all()
+            add_columns(Account.fullname)
+        
+        if limit != None:
+            query = query.limit(limit)
+
+        return query.all()
     
     @classmethod
     def find_by_id_tuple(cls, _id):
@@ -329,18 +342,37 @@ class Documents(db.Model):
         return cls.query.join(Purchase, Purchase.document_id==cls.id).\
             join(Account, Account.id==Purchase.account_id).\
             filter(Purchase.account_id==_account_id, cls.id==_id, cls.status==True).\
-            add_column(Account.fullname).\
+            order_by(desc(Purchase.date)).\
+            add_columns(Account.fullname).\
             first()
     
     @classmethod
     def find_by_category(cls, _category_name, limit):
-        return cls.query.join(Account, Account.id==cls.account_id).\
-            join(DocumentCategories, DocumentCategories.document_id==cls.id).\
+        return cls.query.join(DocumentCategories, DocumentCategories.document_id==cls.id).\
             join(Categories, Categories.id == DocumentCategories.category_id).\
             filter(Categories.name==_category_name, cls.status==True).\
+            join(Account, Account.id==cls.account_id).\
             add_column(Account.fullname).\
             limit(limit).\
             all()
+    
+    @classmethod
+    def find_by_category_with_paginate(cls, _category_name, page, per_page):
+        return cls.query.join(DocumentCategories, DocumentCategories.document_id==cls.id).\
+            join(Categories, Categories.id == DocumentCategories.category_id).\
+            filter(Categories.name==_category_name, cls.status==True).\
+            join(Account, Account.id==cls.account_id).\
+            add_column(Account.fullname).\
+            paginate(page=page, per_page=per_page) 
+    
+    @classmethod
+    def search(cls, page, per_page, value):
+        query =  cls.query.\
+            join(Account).\
+            add_column(Account.fullname).\
+            filter(cls.document_name.ilike('%' + value + '%') | Account.fullname.ilike('%' + value + '%'))
+            
+        return query.paginate(page=page, per_page=per_page)        
 
 class DocumentCategories(db.Model):
     __tablename__ = 'document_categories'
@@ -430,7 +462,7 @@ class Purchase(db.Model):
     __tablename__ = 'purchase'
 
     id = db.Column(db.Integer(), primary_key=True)
-    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
     amount = db.Column(db.Integer())
     document_id = db.Column(db.Integer(), db.ForeignKey(
