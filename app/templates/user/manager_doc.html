@@ -1,0 +1,520 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link href="/static/css/profile_user.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block app_content %}
+<div class="justify-content-center" style="width:100vw; position:relative; top:70px;">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-4 pb-5">
+                <!-- Account Sidebar-->
+                <div class="author-card pb-3">
+                    <div class="author-card-cover"></div>
+                    <div class="author-card-profile">
+                        <div class="author-card-avatar text-center bg-secondary">
+                            <span id="base-profile-img" class="h4 text-white">H</span>
+                        </div>
+                        <div class="author-card-details">
+                            <h4 id="base-profile-name" class="author-card-name text-lg">Daniel Adams</h4>
+                            <span id="base-profile-email" class="author-card-position">Email</span>
+                        </div>
+                    </div>
+                    <div class="ps-4" style="display: none;"><h6>Tài liệu: <span>0</span></h5></div>
+                </div>
+                <div class="wizard">
+                    <nav class="list-group list-group-flush">
+                        <a class="list-group-item" href="#">
+                            <i class="fe-icon-shopping-bag mr-1 text-muted"></i>Tổng quan
+                        </a>
+                        <a class="list-group-item" href="/user/thong-tin-ca-nhan">
+                            <i class="bi bi-person-circle"></i>Thông tin cá nhân
+                        </a>
+                        <a class="list-group-item active" href="/user/quan-ly-tai-lieu">
+                            <i class="bi bi-files"></i>Quản lý tài liệu
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <i class="bi bi-currency-dollar"></i>Quản lý tài chính
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <i class="bi bi-pie-chart"></i>Thống kê
+                        </a>
+                    </nav>
+                </div>
+            </div>
+            <!-- Profile Settings-->
+            <div class="col-lg-8 pb-5 ps-5">
+                <h3 id="label-document">Quản lý tài liệu</h3>
+                <div id="all-document">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="form-confirm-delete" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
+    <div class="container d-flex justify-content-center" style="position: fixed;">   
+    <div class="register bg-white col-xl-6 p-4 rounded-3">
+      <div class="d-flex justify-content-end">
+        <button id="close-form-login" type="button" class="btn-close text-right" onclick="clickCloseConfirmDelete()"></button>
+      </div>
+      <h3 class="text-center mb-3">Xác nhận xóa tài liệu</h3>
+      <div id="content-form-confirm-delete" class="border-top border-secondary py-2">
+      </div>
+      <div id="form-confirm-delete-footer" class="text-end">
+      </div>
+    </div> 
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    async function getUser(){
+        url = baseURL + "/api/v1/user-token"
+
+        var base_profile_img = document.getElementById("base-profile-img")
+        var base_profile_name = document.getElementById("base-profile-name")
+        var base_profile_email = document.getElementById("base-profile-email")
+
+        var base_img = document.getElementById("base-img")
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                user.lg_fullname.innerHTML = result.data["fullname"];
+                user.email.innerHTML = result.data["email"];
+                user.ls_fullname.innerHTML = result.data["fullname"];
+                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                base_img.innerHTML = result.data["fullname"][0];
+                base_profile_name.innerHTML = result.data["fullname"];
+                base_profile_email.innerHTML = result.data["email"]
+                base_profile_img.innerHTML = result.data["fullname"][0];
+                openLogin();
+                getAllDocumentByUser();
+            }
+            else{
+                alert(result.message);
+                localStorage.removeItem('token')
+                clickLogin();
+            }
+        } catch (error) {
+            alert(error.message);
+            localStorage.removeItem('token')
+            clickLogin();
+        }
+    }
+
+    async function getAllDocumentByUser(){
+        var url = baseURL + "/document/"
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                var divDeXuat = document.getElementById("all-document")
+                var html = "";
+                for (var i = 0; i < result.data.length; ++i){
+                    html += createDocuments(result.data[i])
+                }
+                divDeXuat.innerHTML = html
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function createDocuments(document){
+        html = `<div id="document-${document["id"]}" class="row mt-3 mb-3 p-3 border rounded" style="background-color: white">
+                    <div class="col-2 pe-0">`
+                        if(document["image"] != null)
+                            html += `<img src="${document["image"]}"
+                                alt="Generic placeholder image" class="img-fluid p-0"
+                                style="width: 100px; height: 120px; border-radius: 10px;">`
+                        else
+                            html += `<img src="/static/images/anh11.png"
+                                    alt="Generic placeholder image" class="img-fluid p-0"
+                                    style="width: 100px; height: 120px; border-radius: 10px;">`
+        html += `   </div>  
+                    <div class="col-6 ps-0">
+                        <h4 class="m-0">${document["document_name"]}</h4>`
+
+        if (document["price"] > 0)
+            html += `<p class="mb-2" style="color: rgb(2, 126, 176);">Mất phí</p>`
+        else
+            html += `<p class="mb-2" style="color: rgb(2, 126, 176);">Miễn phí</p>`
+
+        html += `       <div class="p-0 mb-1 bd-highlight">
+                            <i class="bi bi-hand-thumbs-up me-1"></i><span class="me-3"> ${calculateLikePercentage(document["evaluate"])}%</span>
+                            <i class="bi bi-eye me-1"></i><span> ${document["view_count"]}</span>
+                        </div>
+                        <div class="d-flex flex-row bd-highlight mb-3">
+                            <div onclick="clickDelete('${document["document_name"]}', '${document["id"]}', '${convertDateTimeToGMT7(document["creation_date"])}')" style="cursor: pointer">
+                                <i class="bi bi-trash"></i><span class="me-4"> Xóa</span>
+                            </div>
+                            <div onclick="clickUpdate(${document["id"]})" style="cursor: pointer">
+                                <i class="bi bi-pen-fill me-1"></i><span> Sửa</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 ps-0">
+                        <p class="text-end">Ngày tải lên: ${convertDateTimeToGMT7(document["creation_date"])}</p>
+                    </div>
+                </div>`
+
+        return html;
+    }
+
+    function convertDateTimeToGMT7(datetime){
+        date = new Date(datetime)
+
+        const formattedDate = date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+
+        const formattedTime = date.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        return `${formattedDate} ${formattedTime}`;
+    }
+
+    function calculateLikePercentage(evaluate){
+        var sum = 0;
+        var like = 0;
+
+        evaluate.forEach(data => {
+            if(data === "like"){
+                sum += 1;
+                like += 1;
+            }
+            else if(data === "dislike"){
+                sum += 1;
+            }
+        });
+
+        if(sum == 0)
+            return 0;
+
+        var result = like / sum * 100
+        if (isFloat(result))
+            return result.toFixed(2)
+
+        return result;
+    }
+
+    function isFloat(n){
+        return Number(n) === n && n % 1 !== 0;
+    }
+
+    async function clickUpdate(id){
+        var url = baseURL + "/document/" + id + "/show"
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0){
+                document.getElementById("label-document").innerHTML = "Chỉnh sửa thông tin tài liệu"
+                var divDeXuat = document.getElementById("all-document")
+                divDeXuat.innerHTML = appendDocument(result.data["id"], result.data["document_name"], 
+                                    result.data["price"], result.data["image"], result.data["categories"], 
+                                    result.data["description"])
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function appendDocument(document_id, document_name, price, image, categories, description) {
+        const html = `
+            <div class="app__file__content">
+                <div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div>
+                                        <div class="mb-4 d-flex justify-content-center">
+                                            <img id="selectedImage" src="${image}"
+                                            alt="example placeholder" style="width: 180px; height: 180px" />
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <div class="btn btn-primary btn-rounded">
+                                                <label class="form-label text-white m-1" for="customFile">Chọn ảnh</label>
+                                                <input type="file" class="form-control d-none" id="customFile" onchange="displaySelectedImage(event, 'selectedImage')" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-2">
+                                            <h6 class="mb-0">Tên tài liệu</h6>
+                                        </div>
+                                        <div class="col-sm-10 text-secondary">
+                                            <input id="name-doc" type="text" class="form-control" value="${document_name}" disabled="">
+                                            <div id="name-doc-error" class="invalid-feedback mb-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-2">
+                                            <h6 class="mb-0">Danh mục</h6>
+                                        </div>
+                                        <div id="root-select" class="col-sm-10 text-secondary">
+                                            <select id="danhmuc" class="form-select" aria-label="Default select example" onchange="changeDanhMuc('${document_id}')">
+                                                <option selected>--Danh mục--</option>
+                                            </select>
+                                            <select id="danhmuc2" class="form-select mt-2" aria-label="Default select example">
+                                                <option selected>--Danh mục--</option>
+                                            </select>
+                                            <div id="danhmuc-error" class="invalid-feedback mb-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-2">
+                                            <h6 class="mb-0">Mô tả</h6>
+                                        </div>
+                                        <div class="col-sm-10 text-secondary">
+                                            <textarea id="mota" type="text" class="form-control" value="">${description}</textarea>
+                                            <div id="mota-error" class="invalid-feedback mb-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-2">
+                                            <h6 class="mb-0">Giá bán</h6>
+                                        </div>
+                                        <div class="col-sm-10 text-secondary">
+                                            <select id="giaban" class="form-select" aria-label="Default select example" onchange="changeMoney()">
+                                                <option>Chọn giá bán</option>
+                                                <option value="free">Miễn phí</option>
+                                                <option value="20000">20.000 đ</option>
+                                                <option value="50000">50.000 đ</option>
+                                                <option value="100000">100.000 đ</option>
+                                                <option value="150000">150.000 đ</option>
+                                                <option value="200000">200.000 đ</option>
+                                                <option selected value="${price}">${price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</option>
+                                                <option value="option">Tự ra giá</option>
+                                            </select>
+                                            <input id="option-money" type="text" class="form-control mt-2" value="" style="display: none">
+                                            <div id="giaban-error" class="invalid-feedback mb-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="text-secondary text-end">
+                                            <input id="save" type="button" class="btn px-4" value="Quay lại" onclick="clickReturn()">
+                                            <input id="save" type="button" class="btn btn-primary px-4" value="Lưu thay đổi" onclick="saveDocument('${document_id}')">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+
+        getDanhMuc(`danhmuc`, null, categories[0]["id"])
+        getDanhMuc(`danhmuc2`, categories[1]["parent_id"], categories[1]["id"])
+        
+        return html;
+    }
+
+    function changeMoney(){
+        var value = document.getElementById(`giaban`).value;
+        var ipnOptionSelect = document.getElementById(`option-money`)
+        if(value === "option"){
+            ipnOptionSelect.style.display = 'block';
+        }
+        else{
+            ipnOptionSelect.style.display = 'none';
+        }
+    }
+
+    var imageFile = null;
+
+    function displaySelectedImage(event, elementId) {
+        const selectedImage = document.getElementById(elementId);
+        const fileInput = event.target;
+
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                selectedImage.src = e.target.result;
+            };
+
+            reader.readAsDataURL(fileInput.files[0]);
+            imageFile = fileInput.files[0];
+        }
+    }
+
+    async function getDanhMuc(danhMucId, parentId = null, existedDanhMuc=null){
+        url = baseURL + "/categories/"
+        if(parentId){
+            url += "?parentId=" + parentId
+        }
+
+        try {
+            const result = await getData(url);
+            if (result.code === -1){
+                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+            }
+            else{
+                addOptions(result.data, danhMucId, existedDanhMuc)
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function changeDanhMuc(){
+        danhmuc = document.getElementById(`danhmuc`)
+        danhmuc2 = document.getElementById(`danhmuc2`)
+
+        parentId = danhmuc.options[danhmuc.selectedIndex].dataset.optionId;
+        getDanhMuc(`danhmuc2`, parentId)
+        document.getElementById(`danhmuc2`).style.display = 'block'
+    }
+
+    function addOptions(categories, danhMucId, existedDanhMuc){
+        var x = document.getElementById(`${danhMucId}`);
+        html = "";
+
+        html += `<option selected>--Danh mục--</option>`
+
+        if(categories.length <= 0)
+            x.style.display = 'none'
+
+        categories.forEach(categorie => {
+            if (categorie.id === existedDanhMuc)
+                html += `<option selected value='${categorie.name}' data-option-id='${categorie.id}'>${categorie.name}</option>`
+            else
+                html += `<option value='${categorie.name}' data-option-id='${categorie.id}'>${categorie.name}</option>`
+        }); 
+
+        x.innerHTML = html;
+    }
+
+    let fields_update = () => {
+        return {
+            description:{
+                input: document.getElementById(`mota`),
+                error: document.getElementById(`mota-error`),
+            },
+            price: {
+                input: document.getElementById(`giaban`),
+                error: document.getElementById(`giaban-error`),
+            },
+            categories: {
+                input: document.getElementById(`danhmuc`),
+                error: document.getElementById(`danhmuc-error`),
+            }
+        };
+    };
+
+    async function saveDocument(document_id){
+        var url = baseURL + '/document/update_document'
+
+        resetErrorInputOfFormUpdate();
+
+        var price = document.getElementById(`giaban`).value;
+        var ipnOptionSelect = document.getElementById(`option-money`);
+        if(price === "option"){
+            price = ipnOptionSelect.value; 
+        }
+
+        const formData = new FormData();
+        formData.append('document_id', document_id);
+        formData.append('description', document.getElementById(`mota`).value);
+        formData.append('price', price);
+
+        var arr = {'categories': [document.getElementById(`danhmuc`).value, document.getElementById(`danhmuc2`).value]};
+        formData.append('categories', JSON.stringify(arr));
+
+        if(imageFile !== null)
+            formData.append('image', imageFile);
+
+        try {
+            const result = await postFormData(url, formData);
+            if (result.code === -2){
+                const errors = result.data;
+                Object.keys(errors).forEach((key) => {
+                    fields_update()[key]['input'].classList.add('is-invalid');
+                    fields_update()[key]['error'].innerHTML = errors[key][0];
+                });
+            }
+            else if (result.code === -1){
+                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+            }
+            else if(result.code === 0){
+                alert("Cập nhật tài liệu thành công");
+            }
+            else{
+                alert(result.message);
+                window.location.replace(baseURL + "/api/v1");
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function resetErrorInputOfFormUpdate(){
+        fields = fields_update();
+
+        for(let key in fields){
+            fields[key]['input'].classList.remove('is-invalid');
+        }
+    }
+
+    function clickDelete(document_name, document_id, datetime_create){
+        var form_confirm_delete = document.getElementById('form-confirm-delete');
+        form_confirm_delete.style.visibility = 'visible';
+
+        var content = document.getElementById("content-form-confirm-delete");
+        content.innerHTML = `<h5> Bạn đang tiến hành xóa tài liệu </h5>
+                            <h4 style="color: rgb(2, 126, 176);"> ${document_name}</h4>
+                            <p>Ngày tạo tài liệu: <span class="fw-bold"> ${ datetime_create } </span></p>`
+
+        var footer = document.getElementById("form-confirm-delete-footer");
+        footer.innerHTML = `<input class="btn btn-secondary my-3 rounded" name="submit" type="button" onclick="clickCancelDelete()" value="Hủy">
+                            <input class="btn btn-primary my-3 rounded" name="submit" type="button" onclick="clickConfirmDelete(${document_id})" value="Xác nhận">`;
+    }
+
+    async function clickConfirmDelete(document_id){
+        var url = baseURL + "/document/" + document_id + "/delete";
+
+        try {
+            const result = await deleteData(url);
+            if (result.code === 0){
+                clickCloseConfirmDelete();
+                document.getElementById("document-" + result.data["id"]).style.display = "none"
+            }
+
+            alert(result.message);
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function clickCancelDelete(){
+        var form_confirm_delete = document.getElementById('form-confirm-delete');
+        form_confirm_delete.style.visibility = 'hidden';
+    }
+
+    function clickCloseConfirmDelete(){
+        var form_confirm_delete = document.getElementById('form-confirm-delete');
+        form_confirm_delete.style.visibility = 'hidden';
+    }
+
+    function clickReturn(){
+        window.location.href = "/user/quan-ly-tai-lieu";
+    }
+
+</script>
+{% endblock %}

@@ -317,13 +317,10 @@
     function changeDanhMuc(fileId){
         danhmuc = document.getElementById(`danhmuc-${fileId}`)
         danhmuc2 = document.getElementById(`danhmuc2-${fileId}`)
-        arrayOfOptions = danhmuc2.childNodes[1].childNodes;
 
-        if(arrayOfOptions.length <= 1){
-            parentId = danhmuc.options[danhmuc.selectedIndex].dataset.optionId;
-            getDanhMuc(`danhmuc2-${fileId}`, parentId)
-            document.getElementById(`danhmuc2-${fileId}`).style.display = 'block'
-        }
+        parentId = danhmuc.options[danhmuc.selectedIndex].dataset.optionId;
+        getDanhMuc(`danhmuc2-${fileId}`, parentId)
+        document.getElementById(`danhmuc2-${fileId}`).style.display = 'block'
     }
 
     function changeMoney(fileId){
@@ -337,17 +334,21 @@
         }
     }
 
-    function addOptions(categories, fileId){
-        var x = document.getElementById(`${fileId}`);
+    function addOptions(categories, danhMucId){
+        var x = document.getElementById(`${danhMucId}`);
+        html = "";
+        html += `<option selected>--Danh mục--</option>`
+
+        if(categories.length <= 0)
+            x.style.display = 'none'
 
         categories.forEach(categorie => {
-            var option = document.createElement("option");
-            option.value = categorie.name;
-            option.text = categorie.name;
-            option.dataset.optionId = categorie.id;
-            x.add(option);
+            html += `<option value='${categorie.name}' data-option-id='${categorie.id}'>${categorie.name}</option>`
         }); 
+
+        x.innerHTML = html;
     }
+
 
     async function getDanhMuc(fileId, parentId = null){
         url = baseURL + "/categories/"

@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required
 from flask_login import current_user
 from app.auth.forms import LoginForm, RegisterForm, ResetPasswordRequestForm
 from app.document import bp
-from app.document.forms import UploadDocumentForm
+from app.document.forms import UpdateDocumentForm, UploadDocumentForm
 from app.document.services import DocumentsDataService
 from constant import DocumentS3
 from ultil.custom_random import generate_random_string
@@ -193,3 +193,57 @@ def download_document(id):
 
     return send_file(f"./download_files/{document_name}")
 
+@bp.route("/", methods=['GET'])
+@jwt_required()
+def get_all_document():
+    document, _, msg = DocumentsDataService().get_by_account_id(current_user.id)
+
+    if document is not None:
+        return jsonify({'message': 'Lấy tài liệu thành công', 'code': 0, 'data': document})
+
+    return jsonify({'message': msg, 'code': -1, 'data': None})
+
+@bp.route("/<int:id>/show", methods=['GET'])
+def get_by_id_tuple(id):
+    document, _, msg = DocumentsDataService().get_by_id_tuple(id)
+
+    if document is not None:
+        return jsonify({'message': 'Lấy tài liệu thành công', 'code': 0, 'data': document})
+
+    return jsonify({'message': msg, 'code': -1, 'data': None})
+
+@bp.route('/update_document', methods=['POST'])
+def update_document():
+    imgs = request.files.getlist("image")
+    fileName = ""
+
+    for f in imgs: 
+        fileName = f"anh{generate_random_string(8)}.{f.filename.split('.')[-1]}"
+        path_img = os.path.join(PATH, fileName)
+        f.save(path_img)
+        f.close()
+
+    updateDocument = UpdateDocumentForm(meta={'csrf': False})
+    _categories = json.loads(request.form.get('categories'))["categories"]
+    for entry in _categories:
+        updateDocument.categories.append_entry(entry)
+
+    if updateDocument.validate():        
+        document, _, msg = DocumentsDataService().update_info(updateDocument.document_id.data, updateDocument.data, "/static/images/" + fileName)
+
+        if document is not None:
+            return jsonify({'message': 'Cập nhật tài liệu lên thành công', 'code': 0, 'data': document})
+        else:
+            return jsonify({'message': msg, 'code': -1, 'data': None})
+        
+    return jsonify({'message': 'invalid input', 'code': -2, 'data': updateDocument.errors})
+
+@bp.route('/<document_id>/delete', methods=['DELETE'])
+def delete(document_id):
+    document, _, msg = DocumentsDataService().delete(document_id)
+
+    if document is not None:
+        return jsonify({'message': 'Xóa tài liệu lên thành công', 'code': 0, 'data': document})
+    else:
+        return jsonify({'message': msg, 'code': -1, 'data': None})
+        

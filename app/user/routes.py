@@ -48,3 +48,10 @@ def update_download():
     if user is None:
         return jsonify({'message': 'Cập nhật tài khoản không thành công', 'code': -1, 'data': None})
     return jsonify({'message': 'Cập nhật tài khoản thành công', 'code': 0, 'data': user})
+
+@bp.route("/quan-ly-tai-lieu", methods=["GET"])
+def manager_document():
+    register = RegisterForm(meta={'csrf': False})
+    login = LoginForm(meta={'csrf': False})
+    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
+    return render_template('user/manager_doc.html', title='User',form=register, formlogin=login, formresetpw=resetpw)

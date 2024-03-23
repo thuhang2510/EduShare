@@ -1,4 +1,3 @@
-import base64
 from datetime import datetime
 from flask_login import UserMixin
 from sqlalchemy import desc
@@ -214,6 +213,10 @@ class Categories(db.Model):
 
         return data
     
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+    
 class Documents(db.Model):
     __tablename__ = 'documents'
 
@@ -330,12 +333,29 @@ class Documents(db.Model):
         return query.all()
     
     @classmethod
-    def find_by_id_tuple(cls, _id):
+    def find_by_id_with_account(cls, _id):
         return cls.query.join(Account).filter(cls.id==_id, cls.status==True).add_column(Account.fullname).first()
+    
+    @classmethod
+    def find_by_id_tuple(cls, _id):
+        return cls.query.\
+            join(cls.categories, isouter=True).\
+            with_entities(cls.id, cls.document_name, cls.price, cls.image, cls.description).\
+            filter(cls.id==_id, cls.status==True).\
+            add_entity(Categories).\
+            all()
     
     @classmethod
     def find_by_id(cls, _id):
         return cls.query.join(Account).filter(cls.id==_id, cls.status==True).first()
+    
+    @classmethod
+    def find_by_account_id(cls, _account_id):
+        return cls.query.\
+            join(cls.evaluate, isouter=True).\
+            with_entities(cls.id, cls.document_name, cls.view_count, cls.download_count, cls.creation_date, cls.price, cls.image ,Evaluate.type).\
+            filter(cls.account_id==_account_id, cls.status==True).\
+            all()
     
     @classmethod
     def find_by_purchase(cls, _id, _account_id):
@@ -382,6 +402,14 @@ class DocumentCategories(db.Model):
         'documents.id', ondelete='CASCADE'))
     category_id = db.Column(db.Integer(), db.ForeignKey(
         'categories.id', ondelete='CASCADE'))
+    
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    @classmethod
+    def find(cls, _document_id, _category_id):
+        return cls.query.filter_by(document_id=_document_id, category_id=_category_id).first()
 
 class Evaluate(db.Model):
     __tablename__ = 'evaluate'
