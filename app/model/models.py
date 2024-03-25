@@ -153,7 +153,7 @@ class Transaction(db.Model):
         self.account_id = account_id
 
     def set_datetime_from_timestamp(self, timestamp):
-        self.date = datetime.datetime.fromtimestamp(timestamp/1000.0)
+        self.date = datetime.fromtimestamp(timestamp/1000.0)
 
     def set_datetime(self, datetime):
         self.date = datetime
