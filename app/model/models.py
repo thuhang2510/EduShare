@@ -158,11 +158,8 @@ class Transaction(db.Model):
     def set_datetime(self, datetime):
         self.date = datetime
 
-    def set_wallet_balance(self, result):
+    def set_wallet_balance(self):
         user = Account.find_by_id(self.account_id)
-
-        if result != 0:
-            self.wallet_balance = user.coin
 
         if self.type == TransactionChoices.RECHARGE.value or self.type == TransactionChoices.RECEIVE_MONEY.value:
             self.wallet_balance = user.coin + self.amount
