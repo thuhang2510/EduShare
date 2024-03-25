@@ -21,7 +21,7 @@ def guiMail(id):
         result = request.json.get("resultCode")
         transaction = Transaction(information, type, amount, result, user.id)
         transaction.set_datetime_from_timestamp(request.json.get("responseTime"))
-        transaction.set_wallet_balance()
+        transaction.set_wallet_balance(int(result))
         transaction.save_to_db()
 
         send_email_field(user, transaction)
