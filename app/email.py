@@ -14,7 +14,8 @@ def send_email(subject, recipients, html_body,
     msg.html = html_body
     if attachments:
         for attachment in attachments:
-            msg.attach(*attachment)
+            with current_app.open_resource(attachment[0]) as fp:
+                msg.attach(attachment[0], attachment[1], fp.read())
     if sync:
         mail.send(msg)
     else:

@@ -1,23 +1,53 @@
+from datetime import datetime
 import os
 from flask import jsonify, render_template, request, redirect, json, send_file, send_from_directory
 from flask_jwt_extended import jwt_required
 from flask_login import current_user
 from app.auth.forms import LoginForm, RegisterForm, ResetPasswordRequestForm
 from app.document import bp
+from app.document.email import send_report
 from app.document.forms import UpdateDocumentForm, UploadDocumentForm
 from app.document.services import DocumentsDataService
+from app.auth.services import UserDataService
 from constant import DocumentS3
 from ultil.custom_random import generate_random_string
-from ultil.file_helper import save
 from ultil.s3_helper import download, upload
 from app.extensions import uploader_permission
-from werkzeug.utils import secure_filename
 
 PATH = "app/static/images/"
 
 @bp.app_template_filter()
 def numberFormat(value):
     return format(int(value), ',d')
+
+@bp.app_template_filter()
+def get_only_document_name(document_name):
+    return document_name.rsplit(".", 1)[0]
+
+@bp.app_template_filter()
+def count_evaluate(values):
+    like = 0
+    dislike = 0
+
+    for value in values:
+        if(value.type == 'like'):
+            like += 1
+        elif (value.type == 'dislike'):
+            dislike += 1
+
+    if(like + dislike == 0):
+        return 0
+
+    result = like / (like + dislike) * 100
+
+    if (result.is_integer()):
+        return int(result)
+    
+    return "{:.2f}".format(result) 
+
+@bp.app_template_filter()
+def format_datetime(date):
+    return date.strftime("%d/%m/%Y %H:%M:%S")
 
 @bp.route("/upload", methods=["GET"])
 def index():
@@ -196,7 +226,7 @@ def download_document(id):
 @bp.route("/", methods=['GET'])
 @jwt_required()
 def get_all_document():
-    document, _, msg = DocumentsDataService().get_by_account_id(current_user.id)
+    document, _, msg = DocumentsDataService().get_by_account_id_with_evaluate(current_user.id)
 
     if document is not None:
         return jsonify({'message': 'Lấy tài liệu thành công', 'code': 0, 'data': document})
@@ -205,7 +235,7 @@ def get_all_document():
 
 @bp.route("/<int:id>/show", methods=['GET'])
 def get_by_id_tuple(id):
-    document, _, msg = DocumentsDataService().get_by_id_tuple(id)
+    document, _, msg = DocumentsDataService().get_by_id_tuple_with_categories(id)
 
     if document is not None:
         return jsonify({'message': 'Lấy tài liệu thành công', 'code': 0, 'data': document})
@@ -246,4 +276,19 @@ def delete(document_id):
         return jsonify({'message': 'Xóa tài liệu lên thành công', 'code': 0, 'data': document})
     else:
         return jsonify({'message': msg, 'code': -1, 'data': None})
+    
+@bp.route('/<document_id>/report', methods=['POST'])
+def report(document_id):
+    files = request.files.getlist("file") 
+
+    file_path = os.path.join("app/report_files", files[0].filename)
+    files[0].save(file_path)
+
+    document, _, _ = DocumentsDataService().get_by_id_with_account(document_id)
+    user, _, _ = UserDataService().get_by_id(current_user.id)
+
+    data, code, msg = send_report(document, user, "admin@gmail.com", request.form['content'], ('report_files/' + files[0].filename, "application/pdf"))
+    os.remove(file_path)
+
+    return jsonify({'message': msg, 'code': code, 'data': data})
         

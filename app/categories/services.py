@@ -30,3 +30,13 @@ class CategoriesDataService():
             return categories, 0, "Get categories success"
         except Exception as e:
             return None, -1, "Get categories fail " + str(e)
+        
+    def get_by_document_id(self, documet_id):
+        try:
+            categories =  Categories.find_by_document_id(documet_id)
+            if categories is None:
+                return None, -1, "Get categories fail"
+            
+            return categories, 0, "Get categories success"
+        except Exception as e:
+            return None, -1, "Get categories fail " + str(e)

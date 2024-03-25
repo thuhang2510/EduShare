@@ -1,4 +1,6 @@
 from datetime import datetime
+from app.categories.services import CategoriesDataService
+from app.evaluate.services import EvaluateDataService
 from app.model.models import Documents, Categories, DocumentCategories
 
 class DocumentsDataService():
@@ -120,7 +122,7 @@ class DocumentsDataService():
         except Exception as e:
             return None, -1, "Get document fail"
         
-    def get_by_account_id(self, account_id):
+    def get_by_account_id_with_evaluate(self, account_id):
         try:
             documents = Documents.find_by_account_id(account_id)
             
@@ -137,7 +139,7 @@ class DocumentsDataService():
                                     "creation_date": item[4], 
                                     "price": item[5], 
                                     "image": item[6],
-                                    "evaluate": []})
+                                    "evaluate": [evaluate]})
                 else:
                     rea[indx][1].append(evaluate)
                     results[indx]["evaluate"] = rea[indx][1]
@@ -153,9 +155,9 @@ class DocumentsDataService():
             
         return False, -1
     
-    def get_by_id_tuple(self, id):
+    def get_by_id_tuple_with_categories(self, id):
         try:
-            documents = Documents.find_by_id_tuple(id)
+            documents = Documents.find_by_id_tuple_with_categories(id)
 
             results = {}
             index = 0
@@ -174,6 +176,17 @@ class DocumentsDataService():
                 index += 1
                         
             return results, 0, "Get document success"
+        except Exception as e:
+            return None, -1, "Get document fail"
+        
+    def get_by_id_with_account(self, id):
+        try:
+            document = Documents.find_by_id_tuple_with_account(id)
+            
+            keys = ('id', 'document_name', 'description', 'view_count', 'download_count', 'price', 'type', 'account_id', 'image', 'fullname', 'email')
+            
+            result = dict(zip(keys, document))
+            return result, 0, "Get document success"
         except Exception as e:
             return None, -1, "Get document fail"
         
@@ -217,3 +230,14 @@ class DocumentsDataService():
             return documents.to_dict(), 0, "Delete document success"
         except Exception as e:
             return None, -1, "Delete document fail"
+    
+    def get_by_account_id_with_paginate(self, account_id, page, type, keyword):
+        try:
+            documents = Documents.find_by_account_id_with_paginate(account_id, page, 20, type, keyword)
+
+            if (documents != None):
+                return documents, 0, "Get document success"
+            
+            return None, -1, "Get document fail"
+        except Exception as e:
+            return None, -1, "Get document fail"

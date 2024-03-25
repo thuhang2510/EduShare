@@ -81,7 +81,7 @@
                     <button type="button" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-share-fill"></i></button>
                 </div>
                 <div class="p-2 bd-highlight">
-                    <button id="doc_dislike" type="button" class="btn btn-danger rounded-pill" onclick="reportDocument()"><i class="bi bi-hand-thumbs-down"></i> Báo cáo</button>
+                    <button id="doc_dislike" type="button" class="btn btn-danger rounded-pill" onclick="reportDocument(`{{ document['id'] }}`)"><i class="bi bi-flag"></i> Báo cáo</button>
                 </div>
               </div>
             <div id="pdf-container" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="10" style="width:100%;height:690px;overflow-y:scroll; background-color: #f8f9fa;" onscroll="scrollPage()">
@@ -147,6 +147,29 @@
       </div>
       <div>
         <input class="btn btn-primary w-100 my-3 rounded-pill" name="submit" type="button" onclick="clickConfirmPayment(`{{ document['id'] }}`, `{{ document['price'] }}`, `{{ document['account_id'] }}`)" value="Đồng ý">
+      </div>
+    </div> 
+  </div>
+</div>
+
+<div id="form-report" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
+    <div class="container d-flex justify-content-center" style="position: fixed;">   
+    <div class="register bg-white col-xl-6 p-4 rounded-3">
+      <div class="d-flex justify-content-end">
+        <button id="close-form-login" type="button" class="btn-close text-right" onclick="clickCloseReport()"></button>
+      </div>
+      <h3 class="text-center mb-3" style="color: rgb(2, 126, 176)">Bạn hãy chắc chắn khi báo xấu tài liệu này</h3>
+      <div id="content-form-report" class="py-2">
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label h5">Nội dung</label>
+            <textarea id="form-report-content" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="formFile" class="form-label h5">Tài liệu</label>
+            <input class="form-control" type="file" id="form-report-file">
+        </div>
+      </div>
+      <div id="form-report-footer" class="text-center">
       </div>
     </div> 
   </div>
@@ -870,6 +893,37 @@
         }
         else {
             alert("Có lỗi xảy ra hãy thử lại sau");
+        }
+    }
+
+    function reportDocument(document_id){
+        document.getElementById("form-report").style.visibility = "visible";
+        document.getElementById("form-report-footer").innerHTML = `<input class="btn btn-primary col-3 rounded" name="submit" type="button" onclick="clickSendReport('${document_id}')" value="Gửi">`;
+
+    }
+
+    function clickCloseReport(){
+        document.getElementById("form-report").style.visibility = "hidden";
+    }
+
+    async function clickSendReport(document_id){
+        url = baseURL + "/document/" + document_id + "/report"
+
+        const data = new FormData();
+        data.append("content", document.getElementById("form-report-content").value)
+        data.append("file", document.getElementById("form-report-file").files[0]);     
+
+        try {
+            const result = await postFormData(url, data);
+            if (result.code === 0){
+                alert("Đã gửi báo cáo. Xin hãy đợi chúng tôi xử lý");
+                clickCloseReport();
+            }
+            else {
+                alert("Có lỗi xảy ra hãy thử lại sau");
+            }
+        } catch (error) {
+            console.log(error.message);
         }
     }
 </script>

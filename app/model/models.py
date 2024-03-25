@@ -1,8 +1,9 @@
 from datetime import datetime
 from flask_login import UserMixin
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.sql import extract
 
 from constant import TransactionChoices
 
@@ -85,6 +86,10 @@ class Account(UserMixin, db.Model):
     @classmethod
     def find_by_id(cls, _id):
         return cls.query.filter_by(id=_id, status=True).first()
+    
+    @classmethod
+    def find_by_id_tuple(cls, _id):
+        return cls.query.with_entities(cls.id, cls.fullname, cls.email, cls.address, cls.coin).filter_by(id=_id, status=True).first()
 
     def save_to_db(self):
         db.session.add(self)
@@ -167,6 +172,50 @@ class Transaction(db.Model):
     def get_amount(self):
         return format(self.amount, ',d')
     
+    @classmethod
+    def get_by_account_id_with_paginate(cls, _account_id, page, per_page):
+        return cls.query.order_by(desc(cls.date))\
+                        .filter(cls.account_id == _account_id)\
+                        .paginate(page=page, per_page=per_page)
+    
+    @classmethod
+    def get_month_stats(cls, _account_id, year):
+        return cls.query.with_entities(extract('month', cls.date), func.sum(cls.amount))\
+                    .order_by(cls.date)\
+                    .filter(cls.account_id==_account_id, extract('year', cls.date)==year, cls.type != "Mua tài liệu", cls.result==0)\
+                    .group_by(extract('month', cls.date))\
+                    .all()
+    
+    @classmethod
+    def get_total(cls, account_id, type):
+        return cls.query.with_entities(func.sum(cls.amount))\
+                    .filter(cls.account_id==account_id, cls.type==type, cls.result==0)\
+                    .scalar()
+    
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'date': self.date,
+            'information': self.information,
+            'type': self.type,
+            'status': self.status,
+            'amount': self.amount,
+            'wallet_balance': self.wallet_balance,
+            'result': self.result,
+            'account_id': self.account_id
+        }
+
+        return data
+
+    @classmethod
+    def list_to_dict(cls, transactions):
+        data = []
+
+        for transaction in transactions:
+            data.append(transaction.to_dict())
+
+        return data
+    
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -194,6 +243,10 @@ class Categories(db.Model):
     @classmethod
     def find_all(cls):
         return cls.query.all()
+    
+    @classmethod
+    def find_by_document_id(cls, _document_id):
+        return cls.query.join(DocumentCategories).filter(DocumentCategories.document_id == _document_id).all()
     
     def to_dict(self):
         data = {
@@ -337,13 +390,22 @@ class Documents(db.Model):
         return cls.query.join(Account).filter(cls.id==_id, cls.status==True).add_column(Account.fullname).first()
     
     @classmethod
-    def find_by_id_tuple(cls, _id):
+    def find_by_id_tuple_with_categories(cls, _id):
         return cls.query.\
             join(cls.categories, isouter=True).\
             with_entities(cls.id, cls.document_name, cls.price, cls.image, cls.description).\
             filter(cls.id==_id, cls.status==True).\
             add_entity(Categories).\
             all()
+    
+    @classmethod
+    def find_by_id_tuple_with_account(cls, _id):
+        return cls.query.\
+            with_entities(cls.id, cls.document_name, cls.description, cls.view_count, cls.download_count, cls.price, cls.type, cls.account_id, cls.image).\
+            join(Account).\
+            filter(cls.id==_id, cls.status==True).\
+            add_columns(Account.fullname, Account.email).\
+            first()
     
     @classmethod
     def find_by_id(cls, _id):
@@ -356,6 +418,20 @@ class Documents(db.Model):
             with_entities(cls.id, cls.document_name, cls.view_count, cls.download_count, cls.creation_date, cls.price, cls.image ,Evaluate.type).\
             filter(cls.account_id==_account_id, cls.status==True).\
             all()
+    
+    @classmethod
+    def find_by_account_id_with_paginate(cls, _account_id, page, per_page, type, keyword):
+        query = cls.query.filter(cls.account_id==_account_id, cls.status==True)
+            
+        if type == "free":
+            query = query.filter(cls.price==0)
+        elif type == "pay_fees":
+            query = query.filter(cls.price>0)
+
+        if keyword != "":
+            query = query.filter(cls.document_name.ilike('%' + keyword + '%'))
+        
+        return query.paginate(page=page, per_page=per_page) 
     
     @classmethod
     def find_by_purchase(cls, _id, _account_id):
@@ -476,6 +552,10 @@ class Evaluate(db.Model):
     @classmethod
     def find(cls, _document_id, _account_id):
         return cls.query.filter_by(document_id=_document_id, account_id=_account_id).all()
+    
+    @classmethod
+    def find_by_document_id_with_tuple(cls, _document_id):
+        return cls.query.with_entities(cls.type).filter_by(document_id=_document_id).all()
     
     def save_to_db(self):
         db.session.add(self)

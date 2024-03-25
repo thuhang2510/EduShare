@@ -48,3 +48,10 @@ class UserDataService():
             return user.to_dict(True), 0, "Update password success"
         except Exception as e:
             return None, -1, "Update password fail " + str(e)
+        
+    def get_by_id_tuple(self, id):
+        try:
+            user = Account.find_by_id_tuple(id)
+            return user, 0, "Get user success"
+        except Exception as e:
+            return None, -1, "Get user fail " + str(e)

@@ -12,10 +12,20 @@ class PurchaseDataService():
             purchase.document_id = document_id
             purchase.account_id = current_user_id
             purchase.amount = amount
+
+            buyer_transaction = Transaction(
+                information = 'Mua tài liệu: ' + document.document_name ,
+                type = 'Mua tài liệu',
+                amount = amount,
+                result = 'Thành công',
+                account_id = account_id
+            )
+            buyer_transaction.wallet_balance = current_user.coin - int(amount)
             current_user.coin -= int(amount)
             
             db.session.add(current_user)
             db.session.add(purchase)
+            db.session.add(buyer_transaction)
 
             seller_transaction = Transaction(
                 information = 'Bán tài liệu: ' + document.document_name ,
