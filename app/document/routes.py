@@ -25,6 +25,10 @@ def get_only_document_name(document_name):
     return document_name.rsplit(".", 1)[0]
 
 @bp.app_template_filter()
+def format_datetime(datetime):
+    return datetime.strftime('%d-%m-%Y %H:%M:%S')
+
+@bp.app_template_filter()
 def count_evaluate(values):
     like = 0
     dislike = 0

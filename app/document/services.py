@@ -94,7 +94,7 @@ class DocumentsDataService():
     
     def update_view(self, document_id):
         try:
-            documents = Documents.find_by_id(document_id)
+            documents = Documents.find_by_id_and_status(document_id)
             documents.view_count += 1
 
             documents.save_to_db()
@@ -105,7 +105,7 @@ class DocumentsDataService():
         
     def update_download(self, document_id):
         try:
-            documents = Documents.find_by_id(document_id)
+            documents = Documents.find_by_id_and_status(document_id)
             documents.download_count += 1
 
             documents.save_to_db()
@@ -192,7 +192,7 @@ class DocumentsDataService():
         
     def update_info(self, document_id, data, direction_file):
         try:
-            documents = Documents.find_by_id(document_id)
+            documents = Documents.find_by_id_and_status(document_id)
             documents.description = data['description']
             documents.price = data['price']
             
@@ -222,7 +222,7 @@ class DocumentsDataService():
         
     def delete(self, document_id):
         try:
-            documents = Documents.find_by_id(document_id)
+            documents = Documents.find_by_id_and_status(document_id)
             documents.status = False
 
             documents.save_to_db()

@@ -17,7 +17,7 @@ def search_documents_route():
     query = request.args.get('query')
 
     documents, _, _ = DocumentsDataService().search_documents(page, query)
-    categories, _, _ = CategoriesDataService().get_all()
+    categories, _, _ = CategoriesDataService().get_all_with_tuple()
 
     return render_template('home/search.html', title='Tìm kiếm', form=register, 
                            formlogin=login, formresetpw=resetpw, categories=categories, documents=documents, query=query)

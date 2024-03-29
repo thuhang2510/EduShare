@@ -1,10 +1,12 @@
-from flask import jsonify, redirect, request
+from flask import flash, jsonify, redirect, render_template, request, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import BaseView, expose
 from flask_login import login_user, current_user, logout_user
+from markupsafe import Markup
 from app import db, admin
 from app.admin.email import send_email_field
-from app.model.models import Account, Permission
+from app.admin.forms import CreateCategoryForm, EditCategoryForm
+from app.model.models import Account, Permission, Categories, Documents
 from app.admin import bp
 from app.auth.services import UserDataService
 
@@ -20,8 +22,8 @@ class AccountView(ModelView):
     column_labels = dict(number='Số điện thoại', fullname='Họ và tên', permission='Quyền truy cập', status='Trạng thái', 
                          coin='Số tiền', number_download='SL tải', number_ask='SL hỏi', violation_count='SL vi phạm',
                          address='Địa chỉ', datetime_day_reset='Ngày bắt đầu', datetime_week_reset='Tuần bắt đầu')
-    form_excluded_columns = ('password_hash', 'transaction')
-    column_details_exclude_list = ('password_hash')
+    form_excluded_columns = ('password_hash', 'transaction', "evaluate", "purchase")
+    column_details_exclude_list = ('password_hash', "evaluate", "purchase")
     column_details_list = ('id', 'email', 'fullname', 'number', 'permission', 'status', 'coin', 'address', 
                    'number_download', 'number_ask', 'datetime_week_reset', 'datetime_day_reset', 'violation_count')
     column_editable_list = ('fullname', 'permission', 'status')
@@ -33,6 +35,9 @@ class AccountView(ModelView):
             'readonly': True
         }
     }
+    edit_template = "/admin/edit.html"
+    list_template = "/admin/list.html"
+    details_template = "/admin/detail.html"
 
     def is_accessible(self):
         return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
@@ -49,6 +54,10 @@ class PermissionView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
     
+    edit_template = "/admin/edit.html"
+    list_template = "/admin/list.html"
+    details_template = "/admin/detail.html"
+    
 class LogoutView(BaseView):
     @expose('/')
     def index(self):
@@ -58,8 +67,141 @@ class LogoutView(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated
 
+class DocumentView(ModelView):
+    column_display_pk = True
+    can_view_details = True
+    can_create = False
+    can_edit = True
+    can_delete = False
+    column_searchable_list = ('document_name', 'id')
+    column_list = ("id", "document_name", "type", "description",
+                    "price", "download_count", "view_count", "image", "status")
+    column_details_list = ("id", "document_name", "type", "description",
+                    "price", "download_count", "view_count", "image", "creation_date", "modified_date", "status", "account_id")
+    column_labels = dict(document_name='Tên tài liệu', type='Loại tài liệu', description='Mô tả',
+                         price='Giá bán', download_count='SL tải', view_count='SL xem', image='Ảnh',
+                         creation_date='Ngày tạo', modified_date='Ngày cập nhật', status='Trạng thái')
+    form_excluded_columns = ("price", "download_count", "view_count", "image", "creation_date", "modified_date", "categories", "evaluate", "purchase")
+    form_widget_args = {
+        'document_name': {
+            'readonly': True
+        },
+        'type': {
+            'readonly': True
+        },
+        'description': {
+            'readonly': True
+        }
+    }
+    edit_template = "/admin/edit.html"
+    list_template = "/admin/list.html"
+
+    def _format_image(view, context, model, name):
+        if not model.image:
+            return ''
+
+        return Markup(
+            '<img src="%s" width="90" height="90">' % model.image
+        )
+    
+    def _format_creation_date(view, context, model, name):
+        if not model.creation_date:
+            return ''
+
+        return Markup(
+            model.creation_date.strftime('%d-%m-%Y %H:%M:%S')
+        )
+
+    def _format_modified_date(view, context, model, name):
+        if not model.modified_date:
+            return ''
+
+        return Markup(
+            model.modified_date.strftime('%d-%m-%Y %H:%M:%S')
+        )
+
+    column_formatters = {
+        'image': _format_image,
+        'creation_date': _format_creation_date,
+        'modified_date': _format_modified_date
+    } 
+
+    def is_accessible(self):
+        return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
+    
+    @expose('/details/')
+    def deltails(self):
+        id = request.args.get("id")
+        document = Documents.find_by_id(id)
+        user = Account.find_by_id(document.account_id)
+        return self.render('/admin/documents/detail.html', document=document, user=user)
+    
+    def render(self, template, **kwargs):
+        self.extra_js = [url_for("static", filename="js/admin/detail.js")]
+
+        return super(DocumentView, self).render(template, **kwargs)
+    
+class CategoryView(BaseView):
+    @expose('/')
+    def index(self):
+        categories =  Categories.find_all()
+        return self.render('/admin/categories/index.html', categories=categories)
+    
+    @expose("/create", methods=["GET", "POST"])
+    def create(self):    
+        createCategory = CreateCategoryForm(meta={'csrf': False})
+        categories_parent = Categories.find_all_parent()
+
+        if request.method == 'GET':
+            return self.render('/admin/categories/new.html', form=createCategory, categories_parent=categories_parent)
+
+        category = None
+        if createCategory.validate():
+            category =  Categories()
+            category.name = createCategory.data["name"]
+            category.description = createCategory.data["description"]
+            category.parent_id = createCategory.data["parent_id"]
+            category.save_to_db()
+            flash("Tạo danh mục thành công")
+
+        return self.render('/admin/categories/new.html', form=createCategory, category=category, categories_parent=categories_parent)
+    
+    @expose("/details", methods=["GET"])
+    def detail(self):
+        id = request.args.get("id")
+        category = Categories.find_by_id(id)
+        category_parent = Categories.find_by_id(category.parent_id)
+
+        return self.render('/admin/categories/detail.html', category=category, category_parent=category_parent)
+    
+    @expose("/edit", methods=["GET", "POST"])
+    def edit(self):
+        id = request.args.get("id")
+
+        categories_parent = Categories.find_all_parent()
+        category = Categories.find_by_id(id)
+        editCategory = EditCategoryForm(meta={'csrf': False})
+        editCategory.id = id
+
+        if request.method == 'GET':
+            return self.render('/admin/categories/edit.html', form=editCategory, category=category, categories_parent=categories_parent)
+
+        if editCategory.validate():
+            category.name = editCategory.data["name"]
+            category.description = editCategory.data["description"]
+            category.parent_id = editCategory.data["parent_id"]
+            category.save_to_db()
+            flash("Cập nhật danh mục thành công")
+
+        return self.render('/admin/categories/edit.html', form=editCategory, category=category, categories_parent=categories_parent)
+    
+    def is_accessible(self):
+        return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
+
 admin.add_view(AccountView(Account, db.session, name="Người dùng"))
 admin.add_view(PermissionView(Permission, db.session, name="Quyền"))
+admin.add_view(DocumentView(Documents, db.session, name="Tài liệu"))
+admin.add_view(CategoryView(name="Danh mục", endpoint="categories"))
 admin.add_view(LogoutView(name="Đăng xuất"))
 
 @bp.route("/admin-login", methods=["POST"])

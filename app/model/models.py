@@ -237,7 +237,7 @@ class Categories(db.Model):
         return cls.query.filter_by(name=_name).first()
     
     @classmethod
-    def find_all_not_parent(cls):
+    def find_all_parent(cls):
         return cls.query.filter_by(parent_id=None).all()
     
     @classmethod
@@ -247,6 +247,10 @@ class Categories(db.Model):
     @classmethod
     def find_by_document_id(cls, _document_id):
         return cls.query.join(DocumentCategories).filter(DocumentCategories.document_id == _document_id).all()
+
+    @classmethod
+    def find_by_id(cls, category_id):
+        return cls.query.filter(cls.id == category_id).first()
     
     def to_dict(self):
         data = {
@@ -266,6 +270,11 @@ class Categories(db.Model):
 
         return data
     
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+    
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
@@ -274,16 +283,16 @@ class Documents(db.Model):
     __tablename__ = 'documents'
 
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    creation_date = db.Column(db.DateTime, default=datetime.utcnow)
-    modified_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
     document_name = db.Column(db.String(255))
     type = db.Column(db.String(5))
     description = db.Column(db.String(255))
-    view_count = db.Column(db.Integer, server_default='0')
-    download_count = db.Column(db.Integer, server_default='0')
     price = db.Column(db.Integer, server_default='0')
-    status = db.Column(db.Boolean(), nullable=False, server_default='1')
+    download_count = db.Column(db.Integer, server_default='0')
+    view_count = db.Column(db.Integer, server_default='0')
     image = db.Column(db.String(255))
+    creation_date = db.Column(db.DateTime, default=datetime.utcnow)
+    modified_date = db.Column(db.DateTime, onupdate=datetime.utcnow)    
+    status = db.Column(db.Boolean(), nullable=False, server_default='1')
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
         nullable=False)
     categories = db.relationship(
@@ -408,8 +417,12 @@ class Documents(db.Model):
             first()
     
     @classmethod
+    def find_by_id_and_status(cls, _id):
+        return cls.query.filter(cls.id==_id, cls.status==True).first()
+    
+    @classmethod
     def find_by_id(cls, _id):
-        return cls.query.join(Account).filter(cls.id==_id, cls.status==True).first()
+        return cls.query.filter(cls.id==_id).first()
     
     @classmethod
     def find_by_account_id(cls, _account_id):

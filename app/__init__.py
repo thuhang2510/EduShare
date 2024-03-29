@@ -48,7 +48,7 @@ def create_app(config_class=Config):
     app.register_blueprint(document_bp, url_prefix='/document')
 
     from app.categories import bp as categories_bp
-    app.register_blueprint(categories_bp, url_prefix='/categories')
+    app.register_blueprint(categories_bp, url_prefix='/categories', name="user_categories")
 
     from app.user import bp as user_bp
     app.register_blueprint(user_bp, url_prefix='/user')

@@ -1,0 +1,76 @@
+{% extends 'admin/base.html' %}
+
+{% block head_css %}
+{{ super() }}
+<style>
+    .container {
+        max-width: 100% !important;
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+</style>
+{% endblock %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+{% block body %}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a href="/admin/categories/" class="nav-link">Danh sách</a>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/categories/create" title="Tạo Hồ Sơ Mới" class="nav-link">Tạo</a>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/categories/edit?id={{category.id}}" title="Tạo Hồ Sơ Mới" class="nav-link active">Chỉnh sửa</a>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/categories/details?id={{category.id}}" title="Tạo Hồ Sơ Mới" class="nav-link">Chi tiết</a>
+    </li>
+</ul>
+<div class="table-responsive">
+    <form action="/admin/categories/edit?id={{category.id}}" method="POST" role="form" class="admin-form" enctype="multipart/form-data" style="margin-top: 35px;">
+        <fieldset>
+            <div class="form-group ">
+                {{ form.name.label() }}
+                <input class="form-control" id="name" maxlength="255" name="name" type="text" value="{{category.name}}">
+                {% if form.name.errors %}
+                    <ul class=errors>
+                        {% for error in form.name.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div class="form-group ">
+            <div class="form-group ">
+                {{ form.description.label }}
+                <input class="form-control" id="description" maxlength="255" name="description" type="text" value="{{category.description}}">
+            </div class="form-group ">
+            <div class="form-group ">
+                {{ form.parent_id.label }}
+                <select id="parent_id" name="parent_id" class="form-select form-control col-3" aria-label="Default select example">
+                    <option>Chọn danh mục cha</option>
+                    {% for category_parent in categories_parent%}
+                        {% if category_parent.id == category.parent_id %}
+                            <option value="{{category_parent.id}}" selected>{{category_parent.name}}</option>
+                        {% else %}
+                            <option value="{{category_parent.id}}">{{category_parent.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+        </fieldset>
+        <input type="submit" class="btn btn-primary" value="Lưu">
+    </form>
+</div>
+{% endblock %}

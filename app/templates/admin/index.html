@@ -1,5 +1,18 @@
 {% extends 'admin/base.html' %}
 
+{% block head_css %}
+{{ super() }}
+<style>
+    .container {
+        max-width: 100% !important;
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
 {% if current_user.is_authenticated %}
 <h1>Xin chào {{ current_user.fullname }}</h1>

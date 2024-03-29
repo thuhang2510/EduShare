@@ -3,7 +3,7 @@ from app.model.models import Transaction, db, Purchase, Account, Documents
 class PurchaseDataService():        
     def create(self, document_id, account_id, current_user_id, amount):
         try:
-            document = Documents.find_by_id(document_id)
+            document = Documents.find_by_id_and_status(document_id)
             admin = Account.find_by_permission("admin")
             current_user = Account.find_by_id(current_user_id)
             seller = Account.find_by_id(account_id)

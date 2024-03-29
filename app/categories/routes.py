@@ -23,7 +23,7 @@ def get_all():
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
 
-    categories, _, _ = CategoriesDataService().get_all()
+    categories, _, _ = CategoriesDataService().get_all_with_tuple()
 
     return render_template('categories/all_categories.html', form=register, 
                            formlogin=login, formresetpw=resetpw, categories=categories)

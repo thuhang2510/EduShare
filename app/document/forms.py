@@ -1,4 +1,3 @@
-import os
 from flask_wtf import FlaskForm
 from wtforms import FieldList, Form, StringField, FormField, ValidationError, FileField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo

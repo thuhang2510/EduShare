@@ -1,0 +1,68 @@
+{% extends 'admin/base.html' %}
+
+{% block head_css %}
+{{ super() }}
+<style>
+    .container {
+        max-width: 100% !important;
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a href="javascript:void(0)" class="nav-link active">Danh sách ({{categories | length}})</a>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/categories/create" title="Tạo Hồ Sơ Mới" class="nav-link">Tạo</a>
+    </li>
+</ul>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover model-list">
+        <thead>
+            <tr>
+                <th class="">&nbsp;</th>
+                <th class="column-header col-name">
+                    <a title="Sắp xếp theo Name">Tên danh mục</a>
+                </th>
+                <th class="column-header col-name">
+                    <a title="Sắp xếp theo Name">Tên danh mục</a>
+                </th>
+                <th class="column-header col-description">
+                    <a title="Sắp xếp theo Description">Mô tả</a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories%}
+                <tr>
+                    <td class="list-buttons-column">
+                        <a class="icon" href="/admin/categories/details?id={{category.id}}" title="Xem hồ sơ">
+                            <span class="fa fa-eye glyphicon glyphicon-eye-open"></span>
+                        </a>
+                        <a class="icon" href="/admin/categories/edit?id={{category.id}}" title="Chỉnh sửa bản ghi">
+                            <span class="fa fa-pencil glyphicon glyphicon-pencil"></span>
+                        </a>
+                    </td>
+                    <td class="col-id">
+                        {{ category.id }}
+                    </td>
+                    <td class="col-name">
+                        {{ category.name }}
+                    </td>
+                    <td class="col-description">
+                        {% if category.description %}
+                            {{ category.description }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

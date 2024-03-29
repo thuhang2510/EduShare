@@ -3,7 +3,7 @@ from app.model.models import Categories
 class CategoriesDataService():    
     def get_not_parent_id(self):
         try:
-            categories =  Categories.find_all_not_parent()
+            categories =  Categories.find_all_parent()
             if categories is None:
                 return None, -1, "Get categories fail"
             
@@ -21,7 +21,7 @@ class CategoriesDataService():
         except Exception as e:
             return None, -1, "Get categories fail " + str(e)
         
-    def get_all(self):
+    def get_all_with_tuple(self):
         try:
             categories =  Categories.find_all()
             if categories is None:

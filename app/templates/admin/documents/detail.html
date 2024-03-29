@@ -1,0 +1,140 @@
+{% extends 'admin/base.html' %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class=flashes>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+{% block head_css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/detail.css') }}">
+{% endblock %}
+
+{% block body %}
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="/admin/documents/">Danh sách</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active disabled" href="javascript:void(0)">Chi tiết</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="col-5">
+        <table class="table table-hover table-bordered searchable">
+            <tbody>
+                <tr>
+                    <td>
+                        <b>Id</b>
+                    </td>
+                    <td>
+                        {{document.id}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Tên tài liệu</b>
+                    </td>
+                    <td id="document_name" data-name="{{document.document_name}}">
+                        {{document.document_name | get_only_document_name}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Loại tài liệu</b>
+                    </td>
+                    <td>
+                        {{document.type}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Mô tả</b>
+                    </td>
+                    <td>
+                        {{document.description}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Giá bán</b>
+                    </td>
+                    <td>
+                        {{document.price}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>SL tải</b>
+                    </td>
+                    <td>
+                        {{document.download_count}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>SL xem</b>
+                    </td>
+                    <td>
+                        {{document.view_count}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Ảnh</b>
+                    </td>
+                    <td>
+                        <img src="{{document.image}}" width="90" height="90">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Ngày tạo</b>
+                    </td>
+                    <td>
+                        {{document.creation_date | format_datetime}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Ngày cập nhật</b>
+                    </td>
+                    <td>
+                        {{document.modified_date | format_datetime}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Người tải lên</b>
+                    </td>
+                    <td>
+                        {{user.fullname}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Trạng thái</b>
+                    </td>
+                    <td>
+                        {% if document.status %}
+                            Có thể truy cập
+                        {% else %}
+                            Đã bị xóa
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-7" style="background-color: #f8f9fa; position: relative;">
+        <div id="pdf-container" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="10" style="width:100%;height:690px;overflow-y:scroll; background-color: #f8f9fa;">
+        </div>
+    </div>
+</div>
+{% endblock %}

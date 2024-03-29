@@ -1,0 +1,69 @@
+{% extends 'admin/base.html' %}
+
+{% block head_css %}
+{{ super() }}
+<style>
+    .container {
+        max-width: 100% !important;
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+</style>
+{% endblock %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+{% block body %}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a href="/admin/categories/" class="nav-link">Danh sách</a>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/categories/create" title="Tạo Hồ Sơ Mới" class="nav-link">Tạo</a>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/categories/edit?id={{category.id}}" title="Tạo Hồ Sơ Mới" class="nav-link">Chỉnh sửa</a>
+    </li>
+    <li class="nav-item">
+        <a href="/admin/categories/details?id={{category.id}}" title="Tạo Hồ Sơ Mới" class="nav-link active">Chi tiết</a>
+    </li>
+</ul>
+<table class="table table-hover table-bordered searchable mt-4">
+    <tbody>
+        <tr>
+            <td>
+                <b>Tên danh mục</b>
+            </td>
+            <td>
+                {{category.name}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Mô tả</b>
+            </td>
+            <td>
+                {{category.description}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Tên danh mục cha</b>
+            </td>
+            <td>
+                {{category_parent.name}}
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
