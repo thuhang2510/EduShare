@@ -230,10 +230,29 @@ def download_document(id):
 @bp.route("/", methods=['GET'])
 @jwt_required()
 def get_all_document():
-    document, _, msg = DocumentsDataService().get_by_account_id_with_evaluate(current_user.id)
+    page = request.args.get('page', 1, type=int)
+    type = request.args.get('type', "all", type=str)
+
+    document, _, msg = DocumentsDataService().get_by_account_id_with_paginate(current_user.id, page, type, "")
 
     if document is not None:
-        return jsonify({'message': 'Lấy tài liệu thành công', 'code': 0, 'data': document})
+        results = {
+            "first": document.first,
+            "has_next": document.has_next,
+            "has_prev": document.has_prev,
+            "last": document.last,
+            "next_num": document.next_num,
+            "page": document.page,
+            "pages": document.pages,
+            "prev_num": document.prev_num,
+            "total": document.total
+        }
+
+        results["items"] = []
+
+        for item in document.items:
+            results["items"].append(item.to_dict_has_evaluate())
+        return jsonify({'message': 'Lấy tài liệu thành công', 'code': 0, 'data': results})
 
     return jsonify({'message': msg, 'code': -1, 'data': None})
 

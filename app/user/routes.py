@@ -57,7 +57,9 @@ def manager_document():
     register = RegisterForm(meta={'csrf': False})
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
-    return render_template('user/manager_doc.html', title='User',form=register, formlogin=login, formresetpw=resetpw)
+
+    type = request.args.get("type", "all", type=str)
+    return render_template('user/manager_doc.html', title='User',form=register, formlogin=login, formresetpw=resetpw, type=type)
 
 @bp.route("/<account_id>-trang-ca-nhan")
 def get_view_user(account_id):

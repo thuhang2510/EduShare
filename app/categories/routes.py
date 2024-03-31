@@ -1,9 +1,8 @@
-import os
-from flask import jsonify, render_template, request, redirect
-from flask_login import current_user
+from flask import jsonify, render_template, request
 from app.auth.forms import LoginForm, RegisterForm, ResetPasswordRequestForm
 from app.categories import bp
 from app.categories.services import CategoriesDataService
+from app.document.services import DocumentsDataService
 
 @bp.route("/", methods=["GET"])
 def index():
@@ -27,3 +26,15 @@ def get_all():
 
     return render_template('categories/all_categories.html', form=register, 
                            formlogin=login, formresetpw=resetpw, categories=categories)
+
+@bp.route('/<category_name>')
+def category_view(category_name):
+    register = RegisterForm(meta={'csrf': False})
+    login = LoginForm(meta={'csrf': False})
+    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
+
+    page = request.args.get('page', 1, type=int)
+
+    documents, _, _ = DocumentsDataService().get_by_category_with_paginate(category_name, 15, page)
+    return render_template('categories/detail.html', form=register, 
+                           formlogin=login, formresetpw=resetpw, documents=documents, category_name=category_name)

@@ -1,6 +1,4 @@
 from datetime import datetime
-from app.categories.services import CategoriesDataService
-from app.evaluate.services import EvaluateDataService
 from app.model.models import Documents, Categories, DocumentCategories
 
 class DocumentsDataService():

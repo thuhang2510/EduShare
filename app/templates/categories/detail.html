@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+<link href="/static/css/all_document.css" rel="stylesheet">
+<link href="/static/css/search.css" rel="stylesheet">
+{% endblock %}
+
+{% block app_content %}
+<div class="justify-content-center" style="width:100vw; position:relative; top:70px;">
+    <div class="container mt-3">
+        <h5>Danh sách các tài liệu thuộc danh mục {{category_name}}</h5>
+        <p class="text-right mt-3">
+            {{ documents.first }} - {{ documents.last }} trong {{documents.total}} kết quả
+        </p>
+        <div id="all_document" class="d-flex bd-highlight flex-wrap">
+            {% for document in documents.items %}
+            <div class="carousel-item mb-5" style="cursor: pointer;" onclick="openDocumentDetail('{{document[0].id}}')">
+                <div class="card">
+                    <div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px"><img src="{{ document[0].image }}" class="d-block img-detail" alt="..."> </div></div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ document[0].document_name | get_only_document_name }}</h5>
+                        <p class="card-text">Được thêm bởi {{ document[1] }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex bd-highlight">
+                            <div id="save_doc_{{ document[0].id }}" class="p-2 flex-grow-1 bd-highlight"><i class="bi bi-bookmark"></i></div>
+                            <div class="p-2 bd-highlight"><i class="bi bi-hand-thumbs-up"></i><span>{{ document[0].evaluate | count_evaluate }}%</span></div>
+                            <div class="p-2 bd-highlight"><i class="bi bi-download"></i><span>{{ document[0].download_count }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center">
+            <a href="{{ url_for('user_categories.category_view', category_name=category_name, page=documents.prev_num) }}"
+               class="btn btn-outline-dark {% if documents.page == 1 %}disabled{% endif %}">
+                &laquo;
+            </a>
+            {% for page_num in documents.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if documents.page == page_num %}
+                        <a href="{{ url_for('user_categories.category_view', category_name=category_name, page=page_num) }}"
+                        class="btn btn-dark">
+                            {{ page_num }}
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('user_categories.category_view', category_name=category_name, page=page_num) }}"
+                        class="btn btn-outline-dark">
+                            {{ page_num }}
+                        </a>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
+            {% endfor %}
+
+            <a href=" {{ url_for('user_categories.category_view', category_name=category_name, page=documents.next_num) }}"
+                class="btn btn-outline-dark 
+                {% if documents.page == documents.pages %}disabled{% endif %}">
+                    &raquo;
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    function openDocumentDetail(id){
+        window.location.replace(baseURL + "/document/" + id)
+    }
+</script>
+{% endblock %}

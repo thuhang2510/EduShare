@@ -320,6 +320,23 @@ class Documents(db.Model):
 
         return data
     
+    def to_dict_has_evaluate(self):
+        data = {
+            'id': self.id,
+            'document_name': self.document_name,
+            'description': self.description,
+            'view_count': self.view_count,
+            'download_count': self.download_count,
+            'price': self.price,
+            'type': self.type,
+            'account_id': self.account_id,
+            'creation_date': self.creation_date,
+            'image': self.image,
+            'evaluate': Evaluate.list_to_dict(self.evaluate)
+        }
+
+        return data
+    
     @classmethod
     def to_dict_tuple(self, tuple):
         document = tuple[0]

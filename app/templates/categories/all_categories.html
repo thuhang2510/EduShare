@@ -10,7 +10,23 @@
 {% block app_content %}
 <div class="justify-content-center" style="width:100vw; position:relative; top:70px;">
     <div class="container mt-3">
-        <h3>Danh sách các danh mục</h3>   
+        <h4>Danh sách các danh mục</h4>
+        <div id="all-categories" class="d-flex flex-column flex-wrap" style="height: 50em;">
+            {% for category in categories %}
+                {% if category.parent_id is none %}
+                    <div id="category-{{category.id}}" class="px-5 py-2">
+                        <h5 onclick="clickCategory(`{{category.name}}`)" style="cursor: pointer;">{{category.name}}</h5>
+                        <ul>
+                        {% for category2 in categories %}
+                            {% if category2.parent_id and category2.parent_id == category.id %}
+                                <li onclick="clickCategory(`{{category2.name}}`)" style="cursor: pointer;">{{category2.name}}</li>
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
 </div>
 
@@ -19,6 +35,8 @@
 {% block scripts %}
 {{ super() }}
 <script>
-
+    function clickCategory(category_name){
+       window.location.href = baseURL + '/categories/' + category_name;
+    }
 </script>
 {% endblock %}

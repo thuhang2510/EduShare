@@ -20,7 +20,7 @@
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                     {% for categoryItem in categories %}
                         {% if categoryItem["parent_id"] is not none and category["id"] == categoryItem["parent_id"] %}
-                            <li><a class="dropdown-item" href="/categories/cha/{{ categoryItem['name'] }}">{{ categoryItem["name"] }}</a></li>
+                            <li><a class="dropdown-item" href="/categories/{{ categoryItem['name'] }}">{{ categoryItem["name"] }}</a></li>
                         {% endif %}
                     {% endfor %}
                             </ul>
