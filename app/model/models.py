@@ -379,6 +379,30 @@ class Documents(db.Model):
         db.session.refresh(self)
 
     @classmethod
+    def get_month_stats_document(cls, _account_id, year):
+        return cls.query.with_entities(extract('month', cls.creation_date), func.count())\
+                    .order_by(cls.creation_date)\
+                    .filter(cls.account_id==_account_id, extract('year', cls.creation_date)==year, cls.status==True)\
+                    .group_by(extract('month', cls.creation_date))\
+                    .all()
+    
+    @classmethod
+    def get_month_stats_view_document(cls, _account_id):
+        return cls.query.with_entities(cls.document_name, cls.view_count)\
+                    .order_by(desc(cls.view_count))\
+                    .filter(cls.account_id==_account_id, cls.status==True, cls.view_count > 0)\
+                    .limit(5)\
+                    .all()
+    
+    @classmethod
+    def get_month_stats_download_document(cls, _account_id):
+        return cls.query.with_entities(cls.document_name, cls.download_count)\
+                    .order_by(desc(cls.download_count))\
+                    .filter(cls.account_id==_account_id, cls.status==True, cls.download_count > 0)\
+                    .limit(5)\
+                    .all()
+
+    @classmethod
     def find_by_name(cls, _document_name):
         return cls.query.filter_by(document_name=_document_name, status=True).first()
     

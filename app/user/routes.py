@@ -99,6 +99,14 @@ def manager_financy():
 
     return render_template('user/manager_financy.html',form=register, formlogin=login, formresetpw=resetpw)
 
+@bp.route("/tong-quan")
+def overview():
+    register = RegisterForm(meta={'csrf': False})
+    login = LoginForm(meta={'csrf': False})
+    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
+
+    return render_template('user/overview.html',form=register, formlogin=login, formresetpw=resetpw)
+
 @bp.route("/transactions")
 @jwt_required()
 def get_transactions():
@@ -115,6 +123,28 @@ def get_stats():
     transactions, code, msg = TransactionDataService().get_month_stats(current_user.id, year)
 
     return jsonify({"message": msg, "code": code, "data": transactions})
+
+@bp.route("/stats-document")
+@jwt_required()
+def get_stats_document():
+    year = request.args.get('year', datetime.now().year, type=int)
+    documents, code, msg = DocumentsDataService().get_month_stats_document(current_user.id, year)
+
+    return jsonify({"message": msg, "code": code, "data": documents})
+
+@bp.route("/stats-view-document")
+@jwt_required()
+def get_stats_view_document():
+    documents, code, msg = DocumentsDataService().get_month_stats_view_document(current_user.id)
+
+    return jsonify({"message": msg, "code": code, "data": documents})
+
+@bp.route("/stats-download-document")
+@jwt_required()
+def get_stats_download_document():
+    documents, code, msg = DocumentsDataService().get_month_stats_download_document(current_user.id)
+
+    return jsonify({"message": msg, "code": code, "data": documents})
 
 @bp.route("/total")
 @jwt_required()

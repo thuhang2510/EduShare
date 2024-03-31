@@ -18,7 +18,7 @@
                     <div class="author-card-cover"></div>
                     <div class="author-card-profile">
                         <div class="author-card-avatar text-center bg-secondary">
-                            <span id="base-profile-img" class="h4 text-white">H</span>
+                            <span id="base-profile-img" class="h4 text-white"></span>
                         </div>
                         <div class="author-card-details">
                             <h4 id="base-profile-name" class="author-card-name text-lg"></h4>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="wizard">
                     <nav class="list-group list-group-flush">
-                        <a class="list-group-item" href="#">
+                        <a class="list-group-item" href="/user/tong-quan">
                             <i class="fe-icon-shopping-bag mr-1 text-muted"></i>Tổng quan
                         </a>
                         <a class="list-group-item" href="/user/thong-tin-ca-nhan">
@@ -208,12 +208,17 @@
                             <i class="bi bi-caret-down-fill"></i><span>`
             }
             else{
-                html += `<span class="text-success">
-                            <i class="bi bi-caret-up-fill"></i><span>`
+                html += `<span class="text-success">`
+                
+                if(transactions[i]["result"] == 0)
+                    html += `<i class="bi bi-caret-up-fill"></i><span>`
             }
 
-            html += `       ${transactions[i]["amount"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>   
-                        </span> 
+            if(transactions[i]["result"] == 0)
+                html += `       ${transactions[i]["amount"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>   `
+            else
+                html += `  -   `
+                html +=    `</span> 
                         </td>`
             html += `    <td>${transactions[i]["wallet_balance"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
                     </tr>`
@@ -291,7 +296,7 @@
                 let datas = [];
 
                 for(let i = 0; i < result.data.length; ++i){
-                    labels.push(result.data[i]["month"]);
+                    labels.push("Tháng " + result.data[i]["month"]);
                     datas.push(result.data[i]["sum"]);
                 }
 

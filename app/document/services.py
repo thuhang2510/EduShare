@@ -239,3 +239,45 @@ class DocumentsDataService():
             return None, -1, "Get document fail"
         except Exception as e:
             return None, -1, "Get document fail"
+        
+    def get_month_stats_document(self, account_id, year):
+        try:
+            documents = Documents.get_month_stats_document(account_id, year)
+
+            keys = ("month", "count")
+            results = []
+            
+            for document in documents:
+                results.append(dict(zip(keys, document)))
+            
+            return results, 0, "Get stats success"
+        except Exception as e:
+            return None, -1, "Get stats fail " + str(e)
+        
+    def get_month_stats_view_document(self, account_id):
+        try:
+            documents = Documents.get_month_stats_view_document(account_id)
+
+            keys = ("document_name", "view")
+            results = []
+            
+            for document in documents:
+                results.append(dict(zip(keys, document)))
+            
+            return results, 0, "Get stats success"
+        except Exception as e:
+            return None, -1, "Get stats fail " + str(e)
+        
+    def get_month_stats_download_document(self, account_id):
+        try:
+            documents = Documents.get_month_stats_download_document(account_id)
+
+            keys = ("document_name", "download")
+            results = []
+            
+            for document in documents:
+                results.append(dict(zip(keys, document)))
+            
+            return results, 0, "Get stats success"
+        except Exception as e:
+            return None, -1, "Get stats fail " + str(e)
