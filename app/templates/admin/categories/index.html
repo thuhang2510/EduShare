@@ -21,6 +21,15 @@
     <li class="nav-item">
         <a href="/admin/categories/create" title="Tạo Hồ Sơ Mới" class="nav-link">Tạo</a>
     </li>
+    <li class="nav-item ml-2">
+        <form method="GET" action="/admin/categories/" class="form-inline my-2 my-lg-0" role="search">
+            <div class="form-inline">
+                <input class="form-control col-auto" size="30" type="text" name="search" value=""
+                    placeholder="Tên danh mục">
+                <button class="btn btn-secondary my-2 my-sm-0 ml-2" type="submit">Tìm</button>
+            </div>
+        </form>
+    </li>
 </ul>
 <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover model-list">
@@ -40,27 +49,27 @@
         </thead>
         <tbody>
             {% for category in categories%}
-                <tr>
-                    <td class="list-buttons-column">
-                        <a class="icon" href="/admin/categories/details?id={{category.id}}" title="Xem hồ sơ">
-                            <span class="fa fa-eye glyphicon glyphicon-eye-open"></span>
-                        </a>
-                        <a class="icon" href="/admin/categories/edit?id={{category.id}}" title="Chỉnh sửa bản ghi">
-                            <span class="fa fa-pencil glyphicon glyphicon-pencil"></span>
-                        </a>
-                    </td>
-                    <td class="col-id">
-                        {{ category.id }}
-                    </td>
-                    <td class="col-name">
-                        {{ category.name }}
-                    </td>
-                    <td class="col-description">
-                        {% if category.description %}
-                            {{ category.description }}
-                        {% endif %}
-                    </td>
-                </tr>
+            <tr>
+                <td class="list-buttons-column">
+                    <a class="icon" href="/admin/categories/details?id={{category.id}}" title="Xem hồ sơ">
+                        <span class="fa fa-eye glyphicon glyphicon-eye-open"></span>
+                    </a>
+                    <a class="icon" href="/admin/categories/edit?id={{category.id}}" title="Chỉnh sửa bản ghi">
+                        <span class="fa fa-pencil glyphicon glyphicon-pencil"></span>
+                    </a>
+                </td>
+                <td class="col-id">
+                    {{ category.id }}
+                </td>
+                <td class="col-name">
+                    {{ category.name }}
+                </td>
+                <td class="col-description">
+                    {% if category.description %}
+                    {{ category.description }}
+                    {% endif %}
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>

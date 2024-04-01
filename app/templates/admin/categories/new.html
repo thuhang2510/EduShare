@@ -36,7 +36,9 @@
     <form action="/admin/categories/create" method="POST" role="form" class="admin-form" enctype="multipart/form-data" style="margin-top: 35px;">
         <fieldset>
             <div class="form-group ">
-                {{ form.name.label() }}
+                <label for="name" class="control-label">Tên danh mục
+                    <strong style="color: red">*</strong>
+                </label>
                 <input class="form-control" id="name" maxlength="255" name="name" type="text" value="">
                 {% if form.name.errors %}
                     <ul class=errors>

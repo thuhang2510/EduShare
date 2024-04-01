@@ -6,7 +6,7 @@ from markupsafe import Markup
 from app import db, admin
 from app.admin.email import send_email_field
 from app.admin.forms import CreateCategoryForm, EditCategoryForm
-from app.model.models import Account, Permission, Categories, Documents
+from app.model.models import Account, Permission, Categories, Documents, Transaction
 from app.admin import bp
 from app.auth.services import UserDataService
 
@@ -50,6 +50,7 @@ class PermissionView(ModelView):
     column_display_pk = True
     can_delete = False
     column_labels = dict(name='Tên quyền', description='Mô tả')
+    form_excluded_columns = ("account")
 
     def is_accessible(self):
         return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
@@ -75,13 +76,14 @@ class DocumentView(ModelView):
     can_delete = False
     column_searchable_list = ('document_name', 'id')
     column_list = ("id", "document_name", "type", "description",
-                    "price", "download_count", "view_count", "image", "status")
+                    "price", "download_count", "view_count", "image", "status", "account")
     column_details_list = ("id", "document_name", "type", "description",
                     "price", "download_count", "view_count", "image", "creation_date", "modified_date", "status", "account_id")
-    column_labels = dict(document_name='Tên tài liệu', type='Loại tài liệu', description='Mô tả',
+    column_labels = dict(document_name='Tên tài liệu', type='Loại', description='Mô tả',
                          price='Giá bán', download_count='SL tải', view_count='SL xem', image='Ảnh',
-                         creation_date='Ngày tạo', modified_date='Ngày cập nhật', status='Trạng thái')
-    form_excluded_columns = ("price", "download_count", "view_count", "image", "creation_date", "modified_date", "categories", "evaluate", "purchase")
+                         creation_date='Ngày tạo', modified_date='Ngày cập nhật', status='Trạng thái', account='Tên tài khoản')
+    form_excluded_columns = ("price", "download_count", "view_count", "image", 
+                             "creation_date", "modified_date", "categories", "evaluate", "purchase", "account")
     form_widget_args = {
         'document_name': {
             'readonly': True
@@ -95,6 +97,14 @@ class DocumentView(ModelView):
     }
     edit_template = "/admin/edit.html"
     list_template = "/admin/list.html"
+
+    def _format_document_name(view, context, model, name):
+        if not model.document_name:
+            return ''
+
+        return Markup(
+            model.document_name.rsplit(".", 1)[0]
+        )
 
     def _format_image(view, context, model, name):
         if not model.image:
@@ -121,6 +131,7 @@ class DocumentView(ModelView):
         )
 
     column_formatters = {
+        'document_name': _format_document_name,
         'image': _format_image,
         'creation_date': _format_creation_date,
         'modified_date': _format_modified_date
@@ -141,10 +152,11 @@ class DocumentView(ModelView):
 
         return super(DocumentView, self).render(template, **kwargs)
     
-class CategoryView(BaseView):
+class CategoryView(BaseView):    
     @expose('/')
     def index(self):
-        categories =  Categories.find_all()
+        search = request.args.get('search')
+        categories =  Categories.find_with_name(search)
         return self.render('/admin/categories/index.html', categories=categories)
     
     @expose("/create", methods=["GET", "POST"])
@@ -198,10 +210,59 @@ class CategoryView(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
 
+class StatsView(BaseView):
+    @expose('/')
+    def index(self):
+        return self.render('/admin/stats/index.html')
+    
+    def is_accessible(self):
+        return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
+    
+class TransactionView(ModelView):
+    can_create = False
+    can_edit = False
+    can_delete = False
+    can_view_details = True
+    column_display_pk = True
+    column_filters = ('date', 'type', 'id', 'result')
+    column_labels = dict(information='Thông tin', type='Loại', amount='Số tiền',
+                         wallet_balance='Số dư tài khoản', result='Kết quả', account='Tài khoản',
+                         date='Ngày giao dịch', status='Trạng thái')
+    list_template = "/admin/list.html"
+    details_template = "/admin/detail.html"
+
+    def _format_date(view, context, model, name):
+        if not model.date:
+            return ''
+
+        return Markup(
+            model.date.strftime('%d-%m-%Y %H:%M:%S')
+        )
+    
+    def _format_result(view, context, model, name):
+        if model.result == 0:
+            result_show = "Thành công"
+        else:
+            result_show = "Thất bại"
+
+        return Markup(
+            result_show
+        )
+
+    column_formatters = {
+        'date': _format_date,
+        'result': _format_result
+    } 
+
+    def is_accessible(self):
+        return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
+    
 admin.add_view(AccountView(Account, db.session, name="Người dùng"))
 admin.add_view(PermissionView(Permission, db.session, name="Quyền"))
 admin.add_view(DocumentView(Documents, db.session, name="Tài liệu"))
 admin.add_view(CategoryView(name="Danh mục", endpoint="categories"))
+admin.add_view(TransactionView(Transaction, db.session, name="Giao dịch"))
+admin.add_view(StatsView(name="Thống kê"))
 admin.add_view(LogoutView(name="Đăng xuất"))
 
 @bp.route("/admin-login", methods=["POST"])

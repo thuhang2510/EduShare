@@ -310,7 +310,7 @@ def report(document_id):
     document, _, _ = DocumentsDataService().get_by_id_with_account(document_id)
     user, _, _ = UserDataService().get_by_id(current_user.id)
 
-    data, code, msg = send_report(document, user, "admin@gmail.com", request.form['content'], ('report_files/' + files[0].filename, "application/pdf"))
+    data, code, msg = send_report(document, user, "aedushare@gmail.com", request.form['content'], ('report_files/' + files[0].filename, "application/pdf"))
     os.remove(file_path)
 
     return jsonify({'message': msg, 'code': code, 'data': data})

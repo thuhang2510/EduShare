@@ -401,6 +401,7 @@
                 getUser();
                 clickCloseLogin();
                 resetValueInputOfFormLogin();
+                location.reload();
             }
         } catch (error) {
             console.log(error.message);
@@ -514,7 +515,7 @@
         }
 
         try {
-            const result = await postData(url, data);
+            const result = await postDataNoAuthorization(url, data);
             if (result.code === -2){
                 const errors = result.data;
 

@@ -18,10 +18,10 @@ class AccountPermission(db.Model):
 class Account(UserMixin, db.Model):
     __tablename__ = 'account'
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    email = db.Column(db.String(64), unique=True, index=True)
-    fullname = db.Column(db.String(64), unique=True, index=True)
+    email = db.Column(db.String(64), unique=True, index=True, nullable=False)
+    fullname = db.Column(db.String(64), unique=True, index=True, nullable=False)
     password_hash = db.Column(db.String(255))
-    number = db.Column(db.String(11), unique=True, index=True)
+    number = db.Column(db.String(11), unique=True, index=True, nullable=False)
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
     coin = db.Column(db.Integer , server_default='0')
     address = db.Column(db.String(255))
@@ -37,9 +37,10 @@ class Account(UserMixin, db.Model):
     transaction = db.relationship('Transaction', backref='account', lazy=True)
     evaluate = db.relationship('Evaluate', backref='account', lazy=True)
     purchase = db.relationship('Purchase', backref='account', lazy=True)
+    document = db.relationship('Documents', backref='account', lazy=True)
 
     def __repr__(self):
-        return '<Account {}>'.format(self.fullname)
+        return self.fullname
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -111,7 +112,7 @@ class Permission(db.Model):
     __tablename__ = 'permission'
 
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    name = db.Column(db.String(255), unique=True)
+    name = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.String(255))
 
     def __init__(self, name):
@@ -135,13 +136,13 @@ class Transaction(db.Model):
     __tablename__ = 'transaction'
 
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    date = db.Column(db.DateTime, default=datetime.utcnow)
-    information = db.Column(db.String(255))
-    type = db.Column(db.String(255))
+    date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    information = db.Column(db.String(255), nullable=False)
+    type = db.Column(db.String(255), nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
+    wallet_balance = db.Column(db.Integer, nullable=False)
+    result = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Boolean, nullable=False, server_default='1')
-    amount = db.Column(db.Integer)
-    wallet_balance = db.Column(db.Integer)
-    result = db.Column(db.Integer)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
         nullable=False)
     
@@ -224,7 +225,7 @@ class Categories(db.Model):
     __tablename__ = 'categories'
 
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    name = db.Column(db.String(255), unique=True)
+    name = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.String(255))
     parent_id = db.Column(db.Integer)
 
@@ -244,6 +245,15 @@ class Categories(db.Model):
     def find_all(cls):
         return cls.query.all()
     
+    @classmethod
+    def find_with_name(cls, _name):
+        query = cls.query
+
+        if _name:
+            query = query.filter(cls.name.ilike('%' + _name + '%'))
+
+        return query.all()
+        
     @classmethod
     def find_by_document_id(cls, _document_id):
         return cls.query.join(DocumentCategories).filter(DocumentCategories.document_id == _document_id).all()
@@ -283,10 +293,10 @@ class Documents(db.Model):
     __tablename__ = 'documents'
 
     id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    document_name = db.Column(db.String(255))
-    type = db.Column(db.String(5))
-    description = db.Column(db.String(255))
-    price = db.Column(db.Integer, server_default='0')
+    document_name = db.Column(db.String(255), nullable=False)
+    type = db.Column(db.String(5), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    price = db.Column(db.Integer, server_default='0', nullable=False)
     download_count = db.Column(db.Integer, server_default='0')
     view_count = db.Column(db.Integer, server_default='0')
     image = db.Column(db.String(255))
@@ -545,7 +555,7 @@ class Evaluate(db.Model):
     __tablename__ = 'evaluate'
 
     id = db.Column(db.Integer(), primary_key=True)
-    type = db.Column(db.String(50))
+    type = db.Column(db.String(50), nullable=False)
     document_id = db.Column(db.Integer(), db.ForeignKey(
         'documents.id', ondelete='CASCADE'))
     account_id = db.Column(db.Integer(), db.ForeignKey(
@@ -624,9 +634,9 @@ class Purchase(db.Model):
     __tablename__ = 'purchase'
 
     id = db.Column(db.Integer(), primary_key=True)
-    date = db.Column(db.DateTime, default=datetime.utcnow)
+    date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
-    amount = db.Column(db.Integer())
+    amount = db.Column(db.Integer(), nullable=False)
     document_id = db.Column(db.Integer(), db.ForeignKey(
         'documents.id', ondelete='CASCADE'))
     account_id = db.Column(db.Integer(), db.ForeignKey(

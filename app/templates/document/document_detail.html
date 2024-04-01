@@ -12,8 +12,8 @@
           <div class="col-4 p-0">
             <nav class="navbar navbar-expand-lg px-3">
                 <div class="container-md">
-                  <a id="selectDetail" class="navbar-brand col-6 text-center" onclick="clickInfoDetail()" style="color: rgb(2, 126, 176); border-color: rgb(2, 126, 176); border-bottom: 5px solid rgb(2, 126, 176);">Thông tin</a>
-                  <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()">Hỏi AI</a>
+                  <a id="selectDetail" class="navbar-brand col-12 text-center" onclick="clickInfoDetail()" style="color: rgb(2, 126, 176); border-color: rgb(2, 126, 176); border-bottom: 5px solid rgb(2, 126, 176);">Thông tin</a>
+                  <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()" style="display: none;">Hỏi AI</a>
                 </div>
             </nav>
             <div id="infor-detail" class="px-5" style="width:100%; height:690px; overflow-y:scroll;">
@@ -56,7 +56,7 @@
           <div class="col-8 p-0" style="background-color: #f8f9fa; position: relative;">
             <div class="d-flex bd-highlight ps-2 pt-1 pe-3">
                 <div class="p-2 flex-grow-1 bd-highlight">
-                    <button type="button" class="btn rounded-pill fw-normal p-2 px-3 fs-6" style="background-color: rgb(2, 126, 176); color: white;" onclick="downloadDocument()">
+                    <button id="btn_download" type="button" class="btn rounded-pill fw-normal p-2 px-3 fs-6" style="background-color: rgb(2, 126, 176); color: white;" onclick="downloadDocument()">
                         <i class="bi bi-download"></i> 
                         {% if document["price"] > 0 %}
                             Tải xuống ({{ document["price"] | numberFormat }} đ)
@@ -66,7 +66,9 @@
                     </button>
                 </div>
                 <div id="btn-document-payment" class="p-2 bd-highlight" data-timebuy="">
-                    <button type="button" class="btn btn-danger rounded-pill" onclick="buyDocument(`{{ document['document_name'] }}`, `{{ document['price'] | numberFormat }}`)">Mua tài liệu</button>
+                    {% if document["price"] > 0 %}
+                        <button type="button" class="btn btn-danger rounded-pill" onclick="buyDocument(`{{ document['document_name'] }}`, `{{ document['price'] | numberFormat }}`)">Mua tài liệu</button>
+                    {% endif %}
                 </div>
                 <div class="p-2 bd-highlight">
                     <button id="doc_like" type="button" class="btn btn-outline-success rounded-pill" data-count="{{ document['like'] }}" onclick="likeDocument()"><i class="bi bi-hand-thumbs-up"></i> {{ document["like"] }}</button>
@@ -192,7 +194,7 @@
     {
         if(localStorage.token){
             getUser();
-            getDocumentDetail();
+            getDocumentAllDetail();
         }
         else
             closeLogin();
@@ -206,7 +208,7 @@
         getDocLienQuan(`{{document["categories"][1]["name"]}}`);
     };
 
-    async function getDocumentDetail(){
+    async function getDocumentAllDetail(){
         url = baseURL + "/document/" + `{{document["id"]}}` + "/detail";
 
         try {
@@ -214,7 +216,8 @@
             if (result.code === 0){
                 var btn_document_payment = document.getElementById("btn-document-payment");
                 btn_document_payment.style.visibility = "hidden"
-                btn_document_payment.dataset.
+                var btn_download = document.getElementById("btn_download");
+                btn_download.innerHTML = `<i class="bi bi-download"></i> Tải xuống`;
                 nameFile = result.data["document_name"] + "." + result.data["type"];
                 price = result.data["price"];
                 bought = true;
@@ -733,7 +736,7 @@
                 localStorage.setItem("token", result.data)
                 getUser();
                 clickCloseLogin();
-                getDocumentDetail();
+                getDocumentAllDetail();
                 resetValueInputOfFormLogin();
             }
         } catch (error) {
@@ -760,7 +763,7 @@
                         a.download = `{{document["document_name"]}}`
                         a.click();
                         window.URL.revokeObjectURL(url)
-                        getDocumentDetail();
+                        getDocumentAllDetail();
                     });
                 }
                 else {
@@ -791,7 +794,7 @@
                                 a.download = `{{document["document_name"]}}`
                                 a.click();
                                 window.URL.revokeObjectURL(url)
-                                getDocumentDetail();
+                                getDocumentAllDetail();
                             });
                         }
                         else {
@@ -800,7 +803,7 @@
                     })
                 }
                 else{
-                    alert("Bạn đã hết thời gian tải xuống")
+                    alert("Bạn đã hết thời gian tải xuống. Hãy thực hiện thanh toán để có thể tiếp tục tải xuống trong vòng 24h")
                     show_confirm_document_payment(`{{document["document_name"]}}`, price, null);
                 }
             }
@@ -892,7 +895,7 @@
         if (resultBuyDoc.code === 0){
             clickCloseConfirmPayment();
             document.getElementById("btn-document-payment").style.visibility = "hidden"
-            getDocumentDetail();
+            getDocumentAllDetail();
             getUser();
         }
         else {

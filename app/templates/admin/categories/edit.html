@@ -14,13 +14,13 @@
 {% endblock %}
 
 {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
+{% if messages %}
+<ul class=flashes>
     {% for message in messages %}
-      <li>{{ message }}</li>
+    <li>{{ message }}</li>
     {% endfor %}
-    </ul>
-  {% endif %}
+</ul>
+{% endif %}
 {% endwith %}
 
 {% block body %}
@@ -39,33 +39,38 @@
     </li>
 </ul>
 <div class="table-responsive">
-    <form action="/admin/categories/edit?id={{category.id}}" method="POST" role="form" class="admin-form" enctype="multipart/form-data" style="margin-top: 35px;">
+    <form action="/admin/categories/edit?id={{category.id}}" method="POST" role="form" class="admin-form"
+        enctype="multipart/form-data" style="margin-top: 35px;">
         <fieldset>
             <div class="form-group ">
-                {{ form.name.label() }}
+                <label for="name" class="control-label">Tên danh mục
+                    <strong style="color: red">*</strong>
+                </label>
                 <input class="form-control" id="name" maxlength="255" name="name" type="text" value="{{category.name}}">
                 {% if form.name.errors %}
-                    <ul class=errors>
-                        {% for error in form.name.errors %}
-                        <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
+                <ul class=errors>
+                    {% for error in form.name.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
                 {% endif %}
             </div class="form-group ">
             <div class="form-group ">
                 {{ form.description.label }}
-                <input class="form-control" id="description" maxlength="255" name="description" type="text" value="{{category.description}}">
+                <input class="form-control" id="description" maxlength="255" name="description" type="text"
+                    value="{{category.description}}">
             </div class="form-group ">
             <div class="form-group ">
                 {{ form.parent_id.label }}
-                <select id="parent_id" name="parent_id" class="form-select form-control col-3" aria-label="Default select example">
+                <select id="parent_id" name="parent_id" class="form-select form-control col-3"
+                    aria-label="Default select example">
                     <option>Chọn danh mục cha</option>
                     {% for category_parent in categories_parent%}
-                        {% if category_parent.id == category.parent_id %}
-                            <option value="{{category_parent.id}}" selected>{{category_parent.name}}</option>
-                        {% else %}
-                            <option value="{{category_parent.id}}">{{category_parent.name}}</option>
-                        {% endif %}
+                    {% if category_parent.id == category.parent_id %}
+                    <option value="{{category_parent.id}}" selected>{{category_parent.name}}</option>
+                    {% else %}
+                    <option value="{{category_parent.id}}">{{category_parent.name}}</option>
+                    {% endif %}
                     {% endfor %}
                 </select>
             </div>
