@@ -4,12 +4,34 @@
 {{ super() }}
 <link href="/static/css/profile_user.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+<style>
+    .loading{
+        width: 2rem;
+        height: 2rem;
+        border: 5px solid #f3f3f3;
+        border-top: 6px solid #0d6efd;
+        border-radius: 100%;
+        margin: auto;
+        visibility: hidden;
+        animation: spin 1s infinite linear;
+    }
+    .loading.display {
+        visibility: visible;
+    }
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 {% endblock %}
 
 {% block app_content %}
 <div class="justify-content-center" style="width:100vw; min-height: 50%; position:relative; top:70px;">
     <div class="container mt-5">
-        <div id="alert"></div>
         <div class="row">
             <div class="col-lg-4 pb-5">
                 <div class="author-card pb-3">
@@ -52,6 +74,7 @@
                         <a id="document_saved" href="/user/quan-ly-tai-lieu?type=saved" class="nav-link">Tài liệu đã lưu</a>
                     </li>
                 </ul>
+                <div id="loading" class="loading mt-3"></div>
                 <div id="all-document">
                 </div>
                 <div id="number_page" class="d-flex justify-content-center mt-2">
@@ -83,6 +106,7 @@
     {
         if(localStorage.token){
             getUser();
+            show_display();
         }
         else
             window.location.href = "/api/v1"
@@ -104,11 +128,7 @@
 
     function getDocumentSave(result = null){
         if (result !== null){
-            document.getElementById("alert").innerHTML = `
-                    <div class="alert alert-success" role="alert">
-                        Hủy lưu thành công
-                    </div>
-                `
+            show_base_alert(0, "Hủy lưu thành công");
         }
 
         document.getElementById("document_saved").classList.add("active");
@@ -137,7 +157,6 @@
                 base_profile_email.innerHTML = result.data["email"]
                 base_profile_img.innerHTML = result.data["fullname"][0];
                 openLogin();
-                show_display();
                 userCurrentId = result.data["id"]
             }
             else{
@@ -149,6 +168,9 @@
     }
 
     async function getAllDocumentByUser(page=null){
+        var loader = document.querySelector('#loading');
+        loader.classList.add("display");
+
         var url = baseURL + "/document/"
 
         if(page)
@@ -157,6 +179,9 @@
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0){
+                loader.classList.remove("display");
+                loader.style.display = "none";
+
                 var divDeXuat = document.getElementById("all-document")
                 var html = "";
                 for (var i = 0; i < result.data["items"].length; ++i){
@@ -172,11 +197,17 @@
     }
 
     async function getAllDocumentSaved(){
+        var loader = document.querySelector('#loading');
+        loader.classList.add("display");
+
         var url = baseURL + "/document/get_all_saved"
 
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0){
+                loader.classList.remove("display");
+                loader.style.display = "none";
+
                 var divDeXuat = document.getElementById("all-document")
                 var html = "";
                 for (var i = 0; i < result.data.length; ++i){
@@ -504,7 +535,7 @@
         try {
             const result = await getData(url);
             if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+                show_base_alert(-1, "Có lỗi xảy ra không thể thực hiện cập nhật tài liệu.");    
             }
             else{
                 addOptions(result.data, danhMucId, existedDanhMuc)
@@ -591,13 +622,13 @@
                 });
             }
             else if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");    
             }
             else if(result.code === 0){
-                alert("Cập nhật tài liệu thành công");
+                show_base_alert(0, "Cập nhật tài liệu thành công");
             }
             else{
-                alert(result.message);
+                show_base_alert(-1, result.message);
                 window.location.replace(baseURL + "/api/v1");
             }
         } catch (error) {
@@ -634,10 +665,11 @@
             const result = await deleteData(url. localStorage.token);
             if (result.code === 0){
                 clickCloseConfirmDelete();
-                document.getElementById("document-" + result.data["id"]).style.display = "none"
+                document.getElementById("document-" + result.data["id"]).style.display = "none";
+                show_base_alert(0, "Xóa tài liệu thành công");
             }
 
-            alert(result.message);
+            show_base_alert(-1, result.message);
         } catch (error) {
             console.log(error.message);
         }
@@ -649,17 +681,13 @@
         try {
             const result = await postData(url, localStorage.token);
             if (result.code === -1){
-                document.getElementById("alert").innerHTML = `
-                    <div class="alert alert-warning" role="alert">
-                        ${result.message}
-                    </div>
-                `
+                show_base_alert(-1, result.message);
             }
             else{
                 getDocumentSave(true);
             }
         } catch (error) {
-            alert("Có lỗi xảy ra vui lòng thử lại sau");
+            show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
             console.log(error.message);
         }
     }

@@ -644,7 +644,7 @@
         try {
             const result = await postData(url, null, localStorage.token);
             if (result.code === -1) {
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
             else {
                 getDocDeXuat();
@@ -673,7 +673,7 @@
                 }
             }
         } catch (error) {
-            alert("Có lỗi xảy ra vui lòng thử lại sau");
+            show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
             console.log(error.message);
         }
     }
@@ -684,7 +684,7 @@
         try {
             const result = await postData(url, null, localStorage.token);
             if (result.code === -1) {
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
             else {
                 getDocDeXuat();
@@ -713,7 +713,7 @@
                 }
             }
         } catch (error) {
-            alert("Có lỗi xảy ra vui lòng thử lại sau");
+            show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
             console.log(error.message);
         }
     }
@@ -724,7 +724,7 @@
         try {
             const result = await postData(url, null, localStorage.token);
             if (result.code === -1) {
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
             else {
                 var documentSave = document.getElementById("doc_save");
@@ -737,7 +737,7 @@
                 }
             }
         } catch (error) {
-            alert("Có lỗi xảy ra vui lòng thử lại sau");
+            show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
             console.log(error.message);
         }
     }
@@ -763,7 +763,7 @@
                 });
             }
             else if (result.code === -1) {
-                alert("Có lỗi xảy ra vui lòng thử lại sau");
+                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
                 console.log(result.message);
             }
             else {
@@ -783,7 +783,7 @@
         number_download = parseInt(lg_fullname.dataset.countdownload)
 
         if (number_download >= 5)
-            alert("Tuần này bạn đã hết lượt tải cho tài liệu miễn phí");
+            show_base_alert(-1, "Tuần này bạn đã hết lượt tải cho tài liệu miễn phí");
         else {
             fetch(window.location.href + "/download", {
                 headers: {
@@ -804,10 +804,10 @@
                         });
                     }
                     else if (response.status == 401) {
-                        alert("Bạn cần đăng nhập để thực hiện chức năng này.");
+                        show_base_alert(-1, "Bạn cần đăng nhập để thực hiện chức năng này.");
                     }
                     else if (response.status == 403) {
-                        alert("Bạn không có quyền để sử dụng chức năng này.")
+                        show_base_alert(-1, "Bạn không có quyền để sử dụng chức năng này.")
                     }
                     else {
                         console.error('Có lỗi xảy ra khi tải xuống tệp');
@@ -818,7 +818,7 @@
 
     async function downloadDocNotFree(documentId) {
         if (bought == false)
-            alert("Hãy mua tài liệu trước khi thực hiện tải xuống");
+            show_base_alert(-1, "Hãy mua tài liệu trước khi thực hiện tải xuống");
         else {
             const result = await getData(baseURL + "/document/purchase?document_id=" + `{{document["id"]}}`, localStorage.token);
             if (result.code === 0) {
@@ -844,10 +844,10 @@
                                 });
                             }
                             else if (response.status == 401) {
-                                alert("Bạn cần đăng nhập để thực hiện chức năng này.");
+                                show_base_alert(-1, "Bạn cần đăng nhập để thực hiện chức năng này.");
                             }
                             else if (response.status == 403) {
-                                alert("Bạn không có quyền để sử dụng chức năng này.")
+                                show_base_alert(-1, "Bạn không có quyền để sử dụng chức năng này.")
                             }
                             else {
                                 console.error('Có lỗi xảy ra khi tải xuống tệp');
@@ -860,7 +860,7 @@
                 }
             }
             else {
-                alert("Có lỗi xảy ra hãy thử lại sau");
+                show_base_alert(-1, "Có lỗi xảy ra hãy thử lại sau");
             }
         }
     }
@@ -885,8 +885,7 @@
                 }
             }
             else {
-                alert("Hãy đăng nhập để thực hiện mua tài liệu");
-                clickLogin();
+                show_base_alert(-1, "Hãy đăng nhập để thực hiện mua tài liệu");
             }
         } catch (error) {
             console.log(error.message);
@@ -908,8 +907,7 @@
                 document.getElementById("form-notify-payment").style.visibility = "hidden";
             }
             else {
-                alert("Hãy đăng nhập để thực hiện nạp tiền");
-                clickLogin();
+                show_base_alert(-1, "Hãy đăng nhập để thực hiện nạp tiền");
             }
         } catch (error) {
             console.log(error.message);
@@ -951,7 +949,7 @@
             getUser();
         }
         else {
-            alert("Có lỗi xảy ra hãy thử lại sau");
+            show_base_alert(-1, "Có lỗi xảy ra hãy thử lại sau");
         }
     }
 
@@ -975,11 +973,11 @@
         try {
             const result = await postFormData(url, data, localStorage.token);
             if (result.code === 0) {
-                alert("Đã gửi báo cáo. Xin hãy đợi chúng tôi xử lý");
+                show_base_alert(0, "Đã gửi báo cáo. Xin hãy đợi chúng tôi xử lý");
                 clickCloseReport();
             }
             else {
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
         } catch (error) {
             console.log(error.message);
@@ -997,7 +995,7 @@
     function copyLink(){
         var link = baseURL + `/document/{{document["id"]}}`
         navigator.clipboard.writeText(link);
-        alert("Sao chép")
+        show_base_alert(0, "Đã sao chép")
     }
 </script>
 {% endblock %}

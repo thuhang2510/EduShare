@@ -159,10 +159,10 @@
                 loadChart('bar', labels, 'Thống kê số lượng tài liệu tải lên', datas, 'chartUpload');
             }
             else{
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
         } catch (error) {
-            alert(error.message);
+            show_base_alert(-1, error.message);
         }
     }
 
@@ -183,10 +183,10 @@
                 loadChart('doughnut', labels, 'Thống kê lượt xem nhiều', datas, 'chartView');
             }
             else{
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
         } catch (error) {
-            alert(error.message);
+            show_base_alert(-1, error.message);
         }
     }
 
@@ -207,10 +207,10 @@
                 loadChart('doughnut', labels, 'Thống kê lượt tải xuống nhiều', datas, 'chartDownload');
             }
             else{
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
         } catch (error) {
-            alert(error.message);
+            show_base_alert(-1, error.message);
         }
     }
 

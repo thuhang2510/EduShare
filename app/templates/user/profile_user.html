@@ -215,10 +215,10 @@
                 user.ls_fullname.innerHTML = result.data["fullname"];
                 fields_account.fullname.input.value = result.data["fullname"];
                 fields_account.address.input.value = result.data["address"];
-                alert(result.message)
+                show_base_alert(0, result.message)
             }
             else{
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
         } catch (error) {
             console.log(error.message);
@@ -255,11 +255,11 @@
                 });
             }
             else if (result.code === 0){
-                alert(result.message)
+                show_base_alert(0, result.message)
                 reloadFieldsPasswordError();
             }
             else{
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
         } catch (error) {
             console.log(error.message);
