@@ -2,6 +2,7 @@
 
 {% block head_css %}
 {{ super() }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/css/datepicker.min.css" rel="stylesheet">
 <style>
     .container {
         max-width: 100% !important;
@@ -11,4 +12,198 @@
         margin-left: auto;
     }
 </style>
+{% endblock %}
+
+{% block body %}
+<div class="row mb-3">
+    <div class="col-6 px-5 pt-3">
+        <h5>Thống kê doanh thu trong năm</h5>
+        <div class="d-flex flex-row bd-highlight mb-3 justify-content-end">
+            <div class="pr-1 bd-highlight">
+                <input id="date-own-revenue" class="date-own form-control" style="width: 100px;" type="text" placeholder="Nhập năm">
+            </div>
+            <div class="bd-highlight">
+                <button type="button" class="btn btn-secondary" onclick="clickStatsRevenue()">Thống kê</button>
+            </div>
+        </div>
+        <canvas id="revenue"></canvas>
+    </div>
+    <div class="col-6 px-5 pt-3">
+        <h5>Thống kê tài liệu tải lên trong năm</h5>
+        <div class="d-flex flex-row bd-highlight mb-3 justify-content-end">
+            <div class="pr-1 bd-highlight">
+                <input id="date-own-upload-download" class="date-own form-control" style="width: 100px;" type="text" placeholder="Nhập năm">
+            </div>
+            <div class="bd-highlight">
+                <button type="button" class="btn btn-secondary" onclick="clickStatsUploadDownload()">Thống kê</button>
+            </div>
+        </div>  
+        <canvas id="stats-upload-document"></canvas>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6 px-5 pt-3">
+        <h5>Thống kê sản phẩm theo danh mục</h5>
+        <canvas id="stats-category-doc"></canvas>
+    </div>
+    <div class="col-6 px-5 pt-3">
+    </div>
+</div>
+
+{% endblock %}
+
+{% block tail_js %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
+<script>
+    var dp = $('#date-own-revenue').datepicker({
+        format: "yyyy",
+        viewMode: "years", 
+        minViewMode: "years",
+        autoclose:true
+    });
+
+    var dp = $('#date-own-upload-download').datepicker({
+        format: "yyyy",
+        viewMode: "years", 
+        minViewMode: "years",
+        autoclose:true
+    });
+
+    window.onload = function () {
+        getStatRevenue();
+        getStatUploadDocument();
+        getStatCategory();
+    };
+
+    function clickStatsRevenue(){
+        var year = document.getElementById("date-own-revenue").value;
+        getStatRevenue(year);
+    }
+
+    function clickStatsUploadDownload(){
+        var year = document.getElementById("date-own-upload-download").value;
+        getStatUploadDocument(year);
+    }
+
+    async function getStatRevenue(year = null) {
+        var url = "/admin/stats/stats-revenue";
+
+        if(year)
+            url += "?year=" + year;
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0) {
+                let labels = [];
+                let datas = [];
+
+                for (let i = 0; i < result.data.length; ++i) {
+                    labels.push("Tháng " + result.data[i]["month"]);
+                    datas.push(result.data[i]["sum"]);
+                }
+
+                loadChart('line', labels, 'Thống kê doanh thu', datas, 'revenue');
+            }
+            else {
+                alert(result.message);
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function getStatUploadDocument(year = null) {
+        var url = "/admin/stats/stats-upload-document";
+
+        if(year)
+            url += "?year=" + year;
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0) {
+                let labels = [];
+                let datas = [];
+
+                for (let i = 0; i < result.data.length; ++i) {
+                    labels.push("Tháng " + result.data[i]["month"]);
+                    datas.push(result.data[i]["count"]);
+                }
+
+                loadChart('bar', labels, 'Thống kê tài liệu tải lên', datas, 'stats-upload-document');
+            }
+            else {
+                alert(result.message);
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function getStatCategory() {
+        var url = "/admin/stats/stats-category";
+
+        try {
+            const result = await getData(url);
+            if (result.code === 0) {
+                let labels = [];
+                let datas = [];
+
+                for (let i = 0; i < result.data.length; ++i) {
+                    labels.push(result.data[i]["name"]);
+                    datas.push(result.data[i]["count"]);
+                }
+
+                loadChart('doughnut', labels, 'Thống kê tài liệu theo danh mục', datas, 'stats-category-doc');
+            }
+            else {
+                alert(result.message);
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    function loadChart(type, labels, label_datasets, data_datasets, element) {
+        let chartStatus = Chart.getChart(`${element}`);
+        if (chartStatus != undefined) {
+            chartStatus.destroy();
+        }
+
+        const chart = new Chart(document.getElementById(`${element}`), {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: label_datasets,
+                    data: data_datasets,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    async function getData(url = "") {
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: headers
+        });
+
+        return response.json();
+    }
+</script>
 {% endblock %}

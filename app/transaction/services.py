@@ -46,7 +46,7 @@ class TransactionDataService():
         
     def get_month_stats(self, account_id, year):
         try:
-            transactions = Transaction.get_month_stats(account_id, year)
+            transactions = Transaction.get_month_stats_with_account_id(account_id, year)
 
             keys = ("month", "sum")
             results = []

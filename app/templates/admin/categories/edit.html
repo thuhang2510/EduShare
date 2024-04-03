@@ -57,20 +57,25 @@
             </div class="form-group ">
             <div class="form-group ">
                 {{ form.description.label }}
-                <input class="form-control" id="description" maxlength="255" name="description" type="text"
-                    value="{{category.description}}">
+                {% if category.description %}
+                    <input class="form-control" id="description" maxlength="255" name="description" type="text"
+                        value="{{category.description}}">
+                {% else %}
+                    <input class="form-control" id="description" maxlength="255" name="description" type="text"
+                        value="">
+                {% endif %}
             </div class="form-group ">
             <div class="form-group ">
                 {{ form.parent_id.label }}
                 <select id="parent_id" name="parent_id" class="form-select form-control col-3"
                     aria-label="Default select example">
-                    <option>Chọn danh mục cha</option>
-                    {% for category_parent in categories_parent%}
-                    {% if category_parent.id == category.parent_id %}
-                    <option value="{{category_parent.id}}" selected>{{category_parent.name}}</option>
-                    {% else %}
-                    <option value="{{category_parent.id}}">{{category_parent.name}}</option>
-                    {% endif %}
+                    <option value="null">Chọn danh mục cha</option>
+                    {% for category_parent in categories_parent %}
+                        {% if category_parent.id == category.parent_id %}
+                            <option value="{{category_parent.id}}" selected>{{category_parent.name}}</option>
+                        {% else %}
+                            <option value="{{category_parent.id}}">{{category_parent.name}}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             </div>

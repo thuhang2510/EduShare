@@ -3,11 +3,34 @@
 {% block styles %}
 {{ super() }}
 <link href="/static/css/upload_doc.css" rel="stylesheet">
+<style>
+    .loading{
+        width: 2rem;
+        height: 2rem;
+        border: 5px solid #f3f3f3;
+        border-top: 6px solid #0d6efd;
+        border-radius: 100%;
+        margin: auto;
+        visibility: hidden;
+        animation: spin 1s infinite linear;
+    }
+    .loading.display {
+        visibility: visible;
+    }
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 {% endblock %}
 
 {% block app_content %}
-<div class="justify-content-center" style="margin-bottom: 80px; width:100vw; position:relative; top:70px;">
-    <div id="all-upload" class="container d-flex justify-content-center pt-3 col-7">
+<div class="justify-content-center" style="margin-bottom: 80px; width:100vw; min-height: 50%; position:relative; top:70px;">
+    <div id="all-upload" class="container d-flex justify-content-center pt-3 col-7" style="visibility: hidden;">
         <div class="text-center">
             <h2 class="mt-2 mb-3">Đăng và chia sẻ tài liệu lên EduShare</h2>
             <div class="app">
@@ -50,11 +73,12 @@
 
         if(localStorage.token){
             getUser();
-            document.getElementById("all-upload").style.display = "inline"
+            document.getElementById("all-upload").style.visibility = "visible"
         }
         else{
+            show_base_alert(-1, "Vui lòng đăng nhập để thực hiện chức năng tải tài liệu lên.");
+            document.getElementById("all-upload").style.visibility = "hidden"
             clickLogin();
-            document.getElementById("all-upload").style.display = "none"
         }
     };
 
@@ -62,7 +86,7 @@
         url = baseURL + "/api/v1/user-token"
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
                 user.email.innerHTML = result.data["email"];
@@ -70,16 +94,17 @@
                 user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 openLogin();
-                document.getElementById("all-upload").style.display = "inline"
+                document.getElementById("all-upload").style.visibility = "visible"
+                userCurrentId = result.data["id"]
             }
             else{
-                alert(result.message);
+                show_base_alert(-1, result.message);
                 clickLogin();
-                document.getElementById("all-upload").style.display = "none"
+                document.getElementById("all-upload").style.visibility = "hidden"
             }
         } catch (error) {
             console.log(error.message);
-            document.getElementById("all-upload").style.display = "none"
+            document.getElementById("all-upload").style.visibility = "hidden"
         }
     }
 
@@ -136,19 +161,19 @@
                                 </div>
                                 <div class="col-sm-8">
                                     <div class="row mb-3">
-                                        <div class="col-sm-2">
-                                            <h6 class="mb-0">Tên tài liệu</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Tên tài liệu <strong style="color: red">*</strong></h6>
                                         </div>
-                                        <div class="col-sm-10 text-secondary">
+                                        <div class="col-sm-9 text-secondary">
                                             <input id="name-doc-${fileId}" type="text" class="form-control" value="${getOnlyFileName(fileName)}">
                                             <div id="name-doc-${fileId}-error" class="invalid-feedback mb-1"></div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-2">
-                                            <h6 class="mb-0">Danh mục</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Danh mục <strong style="color: red">*</strong></h6>
                                         </div>
-                                        <div id="root-select-${fileId}" class="col-sm-10 text-secondary">
+                                        <div id="root-select-${fileId}" class="col-sm-9 text-secondary">
                                             <select id="danhmuc-${fileId}" class="form-select" aria-label="Default select example" onchange="changeDanhMuc('${fileId}')">
                                                 <option selected>--Danh mục--</option>
                                             </select>
@@ -159,19 +184,19 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-2">
-                                            <h6 class="mb-0">Mô tả</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Mô tả <strong style="color: red">*</strong></h6>
                                         </div>
-                                        <div class="col-sm-10 text-secondary">
+                                        <div class="col-sm-9 text-secondary">
                                             <input id="mota-${fileId}" type="text" class="form-control" value="">
                                             <div id="mota-${fileId}-error" class="invalid-feedback mb-1"></div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-2">
-                                            <h6 class="mb-0">Giá bán</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Giá bán <strong style="color: red">*</strong></h6>
                                         </div>
-                                        <div class="col-sm-10 text-secondary">
+                                        <div class="col-sm-9 text-secondary">
                                             <select id="giaban-${fileId}" class="form-select" aria-label="Default select example" onchange="changeMoney('${fileId}')">
                                                 <option selected>Chọn giá bán</option>
                                                 <option value="free">Miễn phí</option>
@@ -187,9 +212,12 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="text-secondary">
-                                            <input id="delete-${fileId}" type="button" class="btn btn-primary px-4 btn-secondary" value="Delete" onclick="deleteDocument('${fileName}', '${fileId}')">
-                                            <input id="save-${fileId}" type="button" class="btn btn-primary px-4" value="Save Changes" onclick="saveDocument('${fileId}', '${fileName}', '${type}')">
+                                        <div class="container d-flex align-items-center justify-content-center">
+                                            <div class="d-flex">
+                                                <input id="delete-${fileId}" type="button" class="btn btn-primary px-4 btn-secondary me-2" value="Delete" onclick="deleteDocument('${getOnlyFileName(fileName)}', '${fileId}')">
+                                                <input id="save-${fileId}" type="button" class="btn btn-primary px-4" value="Save Changes" onclick="saveDocument('${fileId}', '${getOnlyFileName(fileName)}', '${type}')">
+                                                <div id="loading-${fileId}" class="loading"></div>
+                                            <div>
                                         </div>
                                     </div>
                                 </div>
@@ -250,15 +278,15 @@
     };
 
     async function deleteDocument(fileName, fileId){
-        url = baseURL + "/document/delete-wait-file?fileName=" + fileName
+        url = baseURL + "/document/delete-wait-file?fileName=" + fileName + ".pdf"
 
         try {
-            const result = await deleteData(url);
+            const result = await deleteData(url, localStorage.token);
             if (result.code === 0){
                 document.getElementById(fileId).style.display = 'none'
             }
             else{
-                alert(result.message);
+                show_base_alert(-1, result.message);
             }
         } catch (error) {
             console.log(error.message);
@@ -266,6 +294,11 @@
     }
 
     async function saveDocument(fileId, fileOldName, type){
+        var loader = document.querySelector(`#loading-${fileId}`);
+        loader.classList.add("display");
+        var btnSave = document.getElementById(`save-${fileId}`);
+        btnSave.style.display = "none";
+
         var url = baseURL + '/document/upload-s3'
 
         var price = document.getElementById(`giaban-${fileId}`).value;
@@ -277,7 +310,7 @@
         var customFile1 = document.getElementById(`customFile-${fileId}`);
 
         const formData = new FormData();
-        formData.append('old_name', fileOldName);
+        formData.append('old_name', fileOldName + "." + type);
         formData.append('document_name', document.getElementById(`name-doc-${fileId}`).value + "." + type);
         formData.append('description', document.getElementById(`mota-${fileId}`).value);
         formData.append('price', price);
@@ -290,7 +323,7 @@
         thu = fields_upload_file(fileId)
 
         try {
-            const result = await postFormData(url, formData);
+            const result = await postFormData(url, formData, localStorage.token);
             if (result.code === -2){
                 const errors = result.data;
                 Object.keys(errors).forEach((key) => {
@@ -299,14 +332,17 @@
                 });
             }
             else if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");    
             }
             else if(result.code === 0){
+                loader.classList.remove("display");
+                loader.style.display = "none";
+                
                 deleteDocument(fileOldName, fileId);
-                alert("Upload tài liệu thành công");
+                show_base_alert(0, "Upload tài liệu thành công");
             }
             else{
-                alert("Hãy đăng nhập trước")
+                show_base_alert(-1, "Hãy đăng nhập trước")
                 window.location.replace(baseURL + "/api/v1")
             }
         } catch (error) {
@@ -359,7 +395,7 @@
         try {
             const result = await getData(url);
             if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+                show_base_alert(-1, "Không thể lấy danh mục. Xin vui lòng thử lại sau");    
             }
             else{
                 addOptions(result.data, fileId)
@@ -394,25 +430,23 @@
     }
 
     async function load(newFile) {
-        url = baseURL + "/document/check-file?fileName=" + newFile['name'];
+        url = baseURL + "/document/check-file?fileName=" + getOnlyFileName(newFile['name']) + ".pdf";
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === -1){
-                alert(result.message);    
+                show_base_alert(-1, result.message);    
             }
             else if(result.code === -3){
                 clickLogin();
             }
             else{
-                const type = getTypeFile(newFile.type)
-
                 const data = new FormData();
                 data.append("file", newFile);        
 
                 const randomId = document.querySelector("#app__files").childElementCount;
                 const elementId = `file-${randomId}`;
-                appendFile(elementId, newFile['name'], type);
+                appendFile(elementId, newFile['name'], "pdf");
 
                 var url = baseURL + '/document/upload-multi'
                 const xhr = new XMLHttpRequest();

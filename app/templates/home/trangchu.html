@@ -4,30 +4,59 @@
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 <link href="/static/css/all_document.css" rel="stylesheet">
+<style>
+    #loading-new, #loading-view{
+        width: 2rem;
+        height: 2rem;
+        border: 5px solid #f3f3f3;
+        border-top: 6px solid #0d6efd;
+        border-radius: 100%;
+        margin: auto;
+        visibility: hidden;
+        animation: spin 1s infinite linear;
+    }
+    #loading-new.display, #loading-view.display {
+        visibility: visible;
+    }
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 {% endblock %}
 
 {% block app_content %}
-<div class="justify-content-center" style="width:100vw; position:relative; top:70px;">
+<div class="justify-content-center" style="width:100vw; min-height: 50%; position:relative; top:70px;">
     <div class="container mt-5">
-    <div id="titleDocumentSave" class="d-flex bd-highlight">
-        <div class="p-2 flex-fill bd-highlight h2">Tài liệu đã lưu</div>
+        <div id="titleDocumentSave" class="d-flex bd-highlight">
+            <div class="p-2 flex-fill bd-highlight h2">Tài liệu đã lưu</div>
+        </div>
+        <div id="carouselSavedControls" class="carousel">
+            <div class="carousel-inner">
+            </div>
+        </div>
+        <div id="titleDocumentNew" class="bd-highlight">
+            <div class="p-2 flex-fill bd-highlight h2">Tài liệu mới nhất</div>
+            <div id="loading-new"></div>
+        </div>
+        <div id="carouselNewControls" class="carousel">
+            <div class="carousel-inner">
+            </div>
+        </div>
+        <div id="titleDocumentView" class="bd-highlight">
+            <div class="p-2 flex-fill bd-highlight h2">Tài liệu xem nhiều</div>
+            <div id="loading-view"></div>
+        </div>
+        <div id="carouselViewControls" class="carousel">
+            <div class="carousel-inner">
+            </div>
+        </div>
     </div>
-    <div id="carouselSavedControls" class="carousel">
-      <div class="carousel-inner">
-      </div>
-    </div>
-    <h2 class="mt-5">Tài liệu mới nhất</h2>
-    <div id="carouselNewControls" class="carousel">
-      <div class="carousel-inner">
-      </div>
-    </div>
-    <h2 class="mt-5">Tài liệu xem nhiều</h2>
-    <div id="carouselViewControls" class="carousel">
-      <div class="carousel-inner">
-      </div>
-    </div>
-  </div>
-  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -35,20 +64,19 @@
 <script src="/static/js/all_document.js"></script>
 <script>
 
-    window.onload = function()
-    {
+    window.onload = function () {
         getAllDocNew();
         getAllDocView();
         getAllDocSaved();
-
-        if(localStorage.token){
+        
+        if (localStorage.token) {
             getUser();
         }
         else
             closeLogin();
     };
 
-    async function sendFormLogin(){
+    async function sendFormLogin() {
         resetErrorInputOfFormLogin();
 
         var url = baseURL + '/api/v1/login'
@@ -59,8 +87,8 @@
         }
 
         try {
-            const result = await postDataNoAuthorization(url, data);
-            if (result.code === -2){
+            const result = await postData(url, data);
+            if (result.code === -2) {
                 const errors = result.data;
 
                 Object.keys(errors).forEach((key) => {
@@ -68,29 +96,31 @@
                     fields_login[key].error.innerHTML = errors[key][0];
                 });
             }
-            else if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
-                console.log("Đăng nhập thất bại");
+            else if (result.code === -1) {
+                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
+                console.log(result.message);
             }
-            else{
+            else {
                 localStorage.setItem("token", result.data)
                 getUser();
                 clickCloseLogin();
                 resetValueInputOfFormLogin();
                 getAllDocSaved();
-                
+                show_base_alert(0, "Đăng nhập thành công");
             }
         } catch (error) {
             console.log(error.message);
         }
     }
 
-    async function getAllDocNew(){
+    async function getAllDocNew() {
+        var loader = document.querySelector("#loading-new");
+        loader.classList.add("display");
         url = baseURL + "/document/get_all_new?limit=30"
 
         try {
-            const result = await getDataNoAuthorization(url);
-            if (result.code === 0){
+            const result = await getData(url);
+            if (result.code === 0) {
                 var carouselNewControls_carouselInner = document.querySelector("#carouselNewControls .carousel-inner")
                 html = "";
                 result.data.forEach(document => {
@@ -98,26 +128,32 @@
                 });
                 carouselNewControls_carouselInner.innerHTML = html;
 
-                if(result.data.length >= 6){
+                if (result.data.length >= 6) {
                     var carouselNewControls = document.querySelector("#carouselNewControls")
                     carouselNewControls.appendChild(showPrev("clickPrevNewDoc()"));
                     carouselNewControls.appendChild(showNext("clickNextNewDoc()"));
                 }
+
+                loader.classList.remove("display");
+                loader.style.display = "none";
             }
         } catch (error) {
             console.log(error.message);
         }
     }
 
-    async function getAllDocSaved(){
+    async function getAllDocSaved() {
         url = baseURL + "/document/get_all_saved?limit=30"
 
         try {
-            const result = await getData(url);
-            if (result.code === 0){
+            const result = await getData(url, localStorage.token);
+            if (result.code === 0) {
                 var titleDocumentSave = document.getElementById("titleDocumentSave")
                 titleDocumentSave.innerHTML = `<div class="p-2 flex-fill bd-highlight h2">Tài liệu đã lưu</div>
-                                            <div class="p-2 flex-fill bd-highlight text-end"><a href="/user/quan-ly-tai-lieu?type=saved" style="color: #0a58ca; text-decoration: underline">Xem toàn bộ</a></div>`
+                                            <div class="p-2 flex-fill bd-highlight text-end">
+                                                <a href="/user/quan-ly-tai-lieu?type=saved" style="color: #0a58ca; text-decoration: underline">Xem toàn bộ
+                                                </a>
+                                            </div>`
 
                 var carouselSavedControls_carouselInner = document.querySelector("#carouselSavedControls .carousel-inner")
                 html = "";
@@ -126,7 +162,7 @@
                 });
                 carouselSavedControls_carouselInner.innerHTML = html;
 
-                if(result.data.length >= 6){
+                if (result.data.length >= 6) {
                     var carouselSavedControls = document.querySelector("#carouselSavedControls")
                     carouselSavedControls.appendChild(showPrev("clickPrevSavedDoc()"));
                     carouselSavedControls.appendChild(showNext("clickPrevNextDoc()"));
@@ -141,12 +177,14 @@
         }
     }
 
-    async function getAllDocView(){
+    async function getAllDocView() {
+        var loader = document.querySelector("#loading-view");
+        loader.classList.add("display");
         url = baseURL + "/document/get_all_view?limit=30"
 
         try {
-            const result = await getDataNoAuthorization(url);
-            if (result.code === 0){
+            const result = await getData(url);
+            if (result.code === 0) {
                 var carouselViewControls_carouselInner = document.querySelector("#carouselViewControls .carousel-inner")
                 html = "";
                 result.data.forEach(document => {
@@ -154,32 +192,35 @@
                 });
                 carouselViewControls_carouselInner.innerHTML = html;
 
-                if(result.data.length >= 6){
+                if (result.data.length >= 6) {
                     var carouselViewControls = document.querySelector("#carouselViewControls")
                     carouselViewControls.appendChild(showPrev("clickPrevViewDoc()"));
                     carouselViewControls.appendChild(showNext("clickNextViewDoc()"));
                 }
+
+                loader.classList.remove("display");
+                loader.style.display = "none";
             }
         } catch (error) {
             console.log(error.message);
         }
     }
 
-    function calculateLikePercentage(evaluate){
+    function calculateLikePercentage(evaluate) {
         var sum = 0;
         var like = 0;
 
         evaluate.forEach(data => {
-            if(data["type"] === "like"){
+            if (data["type"] === "like") {
                 sum += 1;
                 like += 1;
             }
-            else if(data["type"] === "dislike"){
+            else if (data["type"] === "dislike") {
                 sum += 1;
             }
         });
 
-        if(sum == 0)
+        if (sum == 0)
             return 0;
 
         var result = like / sum * 100
@@ -189,20 +230,20 @@
         return result;
     }
 
-    function isFloat(n){
+    function isFloat(n) {
         return Number(n) === n && n % 1 !== 0;
     }
 
-    function checkDocumentSaved(evaluate){
-        for(var data of evaluate){
-            if(userCurrentId !== null && data["type"] === "save" && userCurrentId === data["account_id"])
+    function checkDocumentSaved(evaluate) {
+        for (var data of evaluate) {
+            if (userCurrentId !== null && data["type"] === "save" && userCurrentId === data["account_id"])
                 return true;
-        } 
+        }
 
         return false;
     }
 
-    function showNext(methodClickNext){        
+    function showNext(methodClickNext) {
         var buttonNext = document.createElement("button")
         buttonNext.classList.add("carousel-control-next")
         buttonNext.setAttribute("type", "button")
@@ -222,7 +263,7 @@
         return buttonNext;
     }
 
-    function showPrev(methodClickPrev){
+    function showPrev(methodClickPrev) {
         var buttonPrev = document.createElement("button")
         buttonPrev.classList.add("carousel-control-prev")
         buttonPrev.setAttribute("type", "button")
@@ -242,27 +283,27 @@
         return buttonPrev;
     }
 
-    function getOnlyFileName(fileName){
+    function getOnlyFileName(fileName) {
         return fileName.split('.').slice(0, -1).join('.')
     }
 
-    function showDocument(document){
+    function showDocument(document) {
         html = `<div class="carousel-item active" onclick="openDocumentDetail(${document["id"]})">
                     <div class="card">`
 
-        if(document["image"] != null)
+        if (document["image"] != null)
             html += `<div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px;"><img src="${document["image"]}" class="d-block img-detail" alt="..."> </div></div>`
         else
             html += `<div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px"><img src="/static/images/anh11.png" class="d-block img-detail" alt="..."> </div></div>`
-                        
+
         html += `<div class="card-body">
                     <h5 class="card-title">${getOnlyFileName(document["document_name"])}</h5>
                     <p class="card-text">Được thêm bởi ${document["fullname"]}</p>
                 </div>
                 <div class="card-footer">
                     <div class="d-flex bd-highlight">`
-        
-        if(checkDocumentSaved(document["evaluate"]))
+
+        if (checkDocumentSaved(document["evaluate"]))
             html += `<div class="p-2 flex-grow-1 bd-highlight"><i class="bi bi-bookmark-fill"></i></div>`
         else
             html += `<div class="p-2 flex-grow-1 bd-highlight"><i class="bi bi-bookmark"></i></div>`
@@ -277,7 +318,7 @@
         return html;
     }
 
-    function openDocumentDetail(id){
+    function openDocumentDetail(id) {
         window.location.replace(baseURL + "/document/" + id)
     }
 </script>

@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import flash, jsonify, redirect, render_template, request, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import BaseView, expose
@@ -172,7 +173,10 @@ class CategoryView(BaseView):
             category =  Categories()
             category.name = createCategory.data["name"]
             category.description = createCategory.data["description"]
-            category.parent_id = createCategory.data["parent_id"]
+
+            if (createCategory.data["parent_id"] != "null"):
+                category.parent_id = createCategory.data["parent_id"]
+
             category.save_to_db()
             flash("Tạo danh mục thành công")
 
@@ -201,7 +205,12 @@ class CategoryView(BaseView):
         if editCategory.validate():
             category.name = editCategory.data["name"]
             category.description = editCategory.data["description"]
-            category.parent_id = editCategory.data["parent_id"]
+
+            if (editCategory.data["parent_id"] != "null"):
+                category.parent_id = editCategory.data["parent_id"]
+            else:
+                category.parent_id = None
+
             category.save_to_db()
             flash("Cập nhật danh mục thành công")
 
@@ -214,6 +223,65 @@ class StatsView(BaseView):
     @expose('/')
     def index(self):
         return self.render('/admin/stats/index.html')
+    
+    @expose("/stats-revenue")
+    def get_stats_revenue(self):
+        year = request.args.get('year', datetime.now().year, type=int)
+        revenue, code, msg = self._get_month_stats(year)
+
+        return jsonify({"message": msg, "code": code, "data": revenue})
+
+    def _get_month_stats(self, year):  
+        try:
+            transactions = Transaction.get_month_stats(year)
+            keys = ("month", "sum")
+            results = []
+            
+            for transaction in transactions:
+                results.append(dict(zip(keys, transaction)))
+            
+            return results, 0, "Get stats success"
+        except Exception as e:
+            return None, -1, "Get stats fail " + str(e)
+        
+    @expose("/stats-upload-document")
+    def get_stats_upload_document(self):
+        year = request.args.get('year', datetime.now().year, type=int)
+        stats, code, msg = self._get_month_stats_upload_document(year)
+
+        return jsonify({"message": msg, "code": code, "data": stats})
+
+    def _get_month_stats_upload_document(self, year):  
+        try:
+            document = Documents.get_month_stats_all_document(year)
+            keys = ("month", "count")
+            results = []
+            
+            for transaction in document:
+                results.append(dict(zip(keys, transaction)))
+            
+            return results, 0, "Get stats success"
+        except Exception as e:
+            return None, -1, "Get stats fail " + str(e)
+        
+    @expose("/stats-category")
+    def get_stats_category(self):
+        stats, code, msg = self._get_stats_category_doc()
+
+        return jsonify({"message": msg, "code": code, "data": stats})
+
+    def _get_stats_category_doc(self):  
+        try:
+            document = Categories.get_stats()
+            keys = ("name", "count")
+            results = []
+            
+            for transaction in document:
+                results.append(dict(zip(keys, transaction)))
+            
+            return results, 0, "Get stats success"
+        except Exception as e:
+            return None, -1, "Get stats fail " + str(e)
     
     def is_accessible(self):
         return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
@@ -262,7 +330,7 @@ admin.add_view(PermissionView(Permission, db.session, name="Quyền"))
 admin.add_view(DocumentView(Documents, db.session, name="Tài liệu"))
 admin.add_view(CategoryView(name="Danh mục", endpoint="categories"))
 admin.add_view(TransactionView(Transaction, db.session, name="Giao dịch"))
-admin.add_view(StatsView(name="Thống kê"))
+admin.add_view(StatsView(name="Thống kê", endpoint="stats"))
 admin.add_view(LogoutView(name="Đăng xuất"))
 
 @bp.route("/admin-login", methods=["POST"])

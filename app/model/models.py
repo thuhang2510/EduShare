@@ -180,10 +180,18 @@ class Transaction(db.Model):
                         .paginate(page=page, per_page=per_page)
     
     @classmethod
-    def get_month_stats(cls, _account_id, year):
+    def get_month_stats_with_account_id(cls, _account_id, year):
         return cls.query.with_entities(extract('month', cls.date), func.sum(cls.amount))\
                     .order_by(cls.date)\
                     .filter(cls.account_id==_account_id, extract('year', cls.date)==year, cls.type != "Mua tài liệu", cls.result==0)\
+                    .group_by(extract('month', cls.date))\
+                    .all()
+    
+    @classmethod
+    def get_month_stats(cls, year):
+        return cls.query.with_entities(extract('month', cls.date), func.sum(cls.amount))\
+                    .order_by(cls.date)\
+                    .filter(extract('year', cls.date)==year, cls.type.like("Nhận hoa hồng"), cls.result==0)\
                     .group_by(extract('month', cls.date))\
                     .all()
     
@@ -261,6 +269,16 @@ class Categories(db.Model):
     @classmethod
     def find_by_id(cls, category_id):
         return cls.query.filter(cls.id == category_id).first()
+    
+    @classmethod
+    def get_stats(cls):
+        return cls.query.with_entities(cls.name)\
+                        .join(DocumentCategories, DocumentCategories.category_id == cls.id, isouter=True)\
+                        .join(Documents, Documents.id == DocumentCategories.document_id, isouter=True)\
+                        .add_column(func.count(Documents.id))\
+                        .filter(cls.parent_id == None)\
+                        .group_by(cls.name)\
+                        .all()
     
     def to_dict(self):
         data = {
@@ -393,6 +411,14 @@ class Documents(db.Model):
         return cls.query.with_entities(extract('month', cls.creation_date), func.count())\
                     .order_by(cls.creation_date)\
                     .filter(cls.account_id==_account_id, extract('year', cls.creation_date)==year, cls.status==True)\
+                    .group_by(extract('month', cls.creation_date))\
+                    .all()
+    
+    @classmethod
+    def get_month_stats_all_document(cls, year):
+        return cls.query.with_entities(extract('month', cls.creation_date), func.count())\
+                    .order_by(cls.creation_date)\
+                    .filter(extract('year', cls.creation_date)==year, cls.status==True)\
                     .group_by(extract('month', cls.creation_date))\
                     .all()
     

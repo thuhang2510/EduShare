@@ -8,7 +8,7 @@ class EditCategoryForm(FlaskForm):
     id = IntegerField()
     name = StringField(label="Tên danh mục", validators=[DataRequired("Tên danh mục không thể thiếu")])
     description = StringField(label="Mô tả")
-    parent_id = IntegerField(label="Danh mục cha")
+    parent_id = StringField(label="Danh mục cha")
 
     def validate_name(self, name):
         category = Categories.find_by_name(name.data)
@@ -18,7 +18,7 @@ class EditCategoryForm(FlaskForm):
 class CreateCategoryForm(FlaskForm):
     name = StringField(label="Tên danh mục", validators=[DataRequired("Tên danh mục không thể thiếu")])
     description = StringField(label="Mô tả")
-    parent_id = IntegerField(label="Danh mục cha")
+    parent_id = StringField(label="Danh mục cha")
 
     def validate_name(self, name):
         category = Categories.find_by_name(name.data)

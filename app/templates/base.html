@@ -1,48 +1,74 @@
 {% extends 'bootstrap/base.html' %}
 
 {% block styles %}
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 <style>
-    html, body{
+    html,
+    body {
         height: 100%;
     }
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    ::-webkit-scrollbar-button {
+        display: none;
+    }
+
+    body {
+        -ms-overflow-style:none;
+    }
+</style>
 </style>
 {% endblock %}
 
 {% block content %}
 
 <div style="position: relative; height: 100%;">
-    <nav class="navbar navbar-expand-lg justify-content-center border-bottom col-xl-12" style="position:fixed; top:0; background-color: white; z-index: 998;">
+    <nav class="navbar navbar-expand-lg justify-content-center border-bottom col-xl-12"
+        style="position:fixed; top:0; background-color: white; z-index: 998;">
         <div class="container">
-            <a href="/api/v1" class="navbar-brand d-flex w-50 me-auto fs-3 fw-bold" style="color: rgb(2, 126, 176);">EduShare</a>
+            <a href="/api/v1" class="navbar-brand d-flex w-50 me-auto fs-3 fw-bold"
+                style="color: rgb(2, 126, 176);">EduShare</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsingNavbar3">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
                 <ul class="navbar-nav w-100 justify-content-center">
                     <li class="nav-item col-xl-12 my-1">
-                        <input id="search" class="form-control me-5 rounded-pill" style="border: 2px solid #ced4da;" type="text" placeholder="Tìm kiếm tài liệu">
+                        <input id="search" class="form-control me-5 rounded-pill" style="border: 2px solid #ced4da;"
+                            type="text" placeholder="Tìm kiếm tài liệu">
                     </li>
                 </ul>
                 <ul class="nav navbar-nav ms-auto w-100 justify-content-end">
                     <li class="nav-item">
-                        <button id="recharge" class="btn px-3 my-1 fw-bold me-2 border-2" type="submit" style="color: rgb(2, 126, 176); border: 2px solid rgb(2, 126, 176);" onclick="clickRecharge()">Nạp tiền</button>
+                        <button id="recharge" class="btn px-3 my-1 fw-bold me-2 border-2" type="submit"
+                            style="color: rgb(2, 126, 176); border: 2px solid rgb(2, 126, 176);"
+                            onclick="clickRecharge()">Nạp tiền</button>
                     </li>
                     <li class="nav-item">
-                        <button id="upload" class="btn me-3 px-4 fw-bold my-1" type="submit" style="background-color: rgb(2, 126, 176); color: white;" onclick="clickUpload()">Tải lên</button>
+                        <button id="upload" class="btn me-3 px-4 fw-bold my-1" type="submit"
+                            style="background-color: rgb(2, 126, 176); color: white;" onclick="clickUpload()">Tải
+                            lên</button>
                     </li>
                     <li id="base-andanh" class="nav-item">
-                        <button id="register" onclick="clickRegister()" class="btn mx-0 px-0 my-1" type="submit" style="color: rgb(2, 126, 176);">Đăng ký</button> / 
-                        <button id="login" onclick="clickLogin()" class="btn mx-0 px-0 my-1" style="color: rgb(2, 126, 176);" type="submit">Đăng nhập</button>
+                        <button id="register" onclick="clickRegister()" class="btn mx-0 px-0 my-1" type="submit"
+                            style="color: rgb(2, 126, 176);">Đăng ký</button> /
+                        <button id="login" onclick="clickLogin()" class="btn mx-0 px-0 my-1"
+                            style="color: rgb(2, 126, 176);" type="submit">Đăng nhập</button>
                     </li>
                     <li id="base-login" class="nav-item dropdown" style="display: none;">
-                        <a id="base-login-fullname" class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-id="0" data-countdownload="0" data-countask="0" data-bs-toggle="dropdown" aria-expanded="false">Nguyễn Mai Tú Nguyệt</a>
+                        <a id="base-login-fullname" class="nav-link dropdown-toggle" href="#"
+                            id="navbarScrollingDropdown" role="button" data-id="0" data-countdownload="0"
+                            data-countask="0" data-bs-toggle="dropdown" aria-expanded="false">Nguyễn Mai Tú Nguyệt</a>
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarScrollingDropdown">
                             <li><a class="dropdown-item" href="/user/thong-tin-ca-nhan">Thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" href="/user/quan-ly-tai-lieu">Quản lý tài liệu</a></li>
                             <li><a class="dropdown-item" href="/user/quan-ly-tai-chinh">Quản lý tài chính</a></li>
-                            <li><a class="dropdown-item" href="#">Số dư: <span id="base-coin" class="mb-0" style="color: #0d6efd;"></span></a></li>
+                            <li><a class="dropdown-item" href="#">Số dư: <span id="base-coin" class="mb-0"
+                                        style="color: #0d6efd;"></span></a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -54,113 +80,129 @@
         </div>
     </nav>
 
+    <div id="base-alert" style="position: fixed; top:70px; z-index:1000; left: 50%; transform: translate(-50%); visibility: visible;">
+    </div>
+
     {% block app_content %}{% endblock %}
 
-    <div id="form-register" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; visibility:hidden;z-index: 999;">
-        <div class="container d-flex justify-content-center" style="position: fixed;">   
-        <div class="register bg-white col-xl-5 p-4 rounded-3">
-          <div class="d-flex justify-content-end">
-            <button id="close-form-register" type="button" class="btn-close text-right" onclick="clickCloseRegiter()"></button>
-          </div>
-          <h3 class="text-center">Đăng ký</h3>
-          <form action="/auth/register" method="post">
-            <div class="form-group">
-            {{ form.fullname.label }}
-            {{ form.fullname(class_="form-control rounded-4 my-1", id_="fullname") }}
-            <div id="fullname-error" class="invalid-feedback mb-1"></div>
-            </div>
-            <div class="form-group">
-            {{ form.address.label }}
-            {{ form.address(class_="form-control rounded-4 my-1", id_="address") }}
-            <div id="address-error" class="invalid-feedback mb-1"></div>
-            </div>
-            <div class="form-group">
-            {{ form.number.label }}
-            {{ form.number(class_="form-control rounded-4 my-1", id_="number") }}
-            <div id="number-error" class="invalid-feedback mb-1"></div>
-            </div>
-            <div class="form-group">
-            {{ form.email.label }}
-            {{ form.email(class_="form-control rounded-4 my-1", id_="email") }}
-            <div id="email-error" class="invalid-feedback mb-1"></div>
-            </div>
-            <div class="form-group">
-            {{ form.password.label }}
-            {{ form.password(class_="form-control rounded-4 my-1", id_="password") }}
-            <div id="password-error" class="invalid-feedback mb-1"></div>
-            </div>
-            <div class="form-group">
-            {{ form.repassword.label }}
-            {{ form.repassword(class_="form-control rounded-4 my-1", id_="repassword") }}
-            <div id="repassword-error" class="invalid-feedback mb-1"></div>
-            </div>
-            <input class="btn btn-primary w-100 my-3 rounded-pill" id="submit" name="submit" type="button" onclick="sendFormRegister()" value="Đăng ký">
-          </form>
-          <p class="text-center">Đã có tài khoản?
-            <a class="text-center" onclick="turnToLogin()"> Đăng nhập </a>
-          </p>
-          <p class="text-center">Bằng cách nhập vào Đăng ký, bạn đồng ý với Điều khoản và Chính sách bảo mật thông tin của chúng tôi</p>
-        </div> 
-      </div>
-    </div>
-
-    <div id="form-login" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; visibility:hidden; z-index: 999;">
-        <div class="container d-flex justify-content-center" style="position: fixed;">   
-        <div class="register bg-white col-xl-5 p-4 rounded-3">
-          <div class="d-flex justify-content-end">
-            <button id="close-form-login" type="button" class="btn-close text-right" onclick="clickCloseLogin()"></button>
-          </div>
-          <h3 class="text-center">Đăng nhập</h3>
-          <form action="/auth/login" method="post">
-            <div class="form-group">
-            {{ formlogin.email.label }}
-            {{ formlogin.email(class_="form-control rounded-4 my-1", id_="login-email") }}
-            <div id="login-email-error" class="invalid-feedback mb-1"></div>
-            </div>
-            <div class="form-group">
-            {{ formlogin.password.label }}
-            {{ formlogin.password(class_="form-control rounded-4 my-1", id_="login-password") }}
-            <div id="login-password-error" class="invalid-feedback mb-1"></div>
-            </div>
-            <a href="#" class="text-end my-1" onclick="turnToResetPassword()">Quên mật khẩu</a>
-            <input class="btn btn-primary w-100 my-3 rounded-pill" id="login-submit" name="submit" type="button" onclick="sendFormLogin()" value="Đăng nhập">
-          </form>
-          <p class="text-center">Chưa có tài khoản?
-            <a class="text-center" onclick="turnToRegister()"> Đăng ký </a>
-          </p>
-        </div> 
-      </div>
-    </div>
-
-    <div id="form-reset-password" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; visibility:hidden; z-index: 999;">
-       <div class="container d-flex justify-content-center" style="position: fixed;">   
-        <div class="register bg-white col-xl-5 p-4 rounded-3">
-          <div class="d-flex justify-content-end">
-            <button id="close-form-reset-password" type="button" class="btn-close text-right" onclick="clickCloseResetPw()"></button>
-          </div>
-          <h3 class="text-center">Quên mật khẩu</h3>
-          <p class="text-danger text-center">Bạn quên mật khẩu đăng nhập? Nhập email đăng ký tài khoản ở đây, chúng tôi sẽ giúp bạn lấy lại mật khẩu</p>
-          <form action="#" method="post">
-            <div class="form-group">
-            {{ formresetpw.email.label }}
-            {{ formresetpw.email(class_="form-control rounded-4 my-1", id_="reset-password-email") }}
-            <div id="reset-password-email-error" class="invalid-feedback mb-1"></div>
-            </div>
-            <input class="btn btn-primary w-100 my-3 rounded-pill" id="reset-password-submit" name="submit" type="button" onclick="sendFormResetPassword()" value="Gửi yêu cầu">
-          </form>
-          <div class="text-center"><a class="text-center" onclick="turnToRegister()">Tạo tài khoản mới</a></div>
-          <div class="text-center">Chưa có tài khoản?
-            <a class="text-center" onclick="turnToLogin()"> Đăng nhập </a>
-          </div>
-        </div> 
-      </div>
-    </div>
-
-    <div id="form-recharge" class="d-flex align-items-center justify-content-center" style="height:100%; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; visibility:hidden; z-index: 999;">
-        <div class="container d-flex justify-content-center" style="position: fixed;">   
+    <div id="form-register" class="d-flex align-items-center justify-content-center"
+        style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; visibility:hidden;z-index: 999;">
+        <div class="container d-flex justify-content-center" style="position: fixed;">
             <div class="register bg-white col-xl-5 p-4 rounded-3">
                 <div class="d-flex justify-content-end">
-                    <button id="close-form-recharge" type="button" class="btn-close text-right" onclick="clickCloseRecharge()"></button>
+                    <button id="close-form-register" type="button" class="btn-close text-right"
+                        onclick="clickCloseRegiter()"></button>
+                </div>
+                <h3 class="text-center">Đăng ký</h3>
+                <form action="/auth/register" method="post">
+                    <div class="form-group">
+                        {{ form.fullname.label }} <strong style="color: red">*</strong>
+                        {{ form.fullname(class_="form-control rounded-4 my-1", id_="fullname") }}
+                        <div id="fullname-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.address.label }}
+                        {{ form.address(class_="form-control rounded-4 my-1", id_="address") }}
+                        <div id="address-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.number.label }} <strong style="color: red">*</strong>
+                        {{ form.number(class_="form-control rounded-4 my-1", id_="number") }}
+                        <div id="number-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.email.label }} <strong style="color: red">*</strong>
+                        {{ form.email(class_="form-control rounded-4 my-1", id_="email") }}
+                        <div id="email-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.password.label }} <strong style="color: red">*</strong>
+                        {{ form.password(class_="form-control rounded-4 my-1", id_="password") }}
+                        <div id="password-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <div class="form-group"> 
+                        {{ form.repassword.label }} <strong style="color: red">*</strong>
+                        {{ form.repassword(class_="form-control rounded-4 my-1", id_="repassword") }}
+                        <div id="repassword-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <input class="btn btn-primary w-100 my-3 rounded-pill" id="submit" name="submit" type="button"
+                        onclick="sendFormRegister()" value="Đăng ký">
+                </form>
+                <p class="text-center">Đã có tài khoản?
+                    <a class="text-center" onclick="turnToLogin()"> Đăng nhập </a>
+                </p>
+                <p class="text-center">Bằng cách nhập vào Đăng ký, bạn đồng ý với Điều khoản và Chính sách bảo mật thông
+                    tin của chúng tôi</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="form-login" class="d-flex align-items-center justify-content-center"
+        style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; visibility:hidden; z-index: 999;">
+        <div class="container d-flex justify-content-center" style="position: fixed;">
+            <div class="register bg-white col-xl-5 p-4 rounded-3">
+                <div class="d-flex justify-content-end">
+                    <button id="close-form-login" type="button" class="btn-close text-right"
+                        onclick="clickCloseLogin()"></button>
+                </div>
+                <h3 class="text-center">Đăng nhập</h3>
+                <form action="/auth/login" method="post">
+                    <div class="form-group">
+                        {{ formlogin.email.label }} <strong style="color: red">*</strong>
+                        {{ formlogin.email(class_="form-control rounded-4 my-1", id_="login-email") }}
+                        <div id="login-email-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <div class="form-group">
+                        {{ formlogin.password.label }} <strong style="color: red">*</strong>
+                        {{ formlogin.password(class_="form-control rounded-4 my-1", id_="login-password") }}
+                        <div id="login-password-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <a href="#" class="text-end my-1" onclick="turnToResetPassword()">Quên mật khẩu</a>
+                    <input class="btn btn-primary w-100 my-3 rounded-pill" id="login-submit" name="submit" type="button"
+                        onclick="sendFormLogin()" value="Đăng nhập">
+                </form>
+                <p class="text-center">Chưa có tài khoản?
+                    <a class="text-center" onclick="turnToRegister()"> Đăng ký </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="form-reset-password" class="d-flex align-items-center justify-content-center"
+        style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; visibility:hidden; z-index: 999;">
+        <div class="container d-flex justify-content-center" style="position: fixed;">
+            <div class="register bg-white col-xl-5 p-4 rounded-3">
+                <div class="d-flex justify-content-end">
+                    <button id="close-form-reset-password" type="button" class="btn-close text-right"
+                        onclick="clickCloseResetPw()"></button>
+                </div>
+                <h3 class="text-center">Quên mật khẩu</h3>
+                <p class="text-danger text-center">Bạn quên mật khẩu đăng nhập? Nhập email đăng ký tài khoản ở đây,
+                    chúng tôi sẽ giúp bạn lấy lại mật khẩu</p>
+                <form action="#" method="post">
+                    <div class="form-group">
+                        {{ formresetpw.email.label }} <strong style="color: red">*</strong>
+                        {{ formresetpw.email(class_="form-control rounded-4 my-1", id_="reset-password-email") }}
+                        <div id="reset-password-email-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <input class="btn btn-primary w-100 my-3 rounded-pill" id="reset-password-submit" name="submit"
+                        type="button" onclick="sendFormResetPassword()" value="Gửi yêu cầu">
+                </form>
+                <div class="text-center"><a class="text-center" onclick="turnToRegister()">Tạo tài khoản mới</a></div>
+                <div class="text-center">Chưa có tài khoản?
+                    <a class="text-center" onclick="turnToLogin()"> Đăng nhập </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="form-recharge" class="d-flex align-items-center justify-content-center"
+        style="height:100%; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; visibility:hidden; z-index: 999;">
+        <div class="container d-flex justify-content-center" style="position: fixed;">
+            <div class="register bg-white col-xl-5 p-4 rounded-3">
+                <div class="d-flex justify-content-end">
+                    <button id="close-form-recharge" type="button" class="btn-close text-right"
+                        onclick="clickCloseRecharge()"></button>
                 </div>
                 <h3 class="mb-3">Nạp tiền vào tài khoản</h3>
                 <h5 class="mb-2" style="color: #0d6efd;">Thanh toán qua ví MoMo</h5>
@@ -172,99 +214,109 @@
                     <option value="150000">150.000VNĐ</option>
                     <option value="200000">200.000VNĐ</option>
                 </select>
-                <input class="btn btn-primary w-100 my-3 rounded-pill" id="reset-password-submit" onclick="sendFormRecharge()" name="submit" type="button" value="Nạp tiền">
-            </div> 
-            <div class="register bg-white p-3 rounded-3 col-xl-3" style="z-index: 1; position:absolute; top:0px; left:922px">
+                <input class="btn btn-primary w-100 my-3 rounded-pill" id="reset-password-submit"
+                    onclick="sendFormRecharge()" name="submit" type="button" value="Nạp tiền">
+            </div>
+            <div class="register bg-white p-3 rounded-3 col-xl-3"
+                style="z-index: 1; position:absolute; top:0px; left:922px">
                 <div class="d-flex flex-row bd-highlight mb-3">
-                    <div class="rounded-circle bg-secondary align-self-center d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
+                    <div class="rounded-circle bg-secondary align-self-center d-flex justify-content-center align-items-center"
+                        style="width: 50px; height: 50px;">
                         <span id="base-img" class="h5 text-white">H</span>
                     </div>
                     <div class="d-flex flex-column bd-highlight">
-                        <div id="ls-base-fullname" class="px-2 bd-highlight"><p class="mb-0" style="font-size: .98rem;"></p></div>
-                        <div id="ls-base-email" class="px-2 bd-highlight"><p class="mb-0" style="font-size: .90rem;"></p></div>
-                        <div class="px-2 bd-highlight"><a class="text-center" style="font-size: .90rem;">Lịch sử giao dịch</a></div>
+                        <div id="ls-base-fullname" class="px-2 bd-highlight">
+                            <p class="mb-0" style="font-size: .98rem;"></p>
+                        </div>
+                        <div id="ls-base-email" class="px-2 bd-highlight">
+                            <p class="mb-0" style="font-size: .90rem;"></p>
+                        </div>
+                        <div class="px-2 bd-highlight"><a class="text-center" style="font-size: .90rem;">Lịch sử giao
+                                dịch</a></div>
                     </div>
                 </div>
                 <hr>
-                <p class="mb-0" style="font-size: 15px;">Tài khoản: <span id="ls-base-coin" class="mb-0" style="color: #0d6efd;"></span></p>
+                <p class="mb-0" style="font-size: 15px;">Tài khoản: <span id="ls-base-coin" class="mb-0"
+                        style="color: #0d6efd;"></span></p>
             </div>
-        </div>     
+        </div>
     </div>
-    {% include('footer.html') %}    
+    {% include('footer.html') %}
 </div>
 
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"></script>
 <script>
     const baseURL = "http://127.0.0.1:5000"
- 
-    window.onload = function()
-    {
-        if(localStorage.token)
+
+    window.onload = function () {
+        if (localStorage.token)
             getUser();
         else
             closeLogin();
     };
 
-    function openLogin(){
+    function openLogin() {
         document.getElementById("base-andanh").style.display = "none"
         document.getElementById("base-login").style.display = "block";
     }
 
-    function closeLogin(){
+    function closeLogin() {
         document.getElementById("base-andanh").style.display = "block";
         document.getElementById("base-login").style.display = "none";
     }
 
-    function clickUpload(){
+    function clickUpload() {
         if (localStorage.token)
             window.location.replace(baseURL + "/document/upload")
         else
             clickLogin();
     }
 
-    function clickRegister(){
+    function clickRegister() {
         document.getElementById("form-register").style.visibility = "visible";
     }
 
-    function clickCloseRegiter(){
+    function clickCloseRegiter() {
         resetValueInputOfFormRegister();
         resetErrorInputOfFormRegister();
         document.getElementById("form-register").style.visibility = "hidden";
     }
 
-    function clickLogin(){
+    function clickLogin() {
         document.getElementById("form-login").style.visibility = "visible";
     }
 
-    function clickCloseLogin(){
+    function clickCloseLogin() {
         resetValueInputOfFormLogin();
         resetErrorInputOfFormLogin();
         document.getElementById("form-login").style.visibility = "hidden";
     }
 
-    function turnToLogin(){
+    function turnToLogin() {
         clickCloseRegiter();
         clickCloseResetPw();
         clickLogin();
     }
 
-    function clickResetPw(){
+    function clickResetPw() {
         document.getElementById("form-reset-password").style.visibility = "visible";
     }
 
-    function clickCloseResetPw(){
+    function clickCloseResetPw() {
         document.getElementById("form-reset-password").style.visibility = "hidden";
     }
 
-    function turnToResetPassword(){
+    function turnToResetPassword() {
         clickCloseLogin();
         clickResetPw();
     }
 
-    function turnToRegister(){
+    function turnToRegister() {
         clickCloseLogin();
         clickCloseResetPw();
         clickRegister();
@@ -275,7 +327,7 @@
             input: document.getElementById("fullname"),
             error: document.getElementById("fullname-error"),
         },
-        address:{
+        address: {
             input: document.getElementById("address"),
             error: document.getElementById("address-error"),
         },
@@ -297,7 +349,7 @@
         }
     };
 
-    async function sendFormRegister(){  
+    async function sendFormRegister() {
         resetErrorInputOfFormRegister();
 
         var url = baseURL + '/api/v1/register'
@@ -313,7 +365,7 @@
 
         try {
             const result = await postData(url, data);
-            if (result.code === -2){
+            if (result.code === -2) {
                 const errors = result.data;
 
                 Object.keys(errors).forEach((key) => {
@@ -321,30 +373,30 @@
                     fields_register[key].error.innerHTML = errors[key][0];
                 });
             }
-            else if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");
+            else if (result.code === -1) {
+                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
                 console.log("Thất bại");
             }
-            else{
-                alert("Đăng ký thành công. Vui lòng thực hiện Đăng nhập");
+            else {
+                show_base_alert(0, "Đăng ký thành công. Vui lòng thực hiện Đăng nhập");
                 clickCloseRegiter();
                 clickLogin();
                 resetValueInputOfFormRegister();
             }
         } catch (error) {
-            alert("Có lỗi xảy ra vui lòng thử lại sau");
+            show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
             console.log(error.message);
         }
     }
 
-    function resetErrorInputOfFormRegister(){
-        for(let key in fields_register){
+    function resetErrorInputOfFormRegister() {
+        for (let key in fields_register) {
             fields_register[key].input.classList.remove('is-invalid');
         }
     }
 
-    function resetValueInputOfFormRegister(){
-        for(let key in fields_register){
+    function resetValueInputOfFormRegister() {
+        for (let key in fields_register) {
             fields_register[key].input.value = "";
         }
     }
@@ -360,19 +412,19 @@
         }
     };
 
-    function resetErrorInputOfFormLogin(){
-        for(let key in fields_login){
+    function resetErrorInputOfFormLogin() {
+        for (let key in fields_login) {
             fields_login[key].input.classList.remove('is-invalid');
         }
     }
 
-    function resetValueInputOfFormLogin(){
-        for(let key in fields_login){
+    function resetValueInputOfFormLogin() {
+        for (let key in fields_login) {
             fields_login[key].input.value = "";
         }
     }
 
-    async function sendFormLogin(){
+    async function sendFormLogin() {
         resetErrorInputOfFormLogin();
 
         var url = baseURL + '/api/v1/login'
@@ -383,8 +435,8 @@
         }
 
         try {
-            const result = await postDataNoAuthorization(url, data);
-            if (result.code === -2){
+            const result = await postData(url, data);
+            if (result.code === -2) {
                 const errors = result.data;
 
                 Object.keys(errors).forEach((key) => {
@@ -392,16 +444,16 @@
                     fields_login[key].error.innerHTML = errors[key][0];
                 });
             }
-            else if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+            else if (result.code === -1) {
+                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
                 console.log("Đăng nhập thất bại");
             }
-            else{
+            else {
                 localStorage.setItem("token", result.data)
                 getUser();
                 clickCloseLogin();
                 resetValueInputOfFormLogin();
-                location.reload();
+                show_base_alert(0, "Đăng nhập thành công");
             }
         } catch (error) {
             console.log(error.message);
@@ -418,13 +470,13 @@
 
     var userCurrentId = null;
 
-    async function getUser(){
+    async function getUser() {
         url = baseURL + "/api/v1/user-token"
         var base_img = document.getElementById("base-img")
 
         try {
-            const result = await getData(url);
-            if (result.code === 0){
+            const result = await getData(url, localStorage.token);
+            if (result.code === 0) {
                 user.lg_fullname.innerHTML = result.data["fullname"];
                 user.email.innerHTML = result.data["email"];
                 user.ls_fullname.innerHTML = result.data["fullname"];
@@ -435,27 +487,31 @@
                 userCurrentId = result.data["id"]
 
                 updateCountDownload(result);
-                updateCountAsk(result);
             }
-            else{
+            else if (result.code == -4) {
                 userCurrentId = null;
-                alert(result.message);
-                clickLogin();
+                localStorage.setItem("token", "");
+                closeLogin();
+            }
+            else {
+                userCurrentId = null;
+                closeLogin();
             }
         } catch (error) {
             console.log(error.message);
+            closeLogin();
         }
     }
 
-    async function updateCountDownloadAPI(number_download, week_reset){
+    async function updateCountDownloadAPI(number_download, week_reset) {
         data = {
             "number_download": number_download,
             "week_reset": week_reset
         }
 
         try {
-            const result = await postData("/user/upload-count-download", data);
-            if (result.code == 0){
+            const result = await postData("/user/upload-count-download", data, localStorage.token);
+            if (result.code == 0) {
                 user.lg_fullname.dataset.countdownload = number_download;
             }
         } catch (error) {
@@ -463,27 +519,15 @@
         }
     }
 
-    function updateCountDownload(result){
+    function updateCountDownload(result) {
         var currentDate = new Date();
         datetime_week_reset = new Date(result.data["datetime_week_reset"])
-        datetime_week_reset = Math.abs(currentDate.getTime() - datetime_week_reset.getTime()) / (1000 * 60 * 60 *24);
-        if (datetime_week_reset > 7){
+        datetime_week_reset = Math.abs(currentDate.getTime() - datetime_week_reset.getTime()) / (1000 * 60 * 60 * 24);
+        if (datetime_week_reset > 7) {
             updateCountDownloadAPI(0, true)
         }
         else
             user.lg_fullname.dataset.countdownload = result.data["number_download"]
-    }
-
-    function updateCountAsk(result){
-        var currentDate = new Date();
-        datetime_day_reset = new Date(result.data["datetime_day_reset"])
-        datetime_day_reset = Math.abs(currentDate.getTime() - datetime_day_reset.getTime()) / (1000 * 60 * 60 *24);
-        if (datetime_day_reset > 3){
-            //update ngày ở db
-            user.lg_fullname.dataset.countask = 0
-        }
-        else
-            user.lg_fullname.dataset.countask = result.data["number_ask"]
     }
 
     const fields_reset_fw = {
@@ -493,19 +537,19 @@
         }
     };
 
-    function resetValueInputOfFormResetPw(){
-        for(let key in fields_reset_fw){
+    function resetValueInputOfFormResetPw() {
+        for (let key in fields_reset_fw) {
             fields_reset_fw[key].input.value = "";
         }
     }
 
-    function resetErrorInputOfFormResetPw(){
-        for(let key in fields_reset_fw){
+    function resetErrorInputOfFormResetPw() {
+        for (let key in fields_reset_fw) {
             fields_reset_fw[key].input.classList.remove('is-invalid');
         }
     }
 
-    async function sendFormResetPassword(){
+    async function sendFormResetPassword() {
         resetErrorInputOfFormResetPw();
 
         var url = baseURL + '/api/v1/resetpw'
@@ -515,8 +559,8 @@
         }
 
         try {
-            const result = await postDataNoAuthorization(url, data);
-            if (result.code === -2){
+            const result = await postData(url, data);
+            if (result.code === -2) {
                 const errors = result.data;
 
                 Object.keys(errors).forEach((key) => {
@@ -524,11 +568,11 @@
                     fields_login[key].error.innerHTML = errors[key][0];
                 });
             }
-            else if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+            else if (result.code === -1) {
+                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
             }
-            else{
-                alert("Mật khẩu đã gửi tới mail của bạn. Chuyển sang trang đăng nhập");
+            else {
+                show_base_alert(0, "Mật khẩu đã gửi tới mail của bạn. Chuyển sang trang đăng nhập");
                 turnToLogin();
                 resetValueInputOfFormResetPw();
             }
@@ -537,16 +581,16 @@
         }
     }
 
-    async function clickRecharge(){
+    async function clickRecharge() {
         url = baseURL + "/api/v1/user-token"
 
         try {
-            const result = await getData(url);
-            if (result.code === 0){
+            const result = await getData(url, localStorage.token);
+            if (result.code === 0) {
                 document.getElementById("form-recharge").style.visibility = "visible"
             }
-            else{
-                alert("Hãy đăng nhập để thực hiện nạp tiền");
+            else {
+                show_base_alert(-1, "Hãy đăng nhập để thực hiện nạp tiền");
                 clickLogin();
             }
         } catch (error) {
@@ -554,11 +598,11 @@
         }
     }
 
-    function clickCloseRecharge(){
+    function clickCloseRecharge() {
         document.getElementById("form-recharge").style.visibility = "hidden"
     }
 
-    async function sendFormRecharge(){
+    async function sendFormRecharge() {
         var url = baseURL + '/momo/callMoMo'
 
         data = {
@@ -569,10 +613,10 @@
 
         try {
             const result = await postData(url, data);
-            if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
+            if (result.code === -1) {
+                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
             }
-            else{
+            else {
                 window.location.replace(result.data);
             }
         } catch (error) {
@@ -580,17 +624,17 @@
         }
     }
 
-    async function clickLogout(){
+    async function clickLogout() {
         url = baseURL + "/api/v1/logout";
 
         try {
-            const result = await deleteData(url);
-            if (result.code === 0){
+            const result = await deleteData(url, localStorage.token);
+            if (result.code === 0) {
                 localStorage.removeItem("token");
                 window.location.replace(baseURL + "/api/v1/")
             }
-            else{
-                alert(result.message);
+            else {
+                show_base_alert(-1, result.message);
             }
         } catch (error) {
             console.log(error.message);
@@ -598,18 +642,44 @@
     }
 
     const input_search = document.getElementById('search');
-    input_search.addEventListener("keypress", function(event) {
+    input_search.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
             window.location.replace(baseURL + "/search-documents?query=" + input_search.value);
         }
     });
 
-    async function postData(url, value) {
+    function show_base_alert(status, content){
+        var alert = document.getElementById("base-alert");
+        alert.style.visibility = "visible";
+
+        if(status == 0)
+            alert.innerHTML = `<div class="alert alert-primary alert-dismissible fade show" role="alert" data-timeout="2000">
+                                    <span id="content-base-alert">${content}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>`
+        else
+            alert.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert" data-timeout="2000">
+                                    <span id="content-base-alert">${content}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>`
+
+        let alert_list = document.querySelectorAll('.alert')
+        alert_list.forEach(function(alert) {
+            new bootstrap.Alert(alert);
+
+            let alert_timeout = alert.getAttribute('data-timeout');
+            setTimeout(() => {
+                bootstrap.Alert.getInstance(alert).close();
+            }, +alert_timeout);
+        });
+    }
+
+    async function postData(url, value, token=null) {
         const headers = {
             "Content-Type": "application/json"
         };
 
-        if (localStorage.token) {
+        if (token) {
             headers["Authorization"] = `Bearer ${localStorage.token}`;
         }
 
@@ -622,10 +692,10 @@
         return response.json();
     }
 
-    async function postFormData(url, formData) {
+    async function postFormData(url, formData, token=null) {
         const headers = {};
 
-        if (localStorage.token) {
+        if (token) {
             headers["Authorization"] = `Bearer ${localStorage.token}`;
         }
 
@@ -638,26 +708,12 @@
         return response.json();
     }
 
-    async function postDataNoAuthorization(url, value) {
+    async function getData(url = "", token=null) {
         const headers = {
             "Content-Type": "application/json"
         };
 
-        const response = await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify(value),
-            headers: headers
-        });
-
-        return response.json();
-    }
-
-    async function getData(url = "") {
-        const headers = {
-            "Content-Type": "application/json"
-        };
-
-        if (localStorage.token) {
+        if (token) {
             headers["Authorization"] = `Bearer ${localStorage.token}`;
         }
 
@@ -669,25 +725,12 @@
         return response.json();
     }
 
-    async function getDataNoAuthorization(url = "") {
+    async function deleteData(url = "", token=null) {
         const headers = {
             "Content-Type": "application/json"
         };
 
-        const response = await fetch(url, {
-            method: "GET",
-            headers: headers
-        });
-
-        return response.json();
-    }
-
-    async function deleteData(url = "") {
-        const headers = {
-            "Content-Type": "application/json"
-        };
-
-        if (localStorage.token) {
+        if (token) {
             headers["Authorization"] = `Bearer ${localStorage.token}`;
         }
 

@@ -61,7 +61,14 @@
                     <div class="pe-0 ps-0 col-lg-7">
                         <div class="pt-3 p-3 rounded" style="background-color: white;">
                             <h5>Thống kê doanh thu</h5>
-                            <input id="input_year_stat" class="mb-1" type="number" placeholder="Nhập năm muốn thống kê" min="1999" max="2024">
+                            <div class="d-flex flex-row bd-highlight mb-3 justify-content-end">
+                                <div class="pe-1 bd-highlight">
+                                    <input id="input_year_stat" class="date-own form-control" style="width: 100px;" type="text" placeholder="Nhập năm">
+                                </div>
+                                <div class="bd-highlight">
+                                    <button type="button" class="btn btn-secondary" onclick="clickStats()">Thống kê</button>
+                                </div>
+                            </div>  
                             <canvas id="myChart"></canvas>
                         </div>
                     </div>
@@ -95,11 +102,11 @@
             getTotal();
         }
         else
-            closeLogin();
+            window.location.href = "/api/v1"
     };
 
     async function getUser(){
-        url = baseURL + "/api/v1/user-token"
+        var url = baseURL + "/api/v1/user-token"
 
         var base_profile_img = document.getElementById("base-profile-img")
         var base_profile_name = document.getElementById("base-profile-name")
@@ -110,7 +117,7 @@
         var base_img = document.getElementById("base-img")
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
                 user.email.innerHTML = result.data["email"];
@@ -125,14 +132,14 @@
 
                 money_manager_financy.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 openLogin();
+                userCurrentId = result.data["id"]
             }
             else{
                 window.location.href = "/api/v1";
-                clickLogin();
             }
         } catch (error) {
             alert(error.message);
-            clickLogin();
+            window.location.href = "/api/v1";
         }
     }
 
@@ -143,7 +150,7 @@
             url += "?page=" + page;
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 var table_view_transaction = document.getElementById("table-view-transaction");
                 html = showTransactions(result.data["items"]);
@@ -164,7 +171,7 @@
         var url = baseURL + "/user/total";
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 document.getElementById("total-revenue").innerHTML = parseInt(result.data["total_revenue"]).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 document.getElementById("total-deposits").innerHTML = parseInt(result.data["total_deposits"]).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
@@ -290,7 +297,7 @@
             url += "?year=" + year;
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 let labels = [];
                 let datas = [];
@@ -336,11 +343,9 @@
                     });
     }
 
-    const input_year_stat = document.getElementById('input_year_stat');
-    input_year_stat.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            getStats(`${input_year_stat.value}`)
-        }
-    });
+    function clickStats(){
+        var input_year_stat = document.getElementById('input_year_stat').value;
+        getStats(input_year_stat);
+    }
 </script>
 {% endblock %}

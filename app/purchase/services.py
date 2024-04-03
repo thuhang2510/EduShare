@@ -27,28 +27,30 @@ class PurchaseDataService():
             db.session.add(purchase)
             db.session.add(buyer_transaction)
 
+            seller_amount = (70 / 100 * int(amount))
             seller_transaction = Transaction(
                 information = 'Bán tài liệu: ' + document.document_name ,
                 type = 'Bán tài liệu',
-                amount = amount,
+                amount = seller_amount,
                 result = 'Thành công',
                 account_id = account_id
             )
-            seller_transaction.wallet_balance = seller.coin + (70 / 100 * int(amount))
-            seller.coin += (70 / 100 * int(amount))
+            seller_transaction.wallet_balance = seller.coin + seller_amount
+            seller.coin += seller_amount
 
             db.session.add(seller)
             db.session.add(seller_transaction)
 
+            admin_amount = (30 / 100 * int(amount))
             admin_transaction = Transaction(
                 information = 'Nhận hoa hồng: ' + document.document_name,
                 type = 'Nhận hoa hồng',
-                amount = amount,
+                amount = admin_amount,
                 result = 'Thành công',
                 account_id = admin.id
             )
-            admin_transaction.wallet_balance = admin.coin + (30 / 100 * int(amount))
-            admin.coin += (30 / 100 * int(amount))
+            admin_transaction.wallet_balance = admin.coin + admin_amount
+            admin.coin += admin_amount
 
             db.session.add(admin)
             db.session.add(admin_transaction)

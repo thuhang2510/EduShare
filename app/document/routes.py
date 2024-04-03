@@ -1,4 +1,3 @@
-from datetime import datetime
 import os
 from flask import jsonify, render_template, request, redirect, json, send_file, send_from_directory
 from flask_jwt_extended import jwt_required
@@ -10,9 +9,12 @@ from app.document.forms import UpdateDocumentForm, UploadDocumentForm
 from app.document.services import DocumentsDataService
 from app.auth.services import UserDataService
 from constant import DocumentS3
+from ultil import file_helper
 from ultil.custom_random import generate_random_string
 from ultil.s3_helper import download, upload
-from app.extensions import uploader_permission
+from app.extensions import uploader_permission, downloader_permission, reporter_permission, editter_permision
+
+import aspose.words as aw
 
 PATH = "app/static/images/"
 
@@ -71,8 +73,11 @@ def upload_multi():
         if os.path.exists(file_path):
             return jsonify({'message': f'Tài liệu {f.filename} đã có trong tạm thời', 'code': -1, 'data': None})
         
-        f.save(os.path.join(DocumentS3.UPLOAD_FOLDER, f.filename))
+        f.save(file_path)
         f.close()
+
+        if f.content_type != 'application/pdf':
+            file_helper.convert_doc_to_pdf(f"upload_files/{f.filename}", f"upload_files/{f.filename.replace('docx', 'pdf')}")
         
     return jsonify({'message': 'Tài liệu lưu vào tạm thời thành công', 'code': 0, 'data': None})
     
@@ -195,6 +200,7 @@ def get_document_form(id):
 
 
 @bp.route("/<int:id>/detail", methods=['GET'])
+@jwt_required()
 def get_document_detail(id):
     document, _, msg = DocumentsDataService().get_by_purchase(id, current_user.id)
 
@@ -216,6 +222,8 @@ def get_documents_by_category():
     return jsonify({'message': 'Lấy danh mục thành công', 'code': 0, 'data': categories})
 
 @bp.route("/<int:id>/download", methods=["GET"])
+@jwt_required()
+@downloader_permission.require(http_exception=403)
 def download_document(id):
     document, code, msg = DocumentsDataService().update_download(id)
 
@@ -266,6 +274,8 @@ def get_by_id_tuple(id):
     return jsonify({'message': msg, 'code': -1, 'data': None})
 
 @bp.route('/update_document', methods=['POST'])
+@jwt_required()
+@editter_permision.require(http_exception=403)
 def update_document():
     imgs = request.files.getlist("image")
     fileName = ""
@@ -292,6 +302,7 @@ def update_document():
     return jsonify({'message': 'invalid input', 'code': -2, 'data': updateDocument.errors})
 
 @bp.route('/<document_id>/delete', methods=['DELETE'])
+@jwt_required()
 def delete(document_id):
     document, _, msg = DocumentsDataService().delete(document_id)
 
@@ -301,6 +312,8 @@ def delete(document_id):
         return jsonify({'message': msg, 'code': -1, 'data': None})
     
 @bp.route('/<document_id>/report', methods=['POST'])
+@jwt_required()
+@reporter_permission.require(http_exception=403)
 def report(document_id):
     files = request.files.getlist("file") 
 

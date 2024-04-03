@@ -9,172 +9,225 @@
 <div class="justify-content-center" style="margin-bottom: 80px; width:100%; position:relative; top:70px;">
     <div>
         <div class="row">
-          <div class="col-4 p-0">
-            <nav class="navbar navbar-expand-lg px-3">
-                <div class="container-md">
-                  <a id="selectDetail" class="navbar-brand col-12 text-center" onclick="clickInfoDetail()" style="color: rgb(2, 126, 176); border-color: rgb(2, 126, 176); border-bottom: 5px solid rgb(2, 126, 176);">Thông tin</a>
-                  <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()" style="display: none;">Hỏi AI</a>
+            <div class="col-4">
+                <nav class="navbar navbar-expand-lg px-3">
+                    <div class="container-md">
+                        <a id="selectDetail" class="navbar-brand col-12 text-center" onclick="clickInfoDetail()"
+                            style="color: rgb(2, 126, 176); border-color: rgb(2, 126, 176); border-bottom: 5px solid rgb(2, 126, 176);">Thông
+                            tin</a>
+                        <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()"
+                            style="display: none;">Hỏi AI</a>
+                    </div>
+                </nav>
+                <div id="infor-detail" class="px-4" style="width:100%; height:690px; overflow-y:scroll; scrollbar-width: none;">
+                    <h3>{{ document["document_name"] }}</h3>
+                    <p>
+                        <span class="me-2">
+                            <i class="bi bi-eye"></i> {{ document["view_count"]}}
+                        </span>
+                        <span id="download_count">
+                            <i class="bi bi-download"></i> {{ document["download_count"]}}
+                        </span>
+                    </p>
+                    <p>{{ document["description"] }}</p>
+                    <p>Danh mục:
+                        {% for value in document["categories"] %}
+                        <a href="/categories/{{value['name']}}"
+                            style="color: var(--bs-link-color); text-decoration: underline;">{{ value["name"] }}</a>
+                        {% endfor %}
+                    </p>
+                    <p>Được tải lên bởi <a href="/user/{{document['account_id']}}-trang-ca-nhan"
+                            style="color: var(--bs-link-color); text-decoration: underline;"> {{ document["fullname"] }}
+                        </a></p>
+                    <h5>Đề xuất cho bạn</h5>
+                    <div id="de-xuat">
+                    </div>
+                    <h5>Tài liệu liên quan</h5>
+                    <div id="lienquan">
+                    </div>
                 </div>
-            </nav>
-            <div id="infor-detail" class="px-5" style="width:100%; height:690px; overflow-y:scroll;">
-                <h3>{{ document["document_name"] }}</h3>
-                <p>
-                    <span class="me-2">
-                        <i class="bi bi-eye"></i> {{ document["view_count"]}}
-                    </span>
-                    <span id="download_count">
-                        <i class="bi bi-download"></i> {{ document["download_count"]}}
-                    </span>
-                </p>
-                <p>{{ document["description"] }}</p>
-                <p>Danh mục: 
-                    {% for value in document["categories"] %}
-                        <a href="/categories/{{value['name']}}" style="color: var(--bs-link-color); text-decoration: underline;">{{ value["name"] }}</a>
-                    {% endfor %}
-                </p>
-                <p>Được tải lên bởi <a href="/user/{{document['account_id']}}-trang-ca-nhan" style="color: var(--bs-link-color); text-decoration: underline;"> {{ document["fullname"] }} </a></p>
-                <h5>Đề xuất cho bạn</h5>
-                <div id="de-xuat">
-                </div>
-                <h5>Tài liệu liên quan</h5>
-                <div id="lienquan">
-                </div>
-            </div>
-            <div id="ai-detail" class="px-3" style="height:650px; overflow-y:scroll; display: none;">
-                <div class="chat-container">
-                </div>
-                <div class="typing-container col-4">
-                    <div class="input-group" style="padding: 5px 20px 5px 5px">
-                        <textarea id="chat-input" type="text" class="form-control me-2" placeholder="Nhập câu hỏi vào đây"></textarea>
-                        <svg onclick="sendAsk()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
-                            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
-                        </svg>                          
+                <div id="ai-detail" class="px-3" style="height:650px; overflow-y:scroll; display: none;">
+                    <div class="chat-container">
+                    </div>
+                    <div class="typing-container col-4">
+                        <div class="input-group" style="padding: 5px 20px 5px 5px">
+                            <textarea id="chat-input" type="text" class="form-control me-2"
+                                placeholder="Nhập câu hỏi vào đây"></textarea>
+                            <svg onclick="sendAsk()" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
-          </div>
-          <div class="col-8 p-0" style="background-color: #f8f9fa; position: relative;">
-            <div class="d-flex bd-highlight ps-2 pt-1 pe-3">
-                <div class="p-2 flex-grow-1 bd-highlight">
-                    <button id="btn_download" type="button" class="btn rounded-pill fw-normal p-2 px-3 fs-6" style="background-color: rgb(2, 126, 176); color: white;" onclick="downloadDocument()">
-                        <i class="bi bi-download"></i> 
-                        {% if document["price"] > 0 %}
+            <div class="col-8 ps-0 pe-2" style="background-color: #f8f9fa; position: relative;">
+                <div class="d-flex bd-highlight ps-2 pt-1 pe-3">
+                    <div class="p-2 flex-grow-1 bd-highlight">
+                        <button id="btn_download" type="button" class="btn rounded-pill fw-normal p-2 px-3 fs-6"
+                            style="background-color: rgb(2, 126, 176); color: white;" onclick="downloadDocument()">
+                            <i class="bi bi-download"></i>
+                            {% if document["price"] > 0 %}
                             Tải xuống ({{ document["price"] | numberFormat }} đ)
-                        {% else %}
+                            {% else %}
                             Tải xuống
+                            {% endif %}
+                        </button>
+                    </div>
+                    <div id="btn-document-payment" class="p-2 bd-highlight" data-timebuy="">
+                        {% if document["price"] > 0 %}
+                        <button type="button" class="btn bg-success bg-gradient text-white rounded-pill"
+                            onclick="buyDocument(`{{ document['document_name'] }}`, `{{ document['price'] | numberFormat }}`)">Mua
+                            tài liệu</button>
                         {% endif %}
-                    </button>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <button id="doc_like" type="button" class="btn btn-outline-success rounded-pill"
+                            data-count="{{ document['like'] }}" onclick="likeDocument()"><i
+                                class="bi bi-hand-thumbs-up"></i> {{ document["like"] }}</button>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <button id="doc_dislike" type="button" class="btn btn-outline-warning rounded-pill"
+                            data-count="{{ document['dislike'] }}" onclick="dislikeDocument()"><i
+                                class="bi bi-hand-thumbs-down"></i> {{ document["dislike"] }}</button>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <button id="doc_save" type="button" class="btn btn-outline-secondary rounded-pill"
+                            onclick="saveDocument()"><i class="bi bi-bookmark"></i> Lưu</button>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <div class="dropdown">
+                            <button id="dropdown" type="button" class="btn btn-outline-secondary rounded-pill" data-bs-toggle="dropdown" aria-expanded="false"><i
+                                class="bi bi-share-fill" ></i></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdown">
+                                <li><a class="dropdown-item" href="#" onclick="shareOnFacebook()">Chia sẻ trên facebook</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="copyLink()">Sao chép link</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <button id="doc_dislike" type="button" class="btn btn-danger rounded-pill"
+                            onclick="reportDocument(`{{ document['id'] }}`)"><i class="bi bi-flag"></i> Báo cáo</button>
+                    </div>
                 </div>
-                <div id="btn-document-payment" class="p-2 bd-highlight" data-timebuy="">
-                    {% if document["price"] > 0 %}
-                        <button type="button" class="btn btn-danger rounded-pill" onclick="buyDocument(`{{ document['document_name'] }}`, `{{ document['price'] | numberFormat }}`)">Mua tài liệu</button>
-                    {% endif %}
+                <div id="pdf-container" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="10"
+                    style="width:100%;height:690px;overflow-y:scroll; background-color: #f8f9fa; scrollbar-width:thin;"
+                    onscroll="scrollPage()">
                 </div>
-                <div class="p-2 bd-highlight">
-                    <button id="doc_like" type="button" class="btn btn-outline-success rounded-pill" data-count="{{ document['like'] }}" onclick="likeDocument()"><i class="bi bi-hand-thumbs-up"></i> {{ document["like"] }}</button>
+                <div class="d-flex justify-content-around bd-highlight mb-3 col-5 rounded-pill mx-auto"
+                    style="background-color: #2f3e4e; position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);">
+                    <div class="p-2 bd-highlight">
+                        <svg onclick="clickUp()" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            fill="#d3d9e0" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5" />
+                        </svg>
+                        <span class="me-2"></span>
+                        <svg onclick="clickDown()" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            fill="#d3d9e0" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1" />
+                        </svg>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input id="input_page" type="text"
+                            style="background-color: #2f3e4e; color: #d3d9e0;border: 1px solid #d3d9e0; border-radius: 12px; width: 45px;">
+                        <span id="number_page" class="ps-2" style="color: #d3d9e0;"></span>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <svg onclick="click_zoom_in()" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            fill="#d3d9e0" class="bi bi-zoom-out" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11M13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0" />
+                            <path
+                                d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1 6.5 6.5 0 0 1-1.398 1.4z" />
+                            <path fill-rule="evenodd"
+                                d="M3 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5" />
+                        </svg>
+                        <span class="me-2"></span>
+                        <svg onclick="click_zoom_out()" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            fill="#d3d9e0" class="bi bi-zoom-in" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11M13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0" />
+                            <path
+                                d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1 6.5 6.5 0 0 1-1.398 1.4z" />
+                            <path fill-rule="evenodd"
+                                d="M6.5 3a.5.5 0 0 1 .5.5V6h2.5a.5.5 0 0 1 0 1H7v2.5a.5.5 0 0 1-1 0V7H3.5a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 .5-.5" />
+                        </svg>
+                    </div>
                 </div>
-                <div class="p-2 bd-highlight">
-                    <button id="doc_dislike" type="button" class="btn btn-outline-warning rounded-pill" data-count="{{ document['dislike'] }}" onclick="dislikeDocument()"><i class="bi bi-hand-thumbs-down"></i> {{ document["dislike"] }}</button>
-                </div>
-                <div class="p-2 bd-highlight">
-                    <button id="doc_save" type="button" class="btn btn-outline-secondary rounded-pill" onclick="saveDocument()"><i class="bi bi-bookmark"></i> Lưu</button>
-                </div>
-                <div class="p-2 bd-highlight">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-share-fill"></i></button>
-                </div>
-                <div class="p-2 bd-highlight">
-                    <button id="doc_dislike" type="button" class="btn btn-danger rounded-pill" onclick="reportDocument(`{{ document['id'] }}`)"><i class="bi bi-flag"></i> Báo cáo</button>
-                </div>
-              </div>
-            <div id="pdf-container" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="10" style="width:100%;height:690px;overflow-y:scroll; background-color: #f8f9fa;" onscroll="scrollPage()">
             </div>
-            <div class="d-flex justify-content-around bd-highlight mb-3 col-5 rounded-pill mx-auto" style="background-color: #2f3e4e; position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);">
-                <div class="p-2 bd-highlight">
-                    <svg onclick="clickUp()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d3d9e0" class="bi bi-arrow-up" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/>
-                    </svg>
-                    <span class="me-2"></span>
-                    <svg onclick="clickDown()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d3d9e0" class="bi bi-arrow-down" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
-                    </svg>
-                </div>
-                <div class="p-2 bd-highlight">
-                    <input id="input_page" type="text" style="background-color: #2f3e4e; color: #d3d9e0;border: 1px solid #d3d9e0; border-radius: 12px; width: 45px;">
-                    <span id="number_page" class="ps-2" style="color: #d3d9e0;"></span>
-                </div>
-                <div class="p-2 bd-highlight">
-                    <svg onclick="click_zoom_in()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d3d9e0" class="bi bi-zoom-out" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11M13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0"/>
-                        <path d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1 6.5 6.5 0 0 1-1.398 1.4z"/>
-                        <path fill-rule="evenodd" d="M3 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
-                    </svg>
-                    <span class="me-2"></span>
-                    <svg onclick="click_zoom_out()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d3d9e0" class="bi bi-zoom-in" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11M13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0"/>
-                        <path d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1 6.5 6.5 0 0 1-1.398 1.4z"/>
-                        <path fill-rule="evenodd" d="M6.5 3a.5.5 0 0 1 .5.5V6h2.5a.5.5 0 0 1 0 1H7v2.5a.5.5 0 0 1-1 0V7H3.5a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 .5-.5"/>
-                      </svg>
-                </div>
-              </div>
-          </div>
         </div>
-      </div>
+    </div>
 </div>
-<div id="form-notify-payment" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
-    <div class="container d-flex justify-content-center" style="position: fixed;">   
-    <div class="register bg-white col-xl-7 p-4 rounded-3">
-      <div class="d-flex justify-content-end">
-        <button id="close-form-login" type="button" class="btn-close text-right" onclick="clickCloseNotifyPayment()"></button>
-      </div>
-      <h3 class="text-center mb-3">Thông báo</h3>
-      <div class="border border-secondary rounded py-2 px-4">
-        <p><span class="fw-bold">Số dư trong tài khoản EduShare</span> của bạn <span class="text-danger fw-bold">không đủ</span> để mua tài liệu này.</p>
-        <p>Bạn cần nạp thêm vào tài khoản để tiếp tục.</p>
-        <p>Bạn có thể <span class="fw-bold">sử dụng số tiền dư </span>sau khi mua tài liệu này để <span class="fw-bold">mua các tài liệu về sau.</span></p>
-      </div>
-      <div>
-        <input class="btn btn-primary w-100 my-3 rounded-pill" name="submit" type="button" onclick="clickRecharge()" value="Nạp tiền">
-      </div>
-    </div> 
-  </div>
+<div id="form-notify-payment" class="d-flex align-items-center justify-content-center"
+    style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
+    <div class="container d-flex justify-content-center" style="position: fixed;">
+        <div class="register bg-white col-xl-7 p-4 rounded-3">
+            <div class="d-flex justify-content-end">
+                <button id="close-form-login" type="button" class="btn-close text-right"
+                    onclick="clickCloseNotifyPayment()"></button>
+            </div>
+            <h3 class="text-center mb-3">Thông báo</h3>
+            <div class="border border-secondary rounded py-2 px-4">
+                <p><span class="fw-bold">Số dư trong tài khoản EduShare</span> của bạn <span
+                        class="text-danger fw-bold">không đủ</span> để mua tài liệu này.</p>
+                <p>Bạn cần nạp thêm vào tài khoản để tiếp tục.</p>
+                <p>Bạn có thể <span class="fw-bold">sử dụng số tiền dư </span>sau khi mua tài liệu này để <span
+                        class="fw-bold">mua các tài liệu về sau.</span></p>
+            </div>
+            <div>
+                <input class="btn btn-primary w-100 my-3 rounded-pill" name="submit" type="button"
+                    onclick="clickRecharge()" value="Nạp tiền">
+            </div>
+        </div>
+    </div>
 </div>
-<div id="form-confirm-payment" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
-    <div class="container d-flex justify-content-center" style="position: fixed;">   
-    <div class="register bg-white col-xl-6 p-4 rounded-3">
-      <div class="d-flex justify-content-end">
-        <button id="close-form-login" type="button" class="btn-close text-right" onclick="clickCloseConfirmPayment()"></button>
-      </div>
-      <h3 class="text-center mb-3">Xác nhận thanh toán tài liệu</h3>
-      <div id="content-form-confirm-payment" class="border-top border-secondary py-2">
-      </div>
-      <div>
-        <input class="btn btn-primary w-100 my-3 rounded-pill" name="submit" type="button" onclick="clickConfirmPayment(`{{ document['id'] }}`, `{{ document['price'] }}`, `{{ document['account_id'] }}`)" value="Đồng ý">
-      </div>
-    </div> 
-  </div>
+<div id="form-confirm-payment" class="d-flex align-items-center justify-content-center"
+    style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
+    <div class="container d-flex justify-content-center" style="position: fixed;">
+        <div class="register bg-white col-xl-6 p-4 rounded-3">
+            <div class="d-flex justify-content-end">
+                <button id="close-form-login" type="button" class="btn-close text-right"
+                    onclick="clickCloseConfirmPayment()"></button>
+            </div>
+            <h3 class="text-center mb-3">Xác nhận thanh toán tài liệu</h3>
+            <div id="content-form-confirm-payment" class="border-top border-secondary py-2">
+            </div>
+            <div>
+                <input class="btn btn-primary w-100 my-3 rounded-pill" name="submit" type="button"
+                    onclick="clickConfirmPayment(`{{ document['id'] }}`, `{{ document['price'] }}`, `{{ document['account_id'] }}`)"
+                    value="Đồng ý">
+            </div>
+        </div>
+    </div>
 </div>
 
-<div id="form-report" class="d-flex align-items-center justify-content-center" style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
-    <div class="container d-flex justify-content-center" style="position: fixed;">   
-    <div class="register bg-white col-xl-6 p-4 rounded-3">
-      <div class="d-flex justify-content-end">
-        <button id="close-form-login" type="button" class="btn-close text-right" onclick="clickCloseReport()"></button>
-      </div>
-      <h3 class="text-center mb-3" style="color: rgb(2, 126, 176)">Bạn hãy chắc chắn khi báo xấu tài liệu này</h3>
-      <div id="content-form-report" class="py-2">
-        <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label h5">Nội dung</label>
-            <textarea id="form-report-content" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+<div id="form-report" class="d-flex align-items-center justify-content-center"
+    style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
+    <div class="container d-flex justify-content-center" style="position: fixed;">
+        <div class="register bg-white col-xl-6 p-4 rounded-3">
+            <div class="d-flex justify-content-end">
+                <button id="close-form-login" type="button" class="btn-close text-right"
+                    onclick="clickCloseReport()"></button>
+            </div>
+            <h3 class="text-center mb-3" style="color: rgb(2, 126, 176)">Bạn hãy chắc chắn khi báo xấu tài liệu này</h3>
+            <div id="content-form-report" class="py-2">
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label h5">Nội dung</label>
+                    <textarea id="form-report-content" class="form-control" id="exampleFormControlTextarea1"
+                        rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="formFile" class="form-label h5">Tài liệu</label>
+                    <input class="form-control" type="file" id="form-report-file">
+                </div>
+            </div>
+            <div id="form-report-footer" class="text-center">
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="formFile" class="form-label h5">Tài liệu</label>
-            <input class="form-control" type="file" id="form-report-file">
-        </div>
-      </div>
-      <div id="form-report-footer" class="text-center">
-      </div>
-    </div> 
-  </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -188,11 +241,10 @@
     let currentPage = 1;
     let pageNumber = 0;
     let price = 0;
-    let bought=false;
+    let bought = false;
 
-    window.onload = function()
-    {
-        if(localStorage.token){
+    window.onload = function () {
+        if (localStorage.token) {
             getUser();
             getDocumentAllDetail();
         }
@@ -208,12 +260,12 @@
         getDocLienQuan(`{{document["categories"][1]["name"]}}`);
     };
 
-    async function getDocumentAllDetail(){
+    async function getDocumentAllDetail() {
         url = baseURL + "/document/" + `{{document["id"]}}` + "/detail";
 
         try {
-            const result = await getData(url);
-            if (result.code === 0){
+            const result = await getData(url, localStorage.token);
+            if (result.code === 0) {
                 var btn_document_payment = document.getElementById("btn-document-payment");
                 btn_document_payment.style.visibility = "hidden"
                 var btn_download = document.getElementById("btn_download");
@@ -224,20 +276,20 @@
                 document.getElementById("download_count").innerHTML = `<i class="bi bi-download"></i> ${result.data["download_count"]}`
                 initPdf();
 
-                if (result.data["evaluate"].length > 0){
-                    for(var i = 0; i < result.data["evaluate"].length; ++i){
+                if (result.data["evaluate"].length > 0) {
+                    for (var i = 0; i < result.data["evaluate"].length; ++i) {
                         var type = result.data["evaluate"][i]["type"];
-                        if(type === "like"){
+                        if (type === "like") {
                             var documentLike = document.getElementById("doc_like").getElementsByTagName("i")
                             documentLike[0].classList.remove("bi-hand-thumbs-up");
                             documentLike[0].classList.add("bi-hand-thumbs-up-fill");
                         }
-                        else if (type === "dislike"){
+                        else if (type === "dislike") {
                             var documentLike = document.getElementById("doc_dislike").getElementsByTagName("i")
                             documentLike[0].classList.remove("bi-hand-thumbs-down");
                             documentLike[0].classList.add("bi-hand-thumbs-down-fill");
                         }
-                        else{
+                        else {
                             var documentLike = document.getElementById("doc_save").getElementsByTagName("i")
                             documentLike[0].classList.remove("bi-bookmark");
                             documentLike[0].classList.add("bi-bookmark-fill");
@@ -257,7 +309,7 @@
 
         pdfTT.promise.then((pdf) => {
             let pdf_container = document.getElementById("pdf-container");
-            pdf_container.innerHTML = ""; 
+            pdf_container.innerHTML = "";
 
             console.log("Hiện có " + pdf.numPages + " trang");
             pageNumber = pdf.numPages;
@@ -281,7 +333,7 @@
                     pdfCanvas.height = pageViewPort.height;
                     divContext.appendChild(pdfCanvas);
 
-                    if(price > 0 && i > (pdf.numPages / 100 * 20) && bought == false){
+                    if (price > 0 && i > (pdf.numPages / 100 * 20) && bought == false) {
                         pdfCanvas.style.filter = "blur(5px)"
                         let notify = document.createElement("div")
                         notify.style.position = "absolute";
@@ -335,24 +387,24 @@
         location.href = "#thu" + currentPage;
     }
 
-    function click_zoom_in(){
+    function click_zoom_in() {
         currentScale -= 0.5;
         initPdf();
     }
 
-    function click_zoom_out(){
+    function click_zoom_out() {
         currentScale += 0.5;
         initPdf();
     }
 
     var input = document.getElementById("input_page");
-    input.addEventListener("keypress", function(event) {
+    input.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
             location.href = "#thu" + input.value;
         }
     });
 
-    function clickInfoDetail(){
+    function clickInfoDetail() {
         document.getElementById("infor-detail").style.display = "block";
         document.getElementById("ai-detail").style.display = "none";
 
@@ -367,7 +419,7 @@
         selectDetail.style.color = "rgb(2, 126, 176)";
     }
 
-    function clickAI(){
+    function clickAI() {
         document.getElementById("ai-detail").style.display = "block";
         document.getElementById("infor-detail").style.display = "none";
 
@@ -382,18 +434,18 @@
         selectDetail.style.color = null;
     }
 
-    function scrollPage(){
+    function scrollPage() {
 
     }
 
-    function createElement(html, className){
+    function createElement(html, className) {
         const chatDiv = document.createElement("div");
         chatDiv.classList.add("d-flex", "bd-highlight", "mb-3", "chat", className);
         chatDiv.innerHTML = html;
         return chatDiv;
     }
 
-    const getChatResponse = async(incomingChatDiv) => {
+    const getChatResponse = async (incomingChatDiv) => {
         const API_URL = "https://api.openai.com/v1/chat/completions";
 
         const requestOptions = {
@@ -404,16 +456,16 @@
             },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
-                messages: [{"role": "user", "content": `${userText}`}]
+                messages: [{ "role": "user", "content": `${userText}` }]
             })
         }
 
         let response = null;
 
-        try{
-            response = await(await fetch(API_URL, requestOptions)).json();
+        try {
+            response = await (await fetch(API_URL, requestOptions)).json();
             console.log(response);
-        } catch(error){
+        } catch (error) {
             response = "Có chuyện gì đó xảy ra khi nhận phản hồi. Xin vui lòng thử lại sau";
         }
 
@@ -433,7 +485,7 @@
         return html;
     }
 
-    function copyResponse(copyBtn){
+    function copyResponse(copyBtn) {
         const responseTextElement = copyBtn.parentElement.querySelector("p");
         navigator.clipboard.writeText(responseTextElement.textContent);
         copyBtn.innerHTML = "done"
@@ -474,7 +526,7 @@
 
     let userText = null;
 
-    function sendAsk(){
+    function sendAsk() {
         var chatInput = document.getElementById("chat-input");
         userText = chatInput.value.trim();
         const html = `<div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
@@ -489,15 +541,15 @@
         setTimeout(showTypingAnimation, 500);
     }
 
-    async function getDocDeXuat(){
+    async function getDocDeXuat() {
         var url = baseURL + "/document/get_all_new?limit=5"
 
         try {
-            const result = await getDataNoAuthorization(url);
-            if (result.code === 0){
+            const result = await getData(url);
+            if (result.code === 0) {
                 var divDeXuat = document.getElementById("de-xuat")
                 var html = "";
-                for (var i = 0; i < result.data.length; ++i){
+                for (var i = 0; i < result.data.length; ++i) {
                     html += createDocuments(result.data[i])
                 }
                 divDeXuat.innerHTML = html
@@ -507,15 +559,15 @@
         }
     }
 
-    async function getDocLienQuan(category_name){
+    async function getDocLienQuan(category_name) {
         var url = baseURL + `/document/category?category_name=${category_name}`
 
         try {
-            const result = await getDataNoAuthorization(url);
-            if (result.code === 0){
+            const result = await getData(url);
+            if (result.code === 0) {
                 var divLienQuan = document.getElementById("lienquan")
                 var html = "";
-                for (var i = 0; i < result.data.length; ++i){
+                for (var i = 0; i < result.data.length; ++i) {
                     html += createDocuments(result.data[i])
                 }
                 divLienQuan.innerHTML = html
@@ -525,15 +577,15 @@
         }
     }
 
-    function createDocuments(document){
+    function createDocuments(document) {
         html = `<div class="row mt-3 mb-3" onclick="clickDetail(${document["id"]})">
                     <div class="col-2 pe-0">`
-                        if(document["image"] != null)
-                            html += `<img src="${document["image"]}"
+        if (document["image"] != null)
+            html += `<img src="${document["image"]}"
                                 alt="Generic placeholder image" class="img-fluid p-0"
                                 style="width: 70px; height: 70px; border-radius: 10px;">`
-                        else
-                            html += `<img src="/static/images/anh11.png"
+        else
+            html += `<img src="/static/images/anh11.png"
                                     alt="Generic placeholder image" class="img-fluid p-0"
                                     style="width: 70px; height: 70px; border-radius: 10px;">`
         html += `   </div>  
@@ -550,29 +602,29 @@
         return html;
     }
 
-    function clickDetail(document_id){
+    function clickDetail(document_id) {
         window.location.replace(baseURL + "/document/" + document_id)
     }
 
-    function getOnlyFileName(fileName){
+    function getOnlyFileName(fileName) {
         return fileName.split('.').slice(0, -1).join('.')
     }
 
-    function calculateLikePercentage(evaluate){
+    function calculateLikePercentage(evaluate) {
         var sum = 0;
         var like = 0;
 
         evaluate.forEach(data => {
-            if(data["type"] === "like"){
+            if (data["type"] === "like") {
                 sum += 1;
                 like += 1;
             }
-            else if(data["type"] === "dislike"){
+            else if (data["type"] === "dislike") {
                 sum += 1;
             }
         });
 
-        if(sum == 0)
+        if (sum == 0)
             return 0;
 
         var result = like / sum * 100
@@ -582,23 +634,23 @@
         return result;
     }
 
-    function isFloat(n){
+    function isFloat(n) {
         return Number(n) === n && n % 1 !== 0;
     }
 
-    async function likeDocument(){
+    async function likeDocument() {
         var url = window.location.href + "/evaluate?type=like";
 
         try {
-            const result = await postData(url);
-            if (result.code === -1){
+            const result = await postData(url, null, localStorage.token);
+            if (result.code === -1) {
                 alert(result.message);
             }
-            else{
+            else {
                 getDocDeXuat();
                 getDocLienQuan(`{{document["categories"][1]["name"]}}`);
 
-                if (result.data === null){
+                if (result.data === null) {
                     var documentLike = document.getElementById("doc_like");
                     var count = parseInt(documentLike.dataset.count) - 1;
                     documentLike.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> ${count}`
@@ -612,8 +664,8 @@
 
                     var documentDisLike = document.getElementById("doc_dislike");
                     var countDisLike = parseInt(documentDisLike.dataset.count);
-                    
-                    if (documentDisLike.getElementsByTagName("i")[0].classList.contains("bi-hand-thumbs-down-fill")){
+
+                    if (documentDisLike.getElementsByTagName("i")[0].classList.contains("bi-hand-thumbs-down-fill")) {
                         countDisLike -= 1;
                         documentDisLike.dataset.count = countDisLike;
                     }
@@ -626,19 +678,19 @@
         }
     }
 
-    async function dislikeDocument(){
+    async function dislikeDocument() {
         var url = window.location.href + "/evaluate?type=dislike";
 
         try {
-            const result = await postData(url);
-            if (result.code === -1){
+            const result = await postData(url, null, localStorage.token);
+            if (result.code === -1) {
                 alert(result.message);
             }
-            else{
+            else {
                 getDocDeXuat();
                 getDocLienQuan(`{{document["categories"][1]["name"]}}`);
 
-                if (result.data === null){
+                if (result.data === null) {
                     var documentDisLike = document.getElementById("doc_dislike");
                     var count = parseInt(documentDisLike.dataset.count) - 1;
                     documentDisLike.dataset.count = count;
@@ -652,8 +704,8 @@
 
                     var documentLike = document.getElementById("doc_like");
                     var countLike = parseInt(documentLike.dataset.count);
-                    
-                    if (documentLike.getElementsByTagName("i")[0].classList.contains("bi-hand-thumbs-up-fill")){
+
+                    if (documentLike.getElementsByTagName("i")[0].classList.contains("bi-hand-thumbs-up-fill")) {
                         countLike -= 1;
                         documentLike.dataset.count = countLike;
                     }
@@ -666,17 +718,17 @@
         }
     }
 
-    async function saveDocument(){
+    async function saveDocument() {
         var url = window.location.href + "/evaluate?type=save";
 
         try {
-            const result = await postData(url);
-            if (result.code === -1){
+            const result = await postData(url, null, localStorage.token);
+            if (result.code === -1) {
                 alert(result.message);
             }
-            else{
+            else {
                 var documentSave = document.getElementById("doc_save");
-                if (result.data === null){
+                if (result.data === null) {
                     var documentSave = document.getElementById("doc_save");
                     documentSave.innerHTML = `<i class="bi bi-bookmark"></i> Lưu`
                 }
@@ -690,25 +742,7 @@
         }
     }
 
-    async function postData(url, value) {
-        const headers = {
-            "Content-Type": "application/json"
-        };
-
-        if (localStorage.token) {
-            headers["Authorization"] = `Bearer ${localStorage.token}`;
-        }
-
-        const response = await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify(value),
-            headers: headers
-        });
-
-        return response.json();
-    }
-
-    async function sendFormLogin(){
+    async function sendFormLogin() {
         resetErrorInputOfFormLogin();
 
         var url = baseURL + '/api/v1/login'
@@ -719,8 +753,8 @@
         }
 
         try {
-            const result = await postDataNoAuthorization(url, data);
-            if (result.code === -2){
+            const result = await postData(url, data);
+            if (result.code === -2) {
                 const errors = result.data;
 
                 Object.keys(errors).forEach((key) => {
@@ -728,11 +762,11 @@
                     fields_login[key].error.innerHTML = errors[key][0];
                 });
             }
-            else if (result.code === -1){
-                alert("Có lỗi xảy ra vui lòng thử lại sau");    
-                console.log("Đăng nhập thất bại");
+            else if (result.code === -1) {
+                alert("Có lỗi xảy ra vui lòng thử lại sau");
+                console.log(result.message);
             }
-            else{
+            else {
                 localStorage.setItem("token", result.data)
                 getUser();
                 clickCloseLogin();
@@ -744,65 +778,83 @@
         }
     }
 
-    async function downloadDocFree(){
+    async function downloadDocFree() {
         var lg_fullname = document.getElementById("base-login-fullname")
         number_download = parseInt(lg_fullname.dataset.countdownload)
 
-        if(number_download >= 5)
+        if (number_download >= 5)
             alert("Tuần này bạn đã hết lượt tải cho tài liệu miễn phí");
         else {
-            fetch(window.location.href + "/download")
-            .then(response => {
-                if (response.ok){
-                    updateCountDownloadAPI(number_download + 1, false);;
+            fetch(window.location.href + "/download", {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.token}`
+                }})
+                .then(response => {
+                    if (response.ok) {
+                        updateCountDownloadAPI(number_download + 1, false);;
 
-                    response.blob().then(blob => {
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement("a")
-                        a.href = url;
-                        a.download = `{{document["document_name"]}}`
-                        a.click();
-                        window.URL.revokeObjectURL(url)
-                        getDocumentAllDetail();
-                    });
-                }
-                else {
-                    console.error('Có lỗi xảy ra khi tải xuống tệp');
-                }
-            })
+                        response.blob().then(blob => {
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement("a")
+                            a.href = url;
+                            a.download = `{{document["document_name"]}}`
+                            a.click();
+                            window.URL.revokeObjectURL(url)
+                            getDocumentAllDetail();
+                        });
+                    }
+                    else if (response.status == 401) {
+                        alert("Bạn cần đăng nhập để thực hiện chức năng này.");
+                    }
+                    else if (response.status == 403) {
+                        alert("Bạn không có quyền để sử dụng chức năng này.")
+                    }
+                    else {
+                        console.error('Có lỗi xảy ra khi tải xuống tệp');
+                    }
+                })
         }
     }
 
-    async function downloadDocNotFree(documentId){
+    async function downloadDocNotFree(documentId) {
         if (bought == false)
             alert("Hãy mua tài liệu trước khi thực hiện tải xuống");
-        else{
-            const result = await getData(baseURL + "/document/purchase?document_id=" + `{{document["id"]}}` );
-            if (result.code === 0){
+        else {
+            const result = await getData(baseURL + "/document/purchase?document_id=" + `{{document["id"]}}`, localStorage.token);
+            if (result.code === 0) {
                 var currentDate = new Date();
                 var time_buy = new Date(result.data["date"])
                 time_buy = Math.abs(currentDate.getTime() - time_buy.getTime()) / (1000 * 60 * 60);
 
-                if (time_buy < 24){
-                    fetch(window.location.href + "/download")
-                    .then(response => {
-                        if (response.ok){
-                            response.blob().then(blob => {
-                                const url = window.URL.createObjectURL(blob);
-                                const a = document.createElement("a")
-                                a.href = url;
-                                a.download = `{{document["document_name"]}}`
-                                a.click();
-                                window.URL.revokeObjectURL(url)
-                                getDocumentAllDetail();
-                            });
-                        }
-                        else {
-                            console.error('Có lỗi xảy ra khi tải xuống tệp');
-                        }
-                    })
+                if (time_buy < 24) {
+                    fetch(window.location.href + "/download", {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.token}`
+                        }})
+                        .then(response => {
+                            if (response.ok) {
+                                response.blob().then(blob => {
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement("a")
+                                    a.href = url;
+                                    a.download = `{{document["document_name"]}}`
+                                    a.click();
+                                    window.URL.revokeObjectURL(url)
+                                    getDocumentAllDetail();
+                                });
+                            }
+                            else if (response.status == 401) {
+                                alert("Bạn cần đăng nhập để thực hiện chức năng này.");
+                            }
+                            else if (response.status == 403) {
+                                alert("Bạn không có quyền để sử dụng chức năng này.")
+                            }
+                            else {
+                                console.error('Có lỗi xảy ra khi tải xuống tệp');
+                            }
+                        })
                 }
-                else{
+                else {
                     alert("Bạn đã hết thời gian tải xuống. Hãy thực hiện thanh toán để có thể tiếp tục tải xuống trong vòng 24h")
                     show_confirm_document_payment(`{{document["document_name"]}}`, price, null);
                 }
@@ -813,26 +865,26 @@
         }
     }
 
-    function downloadDocument(){
+    function downloadDocument() {
         if (`{{document["price"]}}` == 0)
             downloadDocFree();
         else
             downloadDocNotFree();
     }
 
-    async function buyDocument(document_name, price){
+    async function buyDocument(document_name, price) {
         var url = baseURL + "/api/v1/user-token"
 
         try {
-            const result = await getData(url);
-            if (result.code === 0){
-                if(result.data["coin"] < document["price"])
+            const result = await getData(url, localStorage.token);
+            if (result.code === 0) {
+                if (result.data["coin"] < document["price"])
                     show_insufficient_funds();
                 else {
                     show_confirm_document_payment(document_name, price, result.data["coin"]);
                 }
             }
-            else{
+            else {
                 alert("Hãy đăng nhập để thực hiện mua tài liệu");
                 clickLogin();
             }
@@ -841,21 +893,21 @@
         }
     }
 
-    function show_insufficient_funds(){
+    function show_insufficient_funds() {
         var form_notify_payment = document.getElementById("form-notify-payment");
         form_notify_payment.style.visibility = "visible";
     }
 
-    async function clickRecharge(){
+    async function clickRecharge() {
         url = baseURL + "/api/v1/user-token"
 
         try {
-            const result = await getData(url);
-            if (result.code === 0){
+            const result = await getData(url, localStorage.token);
+            if (result.code === 0) {
                 document.getElementById("form-recharge").style.visibility = "visible";
                 document.getElementById("form-notify-payment").style.visibility = "hidden";
             }
-            else{
+            else {
                 alert("Hãy đăng nhập để thực hiện nạp tiền");
                 clickLogin();
             }
@@ -864,25 +916,25 @@
         }
     }
 
-    function clickCloseNotifyPayment(){
+    function clickCloseNotifyPayment() {
         document.getElementById("form-notify-payment").style.visibility = "hidden";
     }
 
-    function clickCloseConfirmPayment(){
+    function clickCloseConfirmPayment() {
         document.getElementById("form-confirm-payment").style.visibility = "hidden";
     }
 
-    function show_confirm_document_payment(document_name, price, coin=null){
+    function show_confirm_document_payment(document_name, price, coin = null) {
         document.getElementById("form-confirm-payment").style.visibility = "visible"
         document.getElementById("content-form-confirm-payment").innerHTML = `<h5>Bạn đang thanh toán tài liệu</h5>
                                                                 <h4 style="color: rgb(2, 126, 176);"> ${document_name}</h4>
-                                                                <p>Giá bán: <span class="fw-bold"> ${ price } đ</span></p>`
+                                                                <p>Giá bán: <span class="fw-bold"> ${price} đ</span></p>`
 
-        if(coin !== null)
+        if (coin !== null)
             document.getElementById("content-form-confirm-payment").innerHTML += `<p>Số dư hiện tại của bạn: <span class="fw-bold">${coin.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span></p>`
     }
 
-    async function clickConfirmPayment(documentId, amount, documentAccountId){
+    async function clickConfirmPayment(documentId, amount, documentAccountId) {
         url = baseURL + "/document/purchase"
 
         data = {
@@ -891,8 +943,8 @@
             "account_id": documentAccountId
         }
 
-        const resultBuyDoc = await postData(url, data);
-        if (resultBuyDoc.code === 0){
+        const resultBuyDoc = await postData(url, data, localStorage.token);
+        if (resultBuyDoc.code === 0) {
             clickCloseConfirmPayment();
             document.getElementById("btn-document-payment").style.visibility = "hidden"
             getDocumentAllDetail();
@@ -903,35 +955,49 @@
         }
     }
 
-    function reportDocument(document_id){
+    function reportDocument(document_id) {
         document.getElementById("form-report").style.visibility = "visible";
         document.getElementById("form-report-footer").innerHTML = `<input class="btn btn-primary col-3 rounded" name="submit" type="button" onclick="clickSendReport('${document_id}')" value="Gửi">`;
 
     }
 
-    function clickCloseReport(){
+    function clickCloseReport() {
         document.getElementById("form-report").style.visibility = "hidden";
     }
 
-    async function clickSendReport(document_id){
+    async function clickSendReport(document_id) {
         url = baseURL + "/document/" + document_id + "/report"
 
         const data = new FormData();
         data.append("content", document.getElementById("form-report-content").value)
-        data.append("file", document.getElementById("form-report-file").files[0]);     
+        data.append("file", document.getElementById("form-report-file").files[0]);
 
         try {
-            const result = await postFormData(url, data);
-            if (result.code === 0){
+            const result = await postFormData(url, data, localStorage.token);
+            if (result.code === 0) {
                 alert("Đã gửi báo cáo. Xin hãy đợi chúng tôi xử lý");
                 clickCloseReport();
             }
             else {
-                alert("Có lỗi xảy ra hãy thử lại sau");
+                alert(result.message);
             }
         } catch (error) {
             console.log(error.message);
         }
+    }
+
+    function shareOnFacebook() {
+        var link = baseURL + `/document/{{document["id"]}}`
+        const facebookIntentURL = "https://www.facebook.com/sharer/sharer.php";
+        const contentQuery = `?u=${encodeURIComponent(link)}`;
+        const shareURL =  facebookIntentURL + contentQuery;
+        window.open(shareURL, "_blank");
+    }
+
+    function copyLink(){
+        var link = baseURL + `/document/{{document["id"]}}`
+        navigator.clipboard.writeText(link);
+        alert("Sao chép")
     }
 </script>
 {% endblock %}

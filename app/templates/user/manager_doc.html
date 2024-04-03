@@ -7,12 +7,11 @@
 {% endblock %}
 
 {% block app_content %}
-<div class="justify-content-center" style="width:100vw; position:relative; top:70px;">
+<div class="justify-content-center" style="width:100vw; min-height: 50%; position:relative; top:70px;">
     <div class="container mt-5">
         <div id="alert"></div>
         <div class="row">
             <div class="col-lg-4 pb-5">
-                <!-- Account Sidebar-->
                 <div class="author-card pb-3">
                     <div class="author-card-cover"></div>
                     <div class="author-card-profile">
@@ -43,7 +42,6 @@
                     </nav>
                 </div>
             </div>
-            <!-- Profile Settings-->
             <div class="col-lg-8 pb-5 ps-5">
                 <h3 id="label-document">Quản lý tài liệu</h3>
                 <ul class="nav nav-tabs">
@@ -81,7 +79,14 @@
 {% block scripts %}
 {{ super() }}
 <script>
-    show_display();
+    window.onload = function()
+    {
+        if(localStorage.token){
+            getUser();
+        }
+        else
+            window.location.href = "/api/v1"
+    };
 
     function show_display(){
         if (`{{type}}` === "all"){
@@ -111,7 +116,7 @@
     }
 
     async function getUser(){
-        url = baseURL + "/api/v1/user-token"
+        var url = baseURL + "/api/v1/user-token"
 
         var base_profile_img = document.getElementById("base-profile-img")
         var base_profile_name = document.getElementById("base-profile-name")
@@ -120,7 +125,7 @@
         var base_img = document.getElementById("base-img")
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
                 user.email.innerHTML = result.data["email"];
@@ -132,16 +137,14 @@
                 base_profile_email.innerHTML = result.data["email"]
                 base_profile_img.innerHTML = result.data["fullname"][0];
                 openLogin();
+                show_display();
+                userCurrentId = result.data["id"]
             }
             else{
-                alert(result.message);
-                localStorage.removeItem('token')
-                clickLogin();
+                window.location.href = "/api/v1"
             }
         } catch (error) {
-            alert(error.message);
-            localStorage.removeItem('token')
-            clickLogin();
+            window.location.href = "/api/v1"
         }
     }
 
@@ -152,7 +155,7 @@
             url += "?page=" + page;
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 var divDeXuat = document.getElementById("all-document")
                 var html = "";
@@ -172,7 +175,7 @@
         var url = baseURL + "/document/get_all_saved"
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 var divDeXuat = document.getElementById("all-document")
                 var html = "";
@@ -390,19 +393,19 @@
                                 </div>
                                 <div class="col-sm-8">
                                     <div class="row mb-3">
-                                        <div class="col-sm-2">
-                                            <h6 class="mb-0">Tên tài liệu</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Tên tài liệu <strong style="color: red">*</strong></h6>
                                         </div>
-                                        <div class="col-sm-10 text-secondary">
+                                        <div class="col-sm-9 text-secondary">
                                             <input id="name-doc" type="text" class="form-control" value="${document_name}" disabled="">
                                             <div id="name-doc-error" class="invalid-feedback mb-1"></div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-2">
-                                            <h6 class="mb-0">Danh mục</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Danh mục <strong style="color: red">*</strong></h6>
                                         </div>
-                                        <div id="root-select" class="col-sm-10 text-secondary">
+                                        <div id="root-select" class="col-sm-9 text-secondary">
                                             <select id="danhmuc" class="form-select" aria-label="Default select example" onchange="changeDanhMuc('${document_id}')">
                                                 <option selected>--Danh mục--</option>
                                             </select>
@@ -413,19 +416,19 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-2">
-                                            <h6 class="mb-0">Mô tả</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Mô tả <strong style="color: red">*</strong></h6>
                                         </div>
-                                        <div class="col-sm-10 text-secondary">
+                                        <div class="col-sm-9 text-secondary">
                                             <textarea id="mota" type="text" class="form-control" value="">${description}</textarea>
                                             <div id="mota-error" class="invalid-feedback mb-1"></div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-2">
-                                            <h6 class="mb-0">Giá bán</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Giá bán <strong style="color: red">*</strong></h6>
                                         </div>
-                                        <div class="col-sm-10 text-secondary">
+                                        <div class="col-sm-9 text-secondary">
                                             <select id="giaban" class="form-select" aria-label="Default select example" onchange="changeMoney()">
                                                 <option>Chọn giá bán</option>
                                                 <option value="free">Miễn phí</option>
@@ -457,6 +460,8 @@
 
         getDanhMuc(`danhmuc`, null, categories[0]["id"])
         getDanhMuc(`danhmuc2`, categories[1]["parent_id"], categories[1]["id"])
+        var number_page = document.getElementById("number_page");
+        number_page.style.visibility = "hidden";
         
         return html;
     }
@@ -577,7 +582,7 @@
             formData.append('image', imageFile);
 
         try {
-            const result = await postFormData(url, formData);
+            const result = await postFormData(url, formData, localStorage.token);
             if (result.code === -2){
                 const errors = result.data;
                 Object.keys(errors).forEach((key) => {
@@ -626,7 +631,7 @@
         var url = baseURL + "/document/" + document_id + "/delete";
 
         try {
-            const result = await deleteData(url);
+            const result = await deleteData(url. localStorage.token);
             if (result.code === 0){
                 clickCloseConfirmDelete();
                 document.getElementById("document-" + result.data["id"]).style.display = "none"
@@ -642,7 +647,7 @@
         var url = baseURL + `/document/${document_id}/evaluate?type=save`;
 
         try {
-            const result = await postData(url);
+            const result = await postData(url, localStorage.token);
             if (result.code === -1){
                 document.getElementById("alert").innerHTML = `
                     <div class="alert alert-warning" role="alert">

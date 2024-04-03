@@ -55,7 +55,7 @@
             <div class="form-group ">
                 {{ form.parent_id.label }}
                 <select id="parent_id" name="parent_id" class="form-select form-control col-3" aria-label="Default select example" onchange="changeCategoryParent()">
-                    <option selected>Chọn danh mục cha</option>
+                    <option value="null" selected>Chọn danh mục cha</option>
                     {% for category_parent in categories_parent%}
                         <option value="{{category_parent.id}}">{{category_parent.name}}</option>
                     {% endfor %}

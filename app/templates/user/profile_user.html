@@ -127,7 +127,7 @@
         if(localStorage.token)
             getUser();
         else
-            closeLogin();
+            window.location.href = "/api/v1"
     };
 
     const fields_account = {
@@ -174,7 +174,7 @@
         var base_img = document.getElementById("base-img")
 
         try {
-            const result = await getData(url);
+            const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
                 user.email.innerHTML = result.data["email"];
@@ -190,16 +190,13 @@
                 base_profile_email.innerHTML = result.data["email"]
                 base_profile_img.innerHTML = result.data["fullname"][0];
                 openLogin();
+                userCurrentId = result.data["id"]
             }
             else{
-                alert(result.message);
-                localStorage.removeItem('token')
-                clickLogin();
+                window.location.href = "/api/v1"
             }
         } catch (error) {
-            alert(error.message);
-            localStorage.removeItem('token')
-            clickLogin();
+            window.location.href = "/api/v1"
         }
     }
 
@@ -212,7 +209,7 @@
         }
 
         try {
-            const result = await postData(url, data);
+            const result = await postData(url, data, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
                 user.ls_fullname.innerHTML = result.data["fullname"];
@@ -247,7 +244,7 @@
         }
 
         try {
-            const result = await postData(url, data);
+            const result = await postData(url, data, localStorage.token);
             reloadFieldsPasswordError();
             if (result.code === -2){
                 const errors = result.data;

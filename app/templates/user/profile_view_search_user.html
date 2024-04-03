@@ -62,7 +62,7 @@
 {% endblock %}
 
 {% block app_content %}
-<div class="justify-content-center" style="width:100vw; position:relative; top:70px;">
+<div class="justify-content-center" style="width:100vw; min-height: 50%; position:relative; top:70px;">
     <section id="content" class="container mt-3">
         <div class="row">
             <div class="col-md-4">
@@ -98,7 +98,7 @@
                             <div class="col-2 p-0">
                                 <img src="{{ document.image }}"
                                             alt="Generic placeholder image" class="img-fluid p-0"
-                                            style="width: 100px; height: 120px; border-radius: 10px;">
+                                            style="width: 100px; height: 120px; border-radius: 10px;"/>
                             </div>  
                             <div class="col-6 ps-0">
                                 <h4 class="m-0">{{ document.document_name | get_only_document_name }}</h4>

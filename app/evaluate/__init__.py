@@ -12,7 +12,7 @@ def handle_auth_error(e):
 
 @bp.errorhandler(NoAuthorizationError)
 def handle_auth_error(e):
-    return {'message': 'Bạn không có quyền truy cập vào tài nguyên này. Vui lòng đăng nhập để tiếp tục', 'code': -1}, 401
+    return {'message': 'Bạn không có quyền truy cập vào chức năng này. Vui lòng đăng nhập để tiếp tục', 'code': -1}, 401
 
 @bp.errorhandler(RevokedTokenError)
 def handle_expired_error(e):
