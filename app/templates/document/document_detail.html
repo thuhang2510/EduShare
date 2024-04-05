@@ -803,7 +803,7 @@
                             getDocumentAllDetail();
                         });
                     }
-                    else if (response.status == 401) {
+                    else if (response.status == 401 || response.status == 422) {
                         show_base_alert(-1, "Bạn cần đăng nhập để thực hiện chức năng này.");
                     }
                     else if (response.status == 403) {
@@ -843,7 +843,7 @@
                                     getDocumentAllDetail();
                                 });
                             }
-                            else if (response.status == 401) {
+                            else if (response.status == 401 || response.status == 422) {
                                 show_base_alert(-1, "Bạn cần đăng nhập để thực hiện chức năng này.");
                             }
                             else if (response.status == 403) {
