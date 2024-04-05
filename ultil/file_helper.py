@@ -6,6 +6,7 @@ lic = aw.License()
 def convert_doc_to_pdf(file_path_old, file_path_new):
     try:
         lic.set_license("Aspose.WordsforPythonvia.NET.lic")
+        return "", 0, None
         print("License set successfully.")
         
         doc = aw.Document(file_path_old)
