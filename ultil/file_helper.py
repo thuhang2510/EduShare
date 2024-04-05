@@ -13,4 +13,4 @@ def convert_doc_to_pdf(file_path_old, file_path_new):
         os.remove(file_path_old)
         return "", 0, None
     except RuntimeError as err:
-        return str(err), -1, None
+        return "Không thể license", -1, None
