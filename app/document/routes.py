@@ -77,7 +77,8 @@ def upload_multi():
         f.close()
 
         if f.content_type != 'application/pdf':
-            file_helper.convert_doc_to_pdf(f"upload_files/{f.filename}", f"upload_files/{f.filename.replace('docx', 'pdf')}")
+            message, code, data = file_helper.convert_doc_to_pdf(f"upload_files/{f.filename}", f"upload_files/{f.filename.replace('docx', 'pdf')}")
+            return jsonify({'message': message, 'code': 0, 'data': None})
         
     return jsonify({'message': 'Tài liệu lưu vào tạm thời thành công', 'code': 0, 'data': None})
     
