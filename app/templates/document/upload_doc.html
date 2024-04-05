@@ -350,16 +350,15 @@
             }
             else if(result.code === 0){
                 deleteDocument(fileOldName, fileId);
-
-                loader.classList.remove("display");
-                loader.style.display = "none";
-                
                 show_base_alert(0, "Upload tài liệu thành công");
             }
             else{
                 show_base_alert(-1, "Hãy đăng nhập trước")
                 window.location.replace(baseURL + "/api/v1")
             }
+
+            loader.classList.remove("display");
+            loader.style.display = "none";
         } catch (error) {
             console.log(error.message);
         }
