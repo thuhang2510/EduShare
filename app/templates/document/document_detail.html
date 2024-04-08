@@ -992,9 +992,9 @@
         window.open(shareURL, "_blank");
     }
 
-    function copyLink(){
+    async function copyLink(){
         var link = baseURL + `/document/{{document["id"]}}`
-        navigator.clipboard.writeText(link);
+        await navigator.clipboard.writeText(link);
         show_base_alert(0, "Đã sao chép")
     }
 </script>
