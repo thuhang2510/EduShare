@@ -993,14 +993,28 @@
     }
 
     function copyLink(){
-        navigator.clipboard
-            .writeText(content.innerText)
-            .then(() => {
-                // Overwriting with an empty string
-                content.innerText = "";
-                alert("Copied to clipboard");
-            })
-            .catch((e) => alert(e.message));
+        var copyText = baseURL + `/document/{{document["id"]}}`
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(copyText);
+            show_base_alert(0, "Đã sao chép");
+        }
+        else {    
+            unsecuredCopyToClipboard(copyText);
+        }
+    }
+
+    function unsecuredCopyToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        try {
+            document.execCommand('copy');
+            show_base_alert(0, "Đã sao chép");
+        } catch (err) {
+            show_base_alert(-1, "Không thể sao chép đường dẫn");
+            console.error('Không thể sao chép đường dẫn', err);
+        }
+        document.body.removeChild(textArea);
     }
 </script>
 {% endblock %}
