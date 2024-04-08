@@ -994,13 +994,11 @@
     }
 
     var url = document.location.href;
-    new ClipboardJS('.copylink', {
+    var clipboard = new ClipboardJS('.copylink', {
         text: function() {
             return url;
         }
     });
-
-    var clipboard = new ClipboardJS('.copylink');
 
     clipboard.on('success', function(e) {
         show_base_alert(0, "Đã sao chép");
