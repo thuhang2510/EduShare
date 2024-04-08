@@ -102,7 +102,7 @@
                                 class="bi bi-share-fill" ></i></button>
                             <ul class="dropdown-menu" aria-labelledby="dropdown">
                                 <li><a class="dropdown-item" href="#" onclick="shareOnFacebook()">Chia sẻ trên facebook</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="copyLink()">Sao chép link</a></li>
+                                <li><button class="dropdown-item copylink">Sao chép link</button></li>
                             </ul>
                         </div>
                     </div>
@@ -234,6 +234,7 @@
 {% block scripts %}
 {{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
 <script>
     let nameFile = null;
     let pdfTT = null;
@@ -992,32 +993,22 @@
         window.open(shareURL, "_blank");
     }
 
-    function copyLink(){
-        var copyText = baseURL + `/document/{{document["id"]}}`
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(copyText);
-            show_base_alert(0, "Đã sao chép");
+    var url = document.location.href;
+    new ClipboardJS('.copylink', {
+        text: function() {
+            return url;
         }
-        else {    
-            unsecuredCopyToClipboard(copyText);
-        }
-    }
+    });
 
-    function unsecuredCopyToClipboard(text) {
-        const textArea = document.createElement("textarea");
-        textArea.style.visibility = "hidden"
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            show_base_alert(0, "Đã sao chép");
-        } catch (err) {
-            show_base_alert(-1, "Không thể sao chép đường dẫn");
-            console.error('Không thể sao chép đường dẫn', err);
-        }
-        document.body.removeChild(textArea);
-    }
+    var clipboard = new ClipboardJS('.copylink');
+
+    clipboard.on('success', function(e) {
+        show_base_alert(0, "Đã sao chép");
+        e.clearSelection();
+    });
+
+    clipboard.on('error', function(e) {
+        show_base_alert(-1, "Không thể sao chép đường dẫn");
+    });
 </script>
 {% endblock %}
