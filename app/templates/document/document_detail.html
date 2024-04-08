@@ -992,10 +992,15 @@
         window.open(shareURL, "_blank");
     }
 
-    async function copyLink(){
-        var link = baseURL + `/document/{{document["id"]}}`
-        await navigator.clipboard.writeText(link);
-        show_base_alert(0, "Đã sao chép")
+    function copyLink(){
+        navigator.clipboard
+            .writeText(content.innerText)
+            .then(() => {
+                // Overwriting with an empty string
+                content.innerText = "";
+                alert("Copied to clipboard");
+            })
+            .catch((e) => alert(e.message));
     }
 </script>
 {% endblock %}
