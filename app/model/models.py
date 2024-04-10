@@ -316,6 +316,7 @@ class Documents(db.Model):
     download_count = db.Column(db.Integer, server_default='0')
     view_count = db.Column(db.Integer, server_default='0')
     image = db.Column(db.String(255))
+    deletion_reason = db.Column(db.String(255))
     creation_date = db.Column(db.DateTime, default=datetime.utcnow)
     modified_date = db.Column(db.DateTime, onupdate=datetime.utcnow)    
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
@@ -550,11 +551,26 @@ class Documents(db.Model):
             paginate(page=page, per_page=per_page) 
     
     @classmethod
-    def search(cls, page, per_page, value):
+    def search(cls, page, per_page, value, sort, price, cat_id):
         query =  cls.query.\
             join(Account).\
             add_column(Account.fullname).\
-            filter(cls.document_name.ilike('%' + value + '%') | Account.fullname.ilike('%' + value + '%'))
+            filter(cls.document_name.ilike('%' + value + '%') | Account.fullname.ilike('%' + value + '%'), cls.status==True)
+        
+        if (sort == 1):
+            query = query.order_by(desc(cls.download_count))
+        elif (sort == 2):
+            query = query.order_by(desc(cls.view_count))
+
+        if price == 1:
+            query = query.filter(cls.price == 0)
+        elif price == 2:
+            query = query.filter(cls.price > 0)
+
+        if cat_id != 0:
+            query = query.join(DocumentCategories, DocumentCategories.document_id==cls.id).\
+                    join(Categories, Categories.id == DocumentCategories.category_id).\
+                    filter(Categories.id == cat_id)
             
         return query.paginate(page=page, per_page=per_page)        
 

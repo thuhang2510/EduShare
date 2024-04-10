@@ -1,0 +1,96 @@
+{% extends 'admin/base.html' %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class=flashes>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+{% block head_css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/detail.css') }}">
+{% endblock %}
+
+{% block body %}
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a href="/admin/documents/" class="nav-link">Danh sách</a>
+    </li>
+    <li class="nav-item">
+        <a href="javascript:void(0)" class="nav-link active">Chỉnh sửa</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/admin/documents/details/?id=2&amp;url=/admin/documents/">Chi tiết</a>
+    </li>
+</ul>
+        <div class="form-group ">
+            <label for="document_name" class="control-label">Tên tài liệu
+                <strong style="color: red">*</strong>
+            </label>
+            <input class="form-control" id="document_name" maxlength="255" name="document_name" readonly="" required=""
+                type="text" value="{{document.document_name | get_only_document_name}}">
+        </div>
+        <div class="form-group ">
+            <label for="type" class="control-label">Loại
+                <strong style="color: red">*</strong>
+            </label>
+            <input class="form-control" id="type" maxlength="5" name="type" readonly="" required="" type="text"
+                value="{{document.type}}">
+        </div>
+        <div class="form-group ">
+            <label for="description" class="control-label">Mô tả
+                <strong style="color: red">*</strong>
+            </label>
+            <input class="form-control" id="description" maxlength="255" name="description" readonly="" required=""
+                type="text"
+                value="{{document.description}}">
+        </div>
+        <div class="form-group ">
+            <label for="description" class="control-label">Người tải lên
+                <strong style="color: red">*</strong>
+            </label>
+            <input class="form-control" id="description" maxlength="255" name="description" readonly="" required=""
+                type="text"
+                value="{{user.fullname}}">
+        </div>
+<form action="" method="POST" role="form" class="admin-form" enctype="multipart/form-data">
+    <fieldset>
+        <div class="form-group ">
+            <label for="status" class="control-label" style="display: block; margin-bottom: 0">Trạng thái
+                &nbsp;
+            </label>
+            
+            {% if document.status %}
+                <input id="status" name="status" type="checkbox" onchange="checkStatus(`{{document.deletion_reason}}`)" checked>
+            {% else %}
+                <input id="status" name="status" type="checkbox" onchange="checkStatus(`{{document.deletion_reason}}`)">
+            {% endif %}
+        </div>
+        {% if document.status %}
+        <div id="deletion_reason" class="form-group" style="display: none;">
+        {% else %}
+        <div id="deletion_reason" class="form-group" style="display: block;">
+        {% endif %}
+            <label for="deletion_reason_content" class="form-label">Lý do tài liệu bị xóa
+                <strong style="color: red">*</strong>
+            </label>
+            <div id="deletion_reason_content">
+                <textarea name="deletion_reason" class="form-control" rows="3">
+{% if document.deletion_reason %}{{document.deletion_reason}}{% endif %}
+                </textarea>
+            </div>
+          </div>
+        <hr>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10 submit-row">
+                <input type="submit" class="btn btn-primary" value="Lưu">
+            </div>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

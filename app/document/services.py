@@ -112,9 +112,9 @@ class DocumentsDataService():
         except Exception as e:
             return None, -1, "Update document fail"
         
-    def search_documents(self, page, query):
+    def search_documents(self, page, query, sort, price, cat_id):
         try:
-            documents = Documents.search(page, 25, query)
+            documents = Documents.search(page, 25, query, sort, price, cat_id)
             
             return documents, 0, "Get document success"
         except Exception as e:

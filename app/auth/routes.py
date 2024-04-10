@@ -6,6 +6,7 @@ from app.auth.services import UserDataService
 from app.blacklist import BLACKLIST
 from flask_login import current_user
 from flask_jwt_extended import create_access_token, get_jwt, jwt_required
+from app.categories.services import CategoriesDataService
 from app.extensions import admin_permission, editter_permision
 from flask_principal import identity_changed, Identity, AnonymousIdentity
 
@@ -14,7 +15,9 @@ def index():
     register = RegisterForm(meta={'csrf': False})
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
-    return render_template('home/trangchu.html', title='Trang chủ', form=register, formlogin=login, formresetpw=resetpw)
+
+    categories, _, _ = CategoriesDataService().get_all_with_tuple()
+    return render_template('home/trangchu.html', title='Trang chủ', form=register, formlogin=login, formresetpw=resetpw, categories=categories)
 
 @bp.route('/register', methods=['POST'])
 def register():

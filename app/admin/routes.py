@@ -5,8 +5,8 @@ from flask_admin import BaseView, expose
 from flask_login import login_user, current_user, logout_user
 from markupsafe import Markup
 from app import db, admin
-from app.admin.email import send_email_field
-from app.admin.forms import CreateCategoryForm, EditCategoryForm
+from app.admin.email import send_email_field, send_email_delete_doc
+from app.admin.forms import CreateCategoryForm, EditCategoryForm, EditDocumentForm
 from app.model.models import Account, Permission, Categories, Documents, Transaction
 from app.admin import bp
 from app.auth.services import UserDataService
@@ -141,18 +141,51 @@ class DocumentView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
     
+    def after_model_change(self, form, model, is_created):
+        if not is_created:
+            user = Account.find_by_id(model.account_id)
+            send_email_delete_doc(model, user)
+    
     @expose('/details/')
     def deltails(self):
         id = request.args.get("id")
         document = Documents.find_by_id(id)
         user = Account.find_by_id(document.account_id)
-        return self.render('/admin/documents/detail.html', document=document, user=user)
+        return self.renderDetail('/admin/documents/detail.html', document=document, user=user)
     
-    def render(self, template, **kwargs):
+    def renderDetail(self, template, **kwargs):
         self.extra_js = [url_for("static", filename="js/admin/detail.js")]
-
         return super(DocumentView, self).render(template, **kwargs)
+
+    @expose('/edit/', methods=["GET", "POST"])
+    def edit(self):
+        id = request.args.get("id")
+        document = Documents.find_by_id(id)
+        user = Account.find_by_id(document.account_id)
+
+        editDocument = EditDocumentForm(meta={'csrf': False})
+
+        if request.method == 'GET':
+            return self.renderEdit('/admin/documents/edit.html', form=editDocument, document=document, user=user)
+
+        if editDocument.validate():
+            if request.form.get("status") == 'on':
+                document.status = True
+                document.deletion_reason = None
+                document.save_to_db()
+                flash("Lưu lại tài liệu thành công")
+            else:
+                document.status = False
+                document.deletion_reason = editDocument.deletion_reason.data
+                document.save_to_db()
+                flash("Xóa tài liệu thành công")
+        
+        return self.renderEdit('/admin/documents/edit.html', form=editDocument, document=document, user=user)
     
+    def renderEdit(self, template, **kwargs):
+        self.extra_js = [url_for("static", filename="js/admin/edit.js")]
+        return super(DocumentView, self).render(template, **kwargs)
+
 class CategoryView(BaseView):    
     @expose('/')
     def index(self):

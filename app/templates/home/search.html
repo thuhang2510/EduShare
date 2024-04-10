@@ -4,35 +4,92 @@
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 <link href="/static/css/all_document.css" rel="stylesheet">
+<style>
+    .dropdown-menu li {
+        position: relative;
+    }
+    .dropdown-menu .dropdown-submenu {
+        display: none;
+        position: absolute;
+        left: 100%;
+        top: -7px;
+    }
+    .dropdown-menu .dropdown-submenu-left {
+        right: 100%;
+        left: auto;
+    }
+    .dropdown-menu > li:hover > .dropdown-submenu {
+        display: block;
+    }
+
+</style>
 {% endblock %}
 
 {% block app_content %}
 <div class="justify-content-center" style="width:100vw; min-height: 50%; position:relative; top:70px;">
     <div class="container mt-2">
         <div class="d-flex flex-row bd-highlight mb-3">
-            {% for category in categories %}
-                {% if category["parent_id"] is none %}
-                    <div class="p-2 bd-highlight">
-                        <div class="dropdown">
-                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ category["name"] }}
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                    {% for categoryItem in categories %}
-                        {% if categoryItem["parent_id"] is not none and category["id"] == categoryItem["parent_id"] %}
-                            <li><a class="dropdown-item" href="/categories/{{ categoryItem['name'] }}">{{ categoryItem["name"] }}</a></li>
+            <div class="p-2 bd-highlight">
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" id="dropdownSort" data-sort="{{sort}}" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sắp xếp:
+                        {% if sort == 0 %}
+                            Tất cả
+                        {% elif sort == 1 %}
+                            Tải nhiều
+                        {% elif sort == 2 %}
+                            Xem nhiều
                         {% endif %}
-                    {% endfor %}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownSort">
+                        <li><a class="dropdown-item" onclick="clickSort(0)">Tất cả</a></li>
+                        <li><a class="dropdown-item" onclick="clickSort(1)">Tải nhiều</a></li>
+                        <li><a class="dropdown-item" onclick="clickSort(2)">Xem nhiều</a></li>
+                    </ul>
+                </div>
+            </div> 
+            <div class="p-2 bd-highlight">
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" id="dropdownCat" data-bs-toggle="dropdown" aria-expanded="false">
+                        Danh mục: {{ cat_name }}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownCat">
+                    {% for category in categories %}
+                        {% if category["parent_id"] is none %}
+                        <li><a class="dropdown-item" data-cat-id="{{category['id']}}" data-cat-name="{{category['name']}}" onclick="clickCat(`{{category['id']}}`, `{{category['name']}}`)"> {{ category["name"] }} &raquo; </a>
+                            <ul class="dropdown-menu dropdown-submenu dropdown-submenu-right">
+                                {% for categoryItem in categories %}
+                                    {% if categoryItem["parent_id"] is not none and category["id"] == categoryItem["parent_id"] %}
+                                        <li><a class="dropdown-item" data-cat-id="{{categoryItem['id']}}" data-cat-name="{{categoryItem['name']}}" onclick="clickCat(`{{categoryItem['id']}}`, `{{categoryItem['name']}}`)">{{ categoryItem["name"] }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
                             </ul>
-                        </div>
-                    </div> 
-                {% endif %}
-            {% endfor %} 
-            <div class="align-self-center p-2">
-                <a class="dropdown-item" href="/categories/all">Xem toàn bộ danh mục</a>
-            </div>
-        </div>  
-
+                        </li>
+                        {% endif %}
+                    {% endfor %} 
+                    </ul>
+                </div>
+            </div> 
+            <div class="p-2 bd-highlight">
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" id="dropdownSell" data-sell='{{ is_sell }}' data-bs-toggle="dropdown" aria-expanded="false">
+                        Giá bán: 
+                        {% if is_sell == 0 %}
+                            Tất cả
+                        {% elif is_sell == 1 %}
+                            Miễn phí
+                        {% elif is_sell == 2 %}
+                            Mất phí
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownSell">
+                        <li><a class="dropdown-item" onclick="clickSell(0)">Tất cả</a></li>
+                        <li><a class="dropdown-item" onclick="clickSell(1)">Miễn phí</a></li>
+                        <li><a class="dropdown-item" onclick="clickSell(2)">Mất phí</a></li>
+                    </ul>
+                </div>
+            </div> 
+        </div> 
         <p class="text-right mt-3">
             {{ documents.first }} - {{ documents.last }} trong {{documents.total}} kết quả
         </p>
@@ -58,20 +115,18 @@
         </div>
 
         <div class="text-right">
-            <a href="{{ url_for('search.search_documents_route', query=query, page=documents.prev_num) }}"
+            <a onclick="clickPage(`{{documents.prev_num}}`)"
                class="btn btn-outline-dark {% if documents.page == 1 %}disabled{% endif %}">
                 &laquo;
             </a>
             {% for page_num in documents.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
                 {% if page_num %}
                     {% if documents.page == page_num %}
-                        <a href="{{ url_for('search.search_documents_route', query=query, page=page_num) }}"
-                        class="btn btn-dark">
+                        <a onclick="clickPage(`{{page_num}}`)" class="btn btn-dark">
                             {{ page_num }}
                         </a>
-                        {% else %}
-                        <a href="{{ url_for('search.search_documents_route', query=query, page=page_num) }}"
-                        class="btn btn-outline-dark">
+                    {% else %}
+                        <a onclick="clickPage(`{{page_num}}`)" class="btn btn-outline-dark">
                             {{ page_num }}
                         </a>
                     {% endif %}
@@ -80,8 +135,7 @@
                 {% endif %}
             {% endfor %}
 
-            <a href=" {{ url_for('search.search_documents_route', query=query, page=documents.next_num) }}"
-                class="btn btn-outline-dark 
+            <a onclick="clickPage(`{{documents.next_num}}`)" class="btn btn-outline-dark 
                 {% if documents.page == documents.pages %}disabled{% endif %}">
                     &raquo;
             </a>
@@ -139,5 +193,43 @@
         window.location.replace(baseURL + "/document/" + id)
     }
 
+    function setUrl(sort, is_sell, cat_id, cat_name, page=null){
+        url = baseURL + "/search-documents?query={{query}}";
+
+        if (sort != 0)
+            url += "&sort=" + sort;
+
+        if (cat_id != 0)
+            url += "&cat_id=" + cat_id + "&cat_name=" + cat_name;
+
+        if (is_sell != 0)
+            url += "&is_sell=" + is_sell;
+
+        if (page){
+            url += "&page=" + page;
+        }
+
+        return url;
+    }
+
+    function clickSort(sort){
+        url = setUrl(sort, `{{is_sell}}`, `{{cat_id}}`, `{{cat_name}}`);
+        window.location.replace(url);
+    }
+
+    function clickCat(cat_id, cat_name){
+        url = setUrl(`{{sort}}`, `{{is_sell}}`, cat_id, cat_name);
+        window.location.replace(url);
+    }
+
+    function clickSell(sell){
+        url = setUrl(`{{sort}}`, sell, `{{cat_id}}`, `{{cat_name}}`);
+        window.location.replace(url);
+    }
+
+    function clickPage(page){
+        url = setUrl(`{{sort}}`, `{{is_sell}}`, `{{cat_id}}`, `{{cat_name}}`, page);
+        window.location.replace(url);
+    }
 </script>
 {% endblock %}

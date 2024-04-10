@@ -15,9 +15,14 @@ def search_documents_route():
 
     page = request.args.get('page', 1, type=int)
     query = request.args.get('query')
+    sort = request.args.get('sort', 0, int)
+    is_sell = request.args.get('is_sell', 0, int)
+    cat_id = request.args.get('cat_id', 0, int)
+    cat_name = request.args.get('cat_name', 'Tất cả', str)
 
-    documents, _, _ = DocumentsDataService().search_documents(page, query)
+    documents, _, _ = DocumentsDataService().search_documents(page, query, sort, is_sell, cat_id)
     categories, _, _ = CategoriesDataService().get_all_with_tuple()
 
     return render_template('home/search.html', title='Tìm kiếm', form=register, 
-                           formlogin=login, formresetpw=resetpw, categories=categories, documents=documents, query=query)
+                           formlogin=login, formresetpw=resetpw, categories=categories, 
+                           documents=documents, query=query, sort=sort, is_sell=is_sell, cat_id=cat_id, cat_name=cat_name)

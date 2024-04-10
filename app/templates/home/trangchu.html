@@ -31,7 +31,30 @@
 
 {% block app_content %}
 <div class="justify-content-center" style="width:100vw; min-height: 50%; position:relative; top:70px;">
-    <div class="container mt-5">
+    <div class="container mt-2">
+        <div class="d-flex flex-row bd-highlight mb-3">
+            {% for category in categories %}
+                {% if category["parent_id"] is none %}
+                    <div class="p-2 bd-highlight">
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ category["name"] }}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    {% for categoryItem in categories %}
+                        {% if categoryItem["parent_id"] is not none and category["id"] == categoryItem["parent_id"] %}
+                            <li><a class="dropdown-item" href="/categories/{{ categoryItem['name'] }}">{{ categoryItem["name"] }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                            </ul>
+                        </div>
+                    </div> 
+                {% endif %}
+            {% endfor %} 
+            <div class="align-self-center p-2">
+                <a class="dropdown-item" href="/categories/all">Xem toàn bộ danh mục</a>
+            </div>
+        </div> 
         <div id="titleDocumentSave" class="d-flex bd-highlight">
             <div class="p-2 flex-fill bd-highlight h2">Tài liệu đã lưu</div>
         </div>

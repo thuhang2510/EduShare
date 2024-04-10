@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import FieldList, Form, SelectField, StringField, FormField, ValidationError, FileField, IntegerField
+from wtforms import StringField, ValidationError, IntegerField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 
 from app.model.models import Categories
@@ -24,3 +24,11 @@ class CreateCategoryForm(FlaskForm):
         category = Categories.find_by_name(name.data)
         if category != None:
             raise ValidationError("Đã có danh mục tên " + name.data)
+        
+class EditDocumentForm(FlaskForm):
+    status = BooleanField(label="Trạng thái")
+    deletion_reason = StringField(label="Lý do xóa")
+
+    def validate_deletion_reason(self, deletion_reason):
+        if self.status.data == False and (deletion_reason.data == "" or deletion_reason.data is None):
+            raise ValidationError("Chưa điền lý do xóa")

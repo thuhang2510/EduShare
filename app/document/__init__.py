@@ -10,6 +10,10 @@ bp = Blueprint('document', __name__)
 def handle_auth_error(e):
     return {'message': 'Bạn không có quyền thực hiện chức năng này.', 'code': -4}, 403
 
+@bp.errorhandler(413)
+def handle_auth_error(e):
+    return {'message': 'Bạn không có quyền thực hiện chức năng này.', 'code': -4}, 403
+
 @bp.errorhandler(NoAuthorizationError)
 def handle_auth_error(e):
     return {'message': 'Hãy đăng nhập để sử dụng chức năng này.', 'code': -4}, 401
