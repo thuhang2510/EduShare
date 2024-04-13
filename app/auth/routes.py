@@ -69,7 +69,9 @@ def get_user_by_token():
             'coin': current_user.coin,
             'address': current_user.address,
             'datetime_week_reset': current_user.datetime_week_reset,
-            'number_download': current_user.number_download
+            'number_download': current_user.number_download,
+            'datetime_day_reset': current_user.datetime_day_reset,
+            'number_ask': current_user.number_ask
         }
         return jsonify({'message': 'Lấy user thành công', 'code': 0, 'data': data})
     

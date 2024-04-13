@@ -487,6 +487,7 @@
                 userCurrentId = result.data["id"]
 
                 updateCountDownload(result);
+                updateCountAsk(result);
             }
             else if (result.code == -4) {
                 userCurrentId = null;
@@ -521,13 +522,42 @@
 
     function updateCountDownload(result) {
         var currentDate = new Date();
-        datetime_week_reset = new Date(result.data["datetime_week_reset"])
+        var datetime_week_reset = new Date(result.data["datetime_week_reset"])
         datetime_week_reset = Math.abs(currentDate.getTime() - datetime_week_reset.getTime()) / (1000 * 60 * 60 * 24);
         if (datetime_week_reset > 7) {
             updateCountDownloadAPI(0, true)
         }
         else
             user.lg_fullname.dataset.countdownload = result.data["number_download"]
+    }
+
+    async function updateCountAskAPI(number_ask, day_reset) {
+        data = {
+            "number_ask": number_ask,
+            "day_reset": day_reset
+        }
+
+        try {
+            const result = await postData("/user/upload-count-ask", data, localStorage.token);
+            if (result.code == 0) {
+                user.lg_fullname.dataset.countask = number_ask;
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function updateCountAsk(result) {
+        var currentDate = new Date();
+        var datetime_day_reset = new Date(result.data["datetime_day_reset"])
+        var date_ask_reset = datetime_day_reset.getDate()
+        var date_current = currentDate.getDate()
+
+        if (date_current > date_ask_reset) {
+            updateCountAskAPI(0, true)
+        }
+        else
+            user.lg_fullname.dataset.countask = result.data["number_ask"]
     }
 
     const fields_reset_fw = {

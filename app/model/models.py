@@ -27,6 +27,8 @@ class Account(UserMixin, db.Model):
     address = db.Column(db.String(255))
     number_download = db.Column(db.Integer, server_default='0')
     datetime_week_reset = db.Column(db.DateTime, default=datetime.utcnow)
+    number_ask = db.Column(db.Integer, server_default='0')
+    datetime_day_reset = db.Column(db.DateTime, default=datetime.utcnow)
     violation_count = db.Column(db.Integer, server_default='0')
     permission = db.relationship(
         'Permission',
@@ -53,6 +55,8 @@ class Account(UserMixin, db.Model):
             'address': self.address,
             'number': self.number,
             'coin': self.coin,
+            'number_ask': self.number_ask,
+            'number_download': self.number_download,
             'datetime_week_reset': self.datetime_week_reset,
             'datetime_day_reset': self.datetime_day_reset,
             'purchase': Purchase.list_to_dict(self.purchase)

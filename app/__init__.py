@@ -62,6 +62,9 @@ def create_app(config_class=Config):
     from app.search import bp as search_bp
     app.register_blueprint(search_bp, url_prefix='')
 
+    from app.ai import bp as ai_bp
+    app.register_blueprint(ai_bp, url_prefix='/ai')
+
     return app
 
 from app.model import models

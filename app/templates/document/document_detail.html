@@ -12,11 +12,10 @@
             <div class="col-4">
                 <nav class="navbar navbar-expand-lg px-3">
                     <div class="container-md">
-                        <a id="selectDetail" class="navbar-brand col-12 text-center" onclick="clickInfoDetail()"
+                        <a id="selectDetail" class="navbar-brand col-6 text-center" onclick="clickInfoDetail()"
                             style="color: rgb(2, 126, 176); border-color: rgb(2, 126, 176); border-bottom: 5px solid rgb(2, 126, 176);">Thông
                             tin</a>
-                        <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()"
-                            style="display: none;">Hỏi AI</a>
+                        <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()">Hỏi AI</a>
                     </div>
                 </nav>
                 <div id="infor-detail" class="px-4" style="width:100%; height:690px; overflow-y:scroll; scrollbar-width: none;">
@@ -406,6 +405,8 @@
     });
 
     function clickInfoDetail() {
+        api_key = null;
+
         document.getElementById("infor-detail").style.display = "block";
         document.getElementById("ai-detail").style.display = "none";
 
@@ -420,19 +421,30 @@
         selectDetail.style.color = "rgb(2, 126, 176)";
     }
 
-    function clickAI() {
-        document.getElementById("ai-detail").style.display = "block";
-        document.getElementById("infor-detail").style.display = "none";
+    async function clickAI() {
+        if (bought == false && `{{document["price"]}}` > 0) {
+            show_base_alert(-1, "Hãy mua tài liệu trước để thực hiện chức năng này.");
+        }
+        else{
+            document.getElementById("ai-detail").style.display = "block";
+            document.getElementById("infor-detail").style.display = "none";
 
-        var selectAI = document.getElementById("selectAI");
-        selectAI.style.borderColor = "#f064fc";
-        selectAI.style.borderBottom = "5px solid #f064fc";
-        selectAI.style.color = "#f064fc"
+            var selectAI = document.getElementById("selectAI");
+            selectAI.style.borderColor = "#f064fc";
+            selectAI.style.borderBottom = "5px solid #f064fc";
+            selectAI.style.color = "#f064fc"
 
-        var selectDetail = document.getElementById("selectDetail")
-        selectDetail.style.borderColor = null;
-        selectDetail.style.borderBottom = null;
-        selectDetail.style.color = null;
+            var selectDetail = document.getElementById("selectDetail")
+            selectDetail.style.borderColor = null;
+            selectDetail.style.borderBottom = null;
+            selectDetail.style.color = null;
+
+            var chatContainer = document.getElementsByClassName("chat-container")[0];
+            chatContainer.innerHTML = "";
+
+            setTimeout(startLoadAI, 500);
+            startShowAI();
+        }
     }
 
     function scrollPage() {
@@ -446,53 +458,68 @@
         return chatDiv;
     }
 
-    const getChatResponse = async (incomingChatDiv) => {
-        const API_URL = "https://api.openai.com/v1/chat/completions";
+    async function loadDocumentToAsk(incomingChatDiv){
+        var url = baseURL + "/ai/load_doc";
 
-        const requestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer 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`
-            },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo",
-                messages: [{ "role": "user", "content": `${userText}` }]
-            })
+        data = {
+            "document_name": `{{document["document_name"]}}`,
+            "document_id": `{{document["id"]}}`,
+            "api_key": api_key
         }
-
-        let response = null;
 
         try {
-            response = await (await fetch(API_URL, requestOptions)).json();
-            console.log(response);
+            const result = await postData(url, data, localStorage.token);
+            if (result.code === -1) {
+                show_base_alert(-1, result.message);
+                clickInfoDetail();
+            }
+            else if (result.code === -4) {
+                show_base_alert(-1, result.message);
+                clickInfoDetail();
+            }
+            else {
+                incomingChatDiv.innerHTML = showResponse(result.message);
+            }
         } catch (error) {
-            response = "Có chuyện gì đó xảy ra khi nhận phản hồi. Xin vui lòng thử lại sau";
+            show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
+            console.log(error.message);
+        }
+    }
+
+    async function getChatResponse(incomingChatDiv){
+        const url = baseURL + "/ai/ask_ai";
+
+        data = {
+            "document_name": `{{document["document_name"]}}`,
+            "ask": `${userText}`,
+            "document_id": `{{document["id"]}}`,
+            "api_key": api_key
         }
 
-        incomingChatDiv.innerHTML = showResponse(response.choices[0].message.content);
+        try {
+            const result = await postData(url, data, localStorage.token);
+            if (result.code === -1) {
+                incomingChatDiv.innerHTML = showResponse(result.message);
+            }
+            else if (result.code === -4) {
+                show_base_alert(-1, result.message);
+                clickInfoDetail();
+            }
+            else {
+                incomingChatDiv.innerHTML = showResponse(result.data);
+            }
+        } catch (error) {
+            response = "Có chuyện gì đó xảy ra khi nhận phản hồi. Xin vui lòng thử lại sau";
+            incomingChatDiv.innerHTML = showResponse(response);
+        }
     }
 
     const showResponse = (response) => {
         const html = `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
                         <div class="p-2 bd-highlight">
                             <p class="mb-0" style="user-select: none;">${response}</p>
-                        </div>
-                        <div onclick="copyResponse(this)" class="ms-auto p-2 bd-highlight span-copy">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
-                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-                            </svg>
                         </div>`
         return html;
-    }
-
-    function copyResponse(copyBtn) {
-        const responseTextElement = copyBtn.parentElement.querySelector("p");
-        navigator.clipboard.writeText(responseTextElement.textContent);
-        copyBtn.innerHTML = "done"
-        setTimeout(() => copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" style="cursor: pointer;">
-                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-                            </svg>`, 1000);
     }
 
     const showTypingAnimation = () => {
@@ -525,11 +552,56 @@
         getChatResponse(incomingChatDiv);
     }
 
+    const startLoadAI = () => {
+        const html = `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                        <div class="p-2 bd-highlight">
+                            <div class="typing-animation">
+                                <div class="typing-dot" style="--delay: 0.2s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                      </svg>
+                                </div>
+                                <div class="typing-dot" style="--delay: 0.3s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                      </svg>
+                                </div>
+                                <div class="typing-dot" style="--delay: 0.4s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                      </svg>
+                                </div>
+                            </div>
+                        </div>`
+
+        const incomingChatDiv = createElement(html, "incoming");
+        incomingChatDiv.style.backgroundColor = "#f8f9fa";
+        var chatContainer = document.getElementsByClassName("chat-container")[0];
+        chatContainer.appendChild(incomingChatDiv);
+
+        loadDocumentToAsk(incomingChatDiv)
+    }
+
+    function startShowAI() {
+        html = showResponse("Tài liệu đang được tải lên. Xin vui lòng chờ một tí.")
+        const incomingChatDiv = createElement(html, "incoming");
+        incomingChatDiv.style.backgroundColor = "#f8f9fa";
+        var chatContainer = document.getElementsByClassName("chat-container")[0];
+        chatContainer.appendChild(incomingChatDiv);
+    }
+
+
     let userText = null;
+    let api_key = null;
 
     function sendAsk() {
+        var lg_fullname = document.getElementById("base-login-fullname")
+        number_ask = parseInt(lg_fullname.dataset.countask)
+
         var chatInput = document.getElementById("chat-input");
         userText = chatInput.value.trim();
+
+        chatInput.value = "";
         const html = `<div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
                     <div class="p-2 bd-highlight">
                         <p class="mb-0"></p>
@@ -539,7 +611,32 @@
         outgoingChatDiv.querySelector("p").textContent = userText;
         var chatContainer = document.getElementsByClassName("chat-container")[0];
         chatContainer.appendChild(outgoingChatDiv);
-        setTimeout(showTypingAnimation, 500);
+
+        if (getAPIKEY(userText)){
+            api_key = getAPIKEY(userText)
+            show_base_alert(0, "API_KEY của bạn đã được lưu. Nhưng khi thoát khỏi giao diện hỏi đáp thì API_KEY của bạn sẽ bị mất.");
+        }
+        else{
+            if (number_ask >= 10 && api_key == null)
+                show_base_alert(-1, "Bạn đã hết lượt đặt câu hỏi trong ngày. Bạn có thể sử dụng OpenAi của mình để đặt câu hỏi, bằng cách cung cấp API_KEY theo cú pháp: API_KEY: {API_KEY của bạn}");
+            else {
+                if (api_key == null)
+                    updateCountAskAPI(number_ask + 1, false);
+
+                setTimeout(showTypingAnimation, 500);
+            }
+        }
+    }
+
+    function getAPIKEY(text){
+        const apiKeyIndex = text.indexOf("API_KEY:");
+
+        if (apiKeyIndex !== -1) {
+            const ancnc = text.substring(apiKeyIndex + "API_KEY:".length);
+            return ancnc.trim();
+        } else {
+            return null;
+        }
     }
 
     async function getDocDeXuat() {
@@ -792,7 +889,7 @@
                 }})
                 .then(response => {
                     if (response.ok) {
-                        updateCountDownloadAPI(number_download + 1, false);;
+                        updateCountDownloadAPI(number_download + 1, false);
 
                         response.blob().then(blob => {
                             const url = window.URL.createObjectURL(blob);

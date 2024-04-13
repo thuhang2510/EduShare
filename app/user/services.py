@@ -49,6 +49,24 @@ class UserDataService():
         except Exception as e:
             return None, -1, "Update password fail " + str(e)
         
+    def update_number_ask(self, id, count_ask, reset_day=False):
+        try:
+            user = Account.find_by_id(id)
+            
+            if user is None:
+                return None, -1, "Get user fail"
+            
+            user.number_ask = count_ask
+
+            if(reset_day):
+                user.datetime_day_reset = datetime.now()
+
+            user.save_to_db()
+            
+            return user.to_dict(True), 0, "Update password success"
+        except Exception as e:
+            return None, -1, "Update password fail " + str(e)
+        
     def get_by_id_tuple(self, id):
         try:
             user = Account.find_by_id_tuple(id)

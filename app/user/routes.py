@@ -52,6 +52,16 @@ def update_download():
         return jsonify({'message': 'Cập nhật tài khoản không thành công', 'code': -1, 'data': None})
     return jsonify({'message': 'Cập nhật tài khoản thành công', 'code': 0, 'data': user})
 
+@bp.route("/upload-count-ask", methods=["POST"])
+@jwt_required()
+def update_number_ask():
+    data = request.json
+
+    user, _, msg = UserDataService().update_number_ask(current_user.id, data["number_ask"], data["day_reset"])
+    if user is None:
+        return jsonify({'message': 'Cập nhật tài khoản không thành công', 'code': -1, 'data': None})
+    return jsonify({'message': 'Cập nhật tài khoản thành công', 'code': 0, 'data': user})
+
 @bp.route("/quan-ly-tai-lieu", methods=["GET"])
 def manager_document():
     register = RegisterForm(meta={'csrf': False})
