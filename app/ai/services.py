@@ -21,7 +21,9 @@ class AIDataService():
         try:
             text = '\n\n'.join([page.page_content for page in loader.load()])
         except Exception as e:
-            return e
+            return str(e)
+        
+        return None
 
         splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
             chunk_size=300,
