@@ -18,17 +18,20 @@ from app.document.services import DocumentsDataService
 class AIDataService():
     def get_documents_from_web(self, url):
         loader = PyPDFLoader(url, extract_images=True)
-        #text = '\n\n'.join([page.page_content for page in loader.load()])
-        return loader
 
-        splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-            chunk_size=300,
-            chunk_overlap=20,
-        )
+        if(loader is not None):
+            text = '\n\n'.join([page.page_content for page in loader.load()])
 
-        splitDocs = splitter.split_text(text)
+            splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+                chunk_size=300,
+                chunk_overlap=20,
+            )
 
-        return splitDocs
+            splitDocs = splitter.split_text(text)
+
+            return splitDocs
+        
+        return None
     
     def get_client(self):
         client = QdrantClient(
