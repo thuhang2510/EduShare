@@ -34,6 +34,15 @@ class AIDataService():
 
         return splitDocs
     
+    def thu(self, url):
+        loader = PyPDFLoader(url, extract_images=True)
+        try:
+            text = '\n\n'.join([page.page_content for page in loader.load()])
+        except Exception as e:
+            return str(e)
+        
+        return None
+    
     def get_client(self):
         client = QdrantClient(
             url="https://42824085-67d1-4a4d-8557-9fff4e673bf9.us-east4-0.gcp.cloud.qdrant.io:6333",

@@ -28,3 +28,11 @@ def ask_ai():
     
     data, code, msg = AIDataService().chat_with_ai(ask, chat_history[current_user.id], document_edu_name, document_id, current_user.id, api_key)
     return jsonify({'message': msg, 'code': code, 'data': data})
+
+@bp.route('/thu', methods=['GET'])
+def thu():
+    document_edu_name = request.args.get("document_name")
+    url = f"https://edushare-s3.s3.amazonaws.com/{document_edu_name}.pdf"
+
+    data = AIDataService().thu(url)
+    return jsonify({'data': data})
