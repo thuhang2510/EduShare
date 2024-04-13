@@ -18,8 +18,8 @@ from app.document.services import DocumentsDataService
 class AIDataService():
     def get_documents_from_web(self, url):
         loader = PyPDFLoader(url, extract_images=True)
-        text = '\n\n'.join([page.page_content for page in loader.load()])
-        return None
+        #text = '\n\n'.join([page.page_content for page in loader.load()])
+        return loader
 
         splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
             chunk_size=300,
