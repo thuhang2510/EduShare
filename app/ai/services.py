@@ -124,8 +124,8 @@ class AIDataService():
             try:
                 if api_key is None:
                     api_key = os.getenv("OPENAI_API_KEY")
+                docs = self.get_documents_from_web(url)
                 return None, 0, "Tải tài liệu để đặt câu hỏi thành công"
-                #docs = self.get_documents_from_web(url)
                 #self.create_db(docs, document_edu_name, api_key)
             except RuntimeError:
                 return None, -1, "Tải tài liệu để đặt câu hỏi không thành công"
