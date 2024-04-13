@@ -18,20 +18,17 @@ from app.document.services import DocumentsDataService
 class AIDataService():
     def get_documents_from_web(self, url):
         loader = PyPDFLoader(url, extract_images=True)
+        #text = '\n\n'.join([page.page_content for page in loader.load()])
+        return loader
 
-        if(loader is not None):
-            text = '\n\n'.join([page.page_content for page in loader.load()])
+        splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+            chunk_size=300,
+            chunk_overlap=20,
+        )
 
-            splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-                chunk_size=300,
-                chunk_overlap=20,
-            )
+        splitDocs = splitter.split_text(text)
 
-            splitDocs = splitter.split_text(text)
-
-            return splitDocs
-        
-        return None
+        return splitDocs
     
     def get_client(self):
         client = QdrantClient(
@@ -129,7 +126,7 @@ class AIDataService():
                 if api_key is None:
                     api_key = os.getenv("OPENAI_API_KEY")
                 docs = self.get_documents_from_web(url)
-                return None, 0, "Tải tài liệu để đặt câu hỏi thành công"
+                return docs, 0, "Tải tài liệu để đặt câu hỏi thành công"
                 #self.create_db(docs, document_edu_name, api_key)
             except RuntimeError:
                 return None, -1, "Tải tài liệu để đặt câu hỏi không thành công"
