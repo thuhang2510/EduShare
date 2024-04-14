@@ -61,7 +61,6 @@ class AIDataService():
         
         return True
         
-
     def create_db(self, pdf_text, document_edu_name, api_key):
         qdrant, qdrant_exit = self.load_qdrant(document_edu_name, api_key)
 
@@ -153,18 +152,7 @@ class AIDataService():
         
     def thu(self):
         try:
-            client = self.get_client()
-            if client is not None:
-                if self.check_document_in_qdrant(client, "Transcript_DamThuHang trr") is False:
-                    return "chưa có docu"
-                lq = Qdrant(
-                    client=client,
-                    collection_name="Transcript_DamThuHang trr", 
-                    embeddings=OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
-                )
-                if lq:
-                    return "có lq"
-                return "không có lq"
-            return "không có client"
+            url = f"https://edushare-s3.s3.amazonaws.com/Transcript_DamThuHang%20trr.pdf"
+            return self.get_documents_from_web(url)
         except Exception as e:
             return str(e)
