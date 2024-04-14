@@ -38,8 +38,9 @@ class AIDataService():
 
     def load_qdrant(self, document_edu_name, api_key):
         client = self.get_client()
+        qdrant_exit = self.check_document_in_qdrant(client, document_edu_name)
 
-        if self.check_document_in_qdrant(client, document_edu_name) is False:
+        if qdrant_exit is False:
             client.create_collection(
                 collection_name=document_edu_name,
                 vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
@@ -49,7 +50,7 @@ class AIDataService():
             client=client,
             collection_name=document_edu_name, 
             embeddings=OpenAIEmbeddings(api_key=api_key)
-        )
+        ), qdrant_exit
             
     def check_document_in_qdrant(self, client, document_edu_name):
         collections = client.get_collections().collections
@@ -62,13 +63,13 @@ class AIDataService():
         
 
     def create_db(self, pdf_text, document_edu_name, api_key):
-        client = self.get_client()
-        if self.check_document_in_qdrant(client, document_edu_name) is False:
-            qdrant = self.load_qdrant(document_edu_name, api_key)
+        qdrant, qdrant_exit = self.load_qdrant(document_edu_name, api_key)
+
+        if qdrant_exit is False:
             qdrant.add_texts(pdf_text)
 
     def create_chain(self, document_edu_name, api_key):
-        vectorStore = self.load_qdrant(document_edu_name, api_key)
+        vectorStore, _ = self.load_qdrant(document_edu_name, api_key)
 
         llm = ChatOpenAI(
             model='gpt-3.5-turbo',
