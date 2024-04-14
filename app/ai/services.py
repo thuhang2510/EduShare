@@ -157,22 +157,20 @@ class AIDataService():
             loader = PyPDFLoader(url, extract_images=True)
 
             if loader is None:
-                return None
+                return "khong có loader"
             
-            text = '\n\n'.join([page.page_content for page in loader.load()])
-            
-            splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-                chunk_size=300,
-                chunk_overlap=20,
-            )
-
-            return splitter.split_text(text)
+            return "có"
         except Exception as e:
             return str(e)
         
     def thu2(self):
         try:
             url = f"https://edushare-s3.s3.amazonaws.com/12%20awws.pdf"
-            return self.get_documents_from_web(url)
+            loader = PyPDFLoader(url, extract_images=True)
+
+            if loader is None:
+                return "khong có loader"
+            
+            return "có"
         except Exception as e:
             return str(e)
