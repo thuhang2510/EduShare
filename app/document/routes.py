@@ -233,7 +233,7 @@ def download_document(id):
     document_name = document["document_name"]
     download(document_name, DocumentS3.BUCKET)
 
-    return send_file(f"./download_files/{document_name}")
+    return send_file(f"./download_files/{document_name}", mimetype="application/pdf")
 
 @bp.route("/", methods=['GET'])
 @jwt_required()
