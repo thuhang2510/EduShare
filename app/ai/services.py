@@ -159,7 +159,7 @@ class AIDataService():
             if loader is None:
                 return "khong có loader"
             
-            return loader.load()[0].page_content
+            return '\n\n'.join([page.page_content for page in loader.load()])
         except Exception as e:
             return str(e)
         
@@ -171,6 +171,6 @@ class AIDataService():
             if loader is None:
                 return "khong có loader"
             
-            return loader.load()[0].page_content
+            return '\n\n'.join([page.page_content for page in loader.load()])
         except Exception as e:
             return str(e)
