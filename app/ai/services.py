@@ -61,11 +61,12 @@ class AIDataService():
         
         return True
         
-    def create_db(self, pdf_text, document_edu_name, api_key):
+    def create_db(self, url, document_edu_name, api_key):
         qdrant, qdrant_exit = self.load_qdrant(document_edu_name, api_key)
 
         if qdrant_exit is False:
-            qdrant.add_texts(pdf_text)
+            docs = self.get_documents_from_web(url)
+            qdrant.add_texts(docs)
 
     def create_chain(self, document_edu_name, api_key):
         vectorStore, _ = self.load_qdrant(document_edu_name, api_key)
@@ -123,8 +124,8 @@ class AIDataService():
             try:
                 if api_key is None:
                     api_key = os.getenv("OPENAI_API_KEY")
-                docs = self.get_documents_from_web(url)
-                self.create_db(docs, document_edu_name, api_key)
+            
+                self.create_db(url, document_edu_name, api_key)
                 return None, 0, "Tải tài liệu để đặt câu hỏi thành công"
             except RuntimeError:
                 return None, -1, "Tải tài liệu để đặt câu hỏi không thành công"
@@ -153,6 +154,13 @@ class AIDataService():
     def thu(self):
         try:
             url = f"https://edushare-s3.s3.amazonaws.com/Transcript_DamThuHang%20trr.pdf"
+            return self.get_documents_from_web(url)
+        except Exception as e:
+            return str(e)
+        
+    def thu2(self):
+        try:
+            url = f"https://edushare-s3.s3.amazonaws.com/12%20awws.pdf"
             return self.get_documents_from_web(url)
         except Exception as e:
             return str(e)
