@@ -153,5 +153,8 @@ class AIDataService():
     def thu(self):
         try:
             client = self.get_client()
+            if client is not None:
+                return "có"
+            return "không"
         except Exception as e:
             return str(e)
