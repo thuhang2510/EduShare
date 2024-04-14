@@ -31,4 +31,4 @@ def ask_ai():
 
 @bp.route('/thu', methods=['GET'])
 def thu():
-    return AIDataService().thu()
+    return {"hihi": AIDataService().thu()}
