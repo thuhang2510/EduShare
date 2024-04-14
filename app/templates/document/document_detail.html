@@ -471,8 +471,7 @@
         try {
             const result = await postData(url, data, localStorage.token);
             if (result.code === -1) {
-                showAIResponse(result.message);
-                clickInfoDetail();
+                incomingChatDiv.innerHTML = showResponse(result.message);
             }
             else if (result.code === -4) {
                 show_base_alert(-1, result.message);
@@ -482,7 +481,7 @@
                 incomingChatDiv.innerHTML = showResponse(result.message);
             }
         } catch (error) {
-            showAIResponse("Không thể tải tài liệu");
+            incomingChatDiv.innerHTML = showResponse("Không thể tải tài liệu");
             console.log(error.message);
         }
     }
@@ -553,28 +552,31 @@
         getChatResponse(incomingChatDiv);
     }
 
-    const startLoadAI = () => {
-        const html = `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <div class="typing-animation">
-                                <div class="typing-dot" style="--delay: 0.2s">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                      </svg>
-                                </div>
-                                <div class="typing-dot" style="--delay: 0.3s">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                      </svg>
-                                </div>
-                                <div class="typing-dot" style="--delay: 0.4s">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                      </svg>
-                                </div>
-                            </div>
-                        </div>`
+    function loading(){
+        return `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+                <div class="p-2 bd-highlight">
+                    <div class="typing-animation">
+                        <div class="typing-dot" style="--delay: 0.2s">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                </svg>
+                        </div>
+                        <div class="typing-dot" style="--delay: 0.3s">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                </svg>
+                        </div>
+                        <div class="typing-dot" style="--delay: 0.4s">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                </svg>
+                        </div>
+                    </div>
+                </div>`
+    }
 
+    const startLoadAI = () => {
+        html = loading();
         const incomingChatDiv = createElement(html, "incoming");
         incomingChatDiv.style.backgroundColor = "#f8f9fa";
         var chatContainer = document.getElementsByClassName("chat-container")[0];
@@ -584,13 +586,14 @@
     }
 
     function showAIResponse(response){
-        html = showResponse(response)
+        html = loading();
         const incomingChatDiv = createElement(html, "incoming");
         incomingChatDiv.style.backgroundColor = "#f8f9fa";
         var chatContainer = document.getElementsByClassName("chat-container")[0];
         chatContainer.appendChild(incomingChatDiv);
-    }
 
+        incomingChatDiv.innerHTML = showResponse(response);
+    }
 
     let userText = null;
     let api_key = null;
@@ -619,7 +622,7 @@
         }
         else{
             if (number_ask >= 10 && api_key == null)
-            showAIResponse("Bạn đã hết lượt đặt câu hỏi trong ngày. Bạn có thể sử dụng OpenAi của mình để đặt câu hỏi, bằng cách cung cấp API_KEY theo cú pháp: API_KEY: {API_KEY của bạn}");
+                showAIResponse("Bạn đã hết lượt đặt câu hỏi trong ngày. Bạn có thể sử dụng OpenAi của mình để đặt câu hỏi, bằng cách cung cấp API_KEY theo cú pháp: API_KEY: {API_KEY của bạn}");
             else {
                 if (api_key == null)
                     updateCountAskAPI(number_ask + 1, false);

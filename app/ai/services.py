@@ -117,10 +117,21 @@ class AIDataService():
         })
 
         return response["answer"]
+    
+    def check_document_valid_to_ask(self, document_id, user_id):
+        data, code, _ = DocumentsDataService().get_by_id(document_id)
         
+        if(code == 0):
+            if (data["price"] > 0):
+                data, code, msg = DocumentsDataService().get_by_purchase(document_id, user_id)
+                if (code == 0):
+                    return True
+                return False
+            return True
+        return False    
+                
     def page_pdf_and_build_vector_db(self, url, document_edu_name, document_id, user_id, api_key=None):
-        data, code, msg = DocumentsDataService().get_by_purchase(document_id, user_id)
-        if (code == 0):
+        if (self.check_document_valid_to_ask(document_id, user_id)):
             try:
                 if api_key is None:
                     api_key = os.getenv("OPENAI_API_KEY")
@@ -133,8 +144,7 @@ class AIDataService():
             return None, -1, "Bạn chưa thể đặt câu hỏi đối với tài liệu này"
 
     def chat_with_ai(self, ask, chat_history, document_edu_name, document_id, user_id, api_key=None):
-        data, code, msg = DocumentsDataService().get_by_purchase(document_id, user_id)
-        if (code == 0):
+        if (self.check_document_valid_to_ask(document_id, user_id)):
             try:
                 if api_key is None:
                     api_key = os.getenv("OPENAI_API_KEY")
@@ -150,27 +160,3 @@ class AIDataService():
                 return None, -1, "Hiện tại không thể hỏi được"
         else:
             return None, -1, "Bạn chưa thể đặt câu hỏi đối với tài liệu này"
-        
-    def thu(self):
-        try:
-            url = f"https://edushare-s3.s3.amazonaws.com/Transcript_DamThuHang%20trr.pdf"
-            loader = PyPDFLoader(url, extract_images=True)
-
-            if loader is None:
-                return "khong có loader"
-            
-            return '\n\n'.join([page.page_content for page in loader.load()])
-        except Exception as e:
-            return str(e)
-        
-    def thu2(self):
-        try:
-            url = f"https://edushare-s3.s3.amazonaws.com/12%20awws.pdf"
-            loader = PyPDFLoader(url, extract_images=True)
-
-            if loader is None:
-                return "khong có loader"
-            
-            return '\n\n'.join([page.page_content for page in loader.load()])
-        except Exception as e:
-            return str(e)
