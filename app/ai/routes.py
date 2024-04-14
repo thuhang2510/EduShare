@@ -34,5 +34,5 @@ def thu():
     return {"hihi": AIDataService().thu()}
 
 @bp.route('/thu2', methods=['GET'])
-def thu():
+def thu2():
     return {"hihi": AIDataService().thu2()}
