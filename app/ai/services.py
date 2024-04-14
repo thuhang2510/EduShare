@@ -154,7 +154,19 @@ class AIDataService():
     def thu(self):
         try:
             url = f"https://edushare-s3.s3.amazonaws.com/Transcript_DamThuHang%20trr.pdf"
-            return self.get_documents_from_web(url)
+            loader = PyPDFLoader(url, extract_images=True)
+
+            if loader is None:
+                return None
+            
+            text = '\n\n'.join([page.page_content for page in loader.load()])
+            
+            splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+                chunk_size=300,
+                chunk_overlap=20,
+            )
+
+            return splitter.split_text(text)
         except Exception as e:
             return str(e)
         
