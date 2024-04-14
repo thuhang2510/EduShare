@@ -30,21 +30,25 @@ class AIDataService():
         return splitDocs
     
     def get_client(self):
-        client = QdrantClient(
-            url="https://42824085-67d1-4a4d-8557-9fff4e673bf9.us-east4-0.gcp.cloud.qdrant.io:6333",
-            api_key="B8UzMjVYHhVZznWQQtM9h1rFHPTYzJd6Nl3gfBC-j1sTgwfHuXNniA"
-        )
-        return client
+        try:
+            client = QdrantClient(
+                url="https://42824085-67d1-4a4d-8557-9fff4e673bf9.us-east4-0.gcp.cloud.qdrant.io:6333",
+                api_key="B8UzMjVYHhVZznWQQtM9h1rFHPTYzJd6Nl3gfBC-j1sTgwfHuXNniA"
+            )
+            return client
+        except Exception as e:
+            return None
 
     def load_qdrant(self, document_edu_name, api_key):
         client = self.get_client()
-
+        if client is None:
+            return None
+        
         if self.check_document_in_qdrant(client, document_edu_name) is False:
             client.create_collection(
                 collection_name=document_edu_name,
                 vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
             )
-            print('collection created')
 
         return Qdrant(
             client=client,
@@ -64,9 +68,14 @@ class AIDataService():
 
     def create_db(self, pdf_text, document_edu_name, api_key):
         client = self.get_client()
+        if client is None:
+            return "fail"
+        
         if self.check_document_in_qdrant(client, document_edu_name) is False:
             qdrant = self.load_qdrant(document_edu_name, api_key)
             qdrant.add_texts(pdf_text)
+        
+        return "success"
 
     def create_chain(self, document_edu_name, api_key):
         vectorStore = self.load_qdrant(document_edu_name, api_key)
@@ -125,8 +134,8 @@ class AIDataService():
                 if api_key is None:
                     api_key = os.getenv("OPENAI_API_KEY")
                 docs = self.get_documents_from_web(url)
-                self.create_db(docs, document_edu_name, api_key)
-                return None, 0, "Tải tài liệu để đặt câu hỏi thành công"
+                kq = self.create_db(docs, document_edu_name, api_key)
+                return kq, 0, "Tải tài liệu để đặt câu hỏi thành công"
             except RuntimeError:
                 return None, -1, "Tải tài liệu để đặt câu hỏi không thành công"
         else:

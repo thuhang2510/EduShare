@@ -235,6 +235,7 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
 <script>
+    const document_id = `{{ document["id"] }}`
     let nameFile = null;
     let pdfTT = null;
     let currentScale = 1.5;
@@ -443,7 +444,7 @@
             chatContainer.innerHTML = "";
 
             setTimeout(startLoadAI, 500);
-            startShowAI();
+            showAIResponse("Tài liệu đang được tải lên. Xin vui lòng đợi một tí.")
         }
     }
 
@@ -470,7 +471,7 @@
         try {
             const result = await postData(url, data, localStorage.token);
             if (result.code === -1) {
-                show_base_alert(-1, result.message);
+                showAIResponse(result.message);
                 clickInfoDetail();
             }
             else if (result.code === -4) {
@@ -481,7 +482,7 @@
                 incomingChatDiv.innerHTML = showResponse(result.message);
             }
         } catch (error) {
-            show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
+            showAIResponse("Không thể tải tài liệu");
             console.log(error.message);
         }
     }
@@ -582,8 +583,8 @@
         loadDocumentToAsk(incomingChatDiv)
     }
 
-    function startShowAI() {
-        html = showResponse("Tài liệu đang được tải lên. Xin vui lòng chờ một tí.")
+    function showAIResponse(response){
+        html = showResponse(response)
         const incomingChatDiv = createElement(html, "incoming");
         incomingChatDiv.style.backgroundColor = "#f8f9fa";
         var chatContainer = document.getElementsByClassName("chat-container")[0];
@@ -614,11 +615,11 @@
 
         if (getAPIKEY(userText)){
             api_key = getAPIKEY(userText)
-            show_base_alert(0, "API_KEY của bạn đã được lưu. Nhưng khi thoát khỏi giao diện hỏi đáp thì API_KEY của bạn sẽ bị mất.");
+            showAIResponse("API_KEY của bạn đã được lưu. Nhưng khi thoát khỏi giao diện hỏi đáp thì API_KEY của bạn sẽ bị mất.");
         }
         else{
             if (number_ask >= 10 && api_key == null)
-                show_base_alert(-1, "Bạn đã hết lượt đặt câu hỏi trong ngày. Bạn có thể sử dụng OpenAi của mình để đặt câu hỏi, bằng cách cung cấp API_KEY theo cú pháp: API_KEY: {API_KEY của bạn}");
+            showAIResponse("Bạn đã hết lượt đặt câu hỏi trong ngày. Bạn có thể sử dụng OpenAi của mình để đặt câu hỏi, bằng cách cung cấp API_KEY theo cú pháp: API_KEY: {API_KEY của bạn}");
             else {
                 if (api_key == null)
                     updateCountAskAPI(number_ask + 1, false);
@@ -737,7 +738,7 @@
     }
 
     async function likeDocument() {
-        var url = window.location.href + "/evaluate?type=like";
+        var url = baseURL + "/document/" + document_id + "/evaluate?type=like";
 
         try {
             const result = await postData(url, null, localStorage.token);
@@ -777,7 +778,7 @@
     }
 
     async function dislikeDocument() {
-        var url = window.location.href + "/evaluate?type=dislike";
+        var url = baseURL + "/document/" + document_id + "/evaluate?type=dislike";
 
         try {
             const result = await postData(url, null, localStorage.token);
@@ -817,7 +818,7 @@
     }
 
     async function saveDocument() {
-        var url = window.location.href + "/evaluate?type=save";
+        var url = baseURL + "/document/" + document_id + "/evaluate?type=save";
 
         try {
             const result = await postData(url, null, localStorage.token);
@@ -883,7 +884,7 @@
         if (number_download >= 5)
             show_base_alert(-1, "Tuần này bạn đã hết lượt tải cho tài liệu miễn phí");
         else {
-            fetch(window.location.href + "/download", {
+            fetch(baseURL + "/document/" + document_id + "/download", {
                 headers: {
                     'Authorization': `Bearer ${localStorage.token}`
                 }})
@@ -925,7 +926,7 @@
                 time_buy = Math.abs(currentDate.getTime() - time_buy.getTime()) / (1000 * 60 * 60);
 
                 if (time_buy < 24) {
-                    fetch(window.location.href + "/download", {
+                    fetch(baseURL + "/document/" + document_id + "/download", {
                         headers: {
                             'Authorization': `Bearer ${localStorage.token}`
                         }})
