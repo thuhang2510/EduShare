@@ -156,7 +156,14 @@ class AIDataService():
             if client is not None:
                 if self.check_document_in_qdrant(client, "Transcript_DamThuHang trr") is False:
                     return "chưa có docu"
-                return "dã có"
+                lq = Qdrant(
+                    client=client,
+                    collection_name="Transcript_DamThuHang trr", 
+                    embeddings=OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
+                )
+                if lq:
+                    return "có lq"
+                return "không có lq"
             return "không có client"
         except Exception as e:
             return str(e)
