@@ -154,7 +154,9 @@ class AIDataService():
         try:
             client = self.get_client()
             if client is not None:
-                return "có"
-            return "không"
+                if self.check_document_in_qdrant(client, "Transcript_DamThuHang trr") is False:
+                    return "chưa có docu"
+                return "dã có"
+            return "không có client"
         except Exception as e:
             return str(e)
