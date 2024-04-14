@@ -423,28 +423,40 @@
     }
 
     async function clickAI() {
-        if (bought == false && `{{document["price"]}}` > 0) {
-            show_base_alert(-1, "Hãy mua tài liệu trước để thực hiện chức năng này.");
-        }
-        else{
-            document.getElementById("ai-detail").style.display = "block";
-            document.getElementById("infor-detail").style.display = "none";
+        var url = baseURL + "/api/v1/user-token"
 
-            var selectAI = document.getElementById("selectAI");
-            selectAI.style.borderColor = "#f064fc";
-            selectAI.style.borderBottom = "5px solid #f064fc";
-            selectAI.style.color = "#f064fc"
+        try {
+            const result = await getData(url, localStorage.token);
+            if (result.code === 0) {
+                if (bought == false && `{{document["price"]}}` > 0) {
+                    show_base_alert(-1, "Hãy mua tài liệu trước để thực hiện chức năng này.");
+                }
+                else{
+                    document.getElementById("ai-detail").style.display = "block";
+                    document.getElementById("infor-detail").style.display = "none";
 
-            var selectDetail = document.getElementById("selectDetail")
-            selectDetail.style.borderColor = null;
-            selectDetail.style.borderBottom = null;
-            selectDetail.style.color = null;
+                    var selectAI = document.getElementById("selectAI");
+                    selectAI.style.borderColor = "#f064fc";
+                    selectAI.style.borderBottom = "5px solid #f064fc";
+                    selectAI.style.color = "#f064fc"
 
-            var chatContainer = document.getElementsByClassName("chat-container")[0];
-            chatContainer.innerHTML = "";
+                    var selectDetail = document.getElementById("selectDetail")
+                    selectDetail.style.borderColor = null;
+                    selectDetail.style.borderBottom = null;
+                    selectDetail.style.color = null;
 
-            setTimeout(startLoadAI, 500);
-            showAIResponse("Tài liệu đang được tải lên. Xin vui lòng đợi một tí.")
+                    var chatContainer = document.getElementsByClassName("chat-container")[0];
+                    chatContainer.innerHTML = "";
+
+                    setTimeout(startLoadAI, 500);
+                    showAIResponse("Tài liệu đang được tải lên. Xin vui lòng đợi một tí.")
+                }
+            }
+            else {
+                show_base_alert(-1, "Hãy đăng nhập để thực hiện chức năng này");
+            }
+        } catch (error) {
+            console.log(error.message);
         }
     }
 

@@ -51,13 +51,6 @@ def login():
         
     return jsonify({'message': 'Dữ liệu nhập vào không hợp lệ', 'code': -2, 'data': login.errors})
 
-
-@bp.route('/thu')
-@jwt_required()
-@editter_permision.require()
-def get_all_user():
-    return "hihi"
-
 @bp.route('/user-token')
 def get_user_by_token():    
     if current_user.is_authenticated:

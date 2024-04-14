@@ -26,6 +26,7 @@ class AIDataService():
         )
 
         splitDocs = splitter.split_text(text)
+        print("Lấy doc xong")
 
         return splitDocs
     
@@ -45,6 +46,7 @@ class AIDataService():
                 collection_name=document_edu_name,
                 vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
             )
+            print("Tạo qdrant xong")
 
         return Qdrant(
             client=client,
@@ -61,11 +63,10 @@ class AIDataService():
         
         return True
         
-    def create_db(self, url, document_edu_name, api_key):
+    def create_db(self, docs, document_edu_name, api_key):
         qdrant, qdrant_exit = self.load_qdrant(document_edu_name, api_key)
 
         if qdrant_exit is False:
-            docs = self.get_documents_from_web(url)
             qdrant.add_texts(docs)
 
     def create_chain(self, document_edu_name, api_key):
@@ -135,8 +136,13 @@ class AIDataService():
             try:
                 if api_key is None:
                     api_key = os.getenv("OPENAI_API_KEY")
-            
-                self.create_db(url, document_edu_name, api_key)
+
+                client = self.get_client()
+                qdrant_exit = self.check_document_in_qdrant(client, document_edu_name)
+
+                if qdrant_exit is False:
+                    docs = self.get_documents_from_web(url)
+                    self.create_db(docs, document_edu_name, api_key)
                 return None, 0, "Tải tài liệu để đặt câu hỏi thành công"
             except RuntimeError:
                 return None, -1, "Tải tài liệu để đặt câu hỏi không thành công"
