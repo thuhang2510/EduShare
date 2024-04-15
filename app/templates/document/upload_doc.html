@@ -277,15 +277,10 @@
         };
     };
 
-    async function deleteDocument(fileName, fileId){
-        var loader = document.querySelector(`#loading-${fileId}`);
-        loader.classList.add("display");
-        var btnSave = document.getElementById(`save-${fileId}`);
-        btnSave.style.display = "none";
-        var btnDelete = document.getElementById(`delete-${fileId}`);
-        btnDelete.style.display = "none";
+    async function deleteDocument(fileOldName, fileId){
+        showLoading(fileId);
 
-        url = baseURL + "/document/delete-wait-file?fileName=" + fileName + ".pdf"
+        url = baseURL + "/document/delete-wait-file?fileName=" + fileOldName + ".pdf"
 
         try {
             const result = await deleteData(url, localStorage.token);
@@ -305,13 +300,17 @@
         }
     }
 
-    async function saveDocument(fileId, fileOldName, type){
+    function showLoading(fileId){
         var loader = document.querySelector(`#loading-${fileId}`);
         loader.classList.add("display");
         var btnSave = document.getElementById(`save-${fileId}`);
         btnSave.style.display = "none";
         var btnDelete = document.getElementById(`delete-${fileId}`);
         btnDelete.style.display = "none";
+    }
+
+    async function saveDocument(fileId, fileOldName, type){
+        showLoading(fileId);
 
         var url = baseURL + '/document/upload-s3'
 
@@ -349,8 +348,8 @@
                 show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");    
             }
             else if(result.code === 0){
-                deleteDocument(fileOldName, fileId);
-                show_base_alert(0, "Upload tài liệu thành công");
+                document.getElementById(fileId).style.display = 'none'
+                show_base_alert(0, "Tài liệu đã upload và đang được xử lý");
             }
             else{
                 show_base_alert(-1, "Hãy đăng nhập trước")

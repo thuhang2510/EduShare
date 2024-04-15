@@ -3,7 +3,7 @@ from flask_cors import CORS
 from config import Config
 from flask_login import current_user
 from flask_principal import identity_loaded, UserNeed, RoleNeed
-from app.extensions import db, jwt, bootstrap, login, principals, mail, admin, babel
+from app.extensions import celery_init_app, db, jwt, bootstrap, login, principals, mail, admin, babel
 
 def get_locale():
     return 'vi'
@@ -23,6 +23,16 @@ def create_app(config_class=Config):
 
     principals.init_app(app)
     mail.init_app(app)
+
+    app.config.from_mapping(
+        CELERY=dict(
+            broker_url="redis://localhost",
+            result_backend="redis://localhost",
+            task_ignore_result=True,
+        ),
+    )
+    app.config.from_prefixed_env()
+    celery_init_app(app)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):

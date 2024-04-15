@@ -236,12 +236,14 @@
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
 <script>
     const document_id = `{{ document["id"] }}`
-    let nameFile = null;
+    const document_name = `{{document["document_name"]}}`
+    const type = `{{document["type"]}}`;
+    const nameFile = document_name + `.` + type;
     let pdfTT = null;
     let currentScale = 1.5;
     let currentPage = 1;
     let pageNumber = 0;
-    let price = 0;
+    const price = `{{document["price"]}}`;
     let bought = false;
 
     window.onload = function () {
@@ -253,8 +255,6 @@
             closeLogin();
 
         document.getElementById("footer").style.display = "none";
-        nameFile = `{{document["document_name"] | safe}}` + `.` + `{{document["type"] | safe}}`;
-        price = `{{document["price"]}}`
 
         initPdf();
         getDocDeXuat();
@@ -262,7 +262,7 @@
     };
 
     async function getDocumentAllDetail() {
-        url = baseURL + "/document/" + `{{document["id"]}}` + "/detail";
+        url = baseURL + "/document/" + document_id + "/detail";
 
         try {
             const result = await getData(url, localStorage.token);
@@ -428,7 +428,7 @@
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0) {
-                if (bought == false && `{{document["price"]}}` > 0) {
+                if (bought == false && price > 0) {
                     show_base_alert(-1, "Hãy mua tài liệu trước để thực hiện chức năng này.");
                 }
                 else{
@@ -448,8 +448,7 @@
                     var chatContainer = document.getElementsByClassName("chat-container")[0];
                     chatContainer.innerHTML = "";
 
-                    setTimeout(startLoadAI, 500);
-                    showAIResponse("Tài liệu đang được tải lên. Xin vui lòng đợi một tí.")
+                    showAIResponse("Bạn có thể đặt bất kỳ câu hỏi nào liên quan đến tài liệu này. Và hệ thống sẽ không lưu trữ lịch sử hỏi đáp.")
                 }
             }
             else {
@@ -471,40 +470,13 @@
         return chatDiv;
     }
 
-    async function loadDocumentToAsk(incomingChatDiv){
-        var url = baseURL + "/ai/load_doc";
-
-        data = {
-            "document_name": `{{document["document_name"]}}`,
-            "document_id": `{{document["id"]}}`,
-            "api_key": api_key
-        }
-
-        try {
-            const result = await postData(url, data, localStorage.token);
-            if (result.code === -1) {
-                incomingChatDiv.innerHTML = showResponse(result.message);
-            }
-            else if (result.code === -4) {
-                show_base_alert(-1, result.message);
-                clickInfoDetail();
-            }
-            else {
-                incomingChatDiv.innerHTML = showResponse(result.message);
-            }
-        } catch (error) {
-            incomingChatDiv.innerHTML = showResponse("Không thể tải tài liệu");
-            console.log(error.message);
-        }
-    }
-
     async function getChatResponse(incomingChatDiv){
         const url = baseURL + "/ai/ask_ai";
 
         data = {
-            "document_name": `{{document["document_name"]}}`,
+            "document_name": document_name,
             "ask": `${userText}`,
-            "document_id": `{{document["id"]}}`,
+            "document_id": document_id,
             "api_key": api_key
         }
 
@@ -585,16 +557,6 @@
                         </div>
                     </div>
                 </div>`
-    }
-
-    const startLoadAI = () => {
-        html = loading();
-        const incomingChatDiv = createElement(html, "incoming");
-        incomingChatDiv.style.backgroundColor = "#f8f9fa";
-        var chatContainer = document.getElementsByClassName("chat-container")[0];
-        chatContainer.appendChild(incomingChatDiv);
-
-        loadDocumentToAsk(incomingChatDiv)
     }
 
     function showAIResponse(response){
@@ -692,7 +654,7 @@
     }
 
     function createDocuments(document) {
-        html = `<div class="row mt-3 mb-3" onclick="clickDetail(${document["id"]})">
+        html = `<div class="row mt-3 mb-3" onclick="clickDetail(${document_id})">
                     <div class="col-2 pe-0">`
         if (document["image"] != null)
             html += `<img src="${document["image"]}"
@@ -911,7 +873,7 @@
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement("a")
                             a.href = url;
-                            a.download = `{{document["document_name"]}}`
+                            a.download = document_name
                             a.click();
                             window.URL.revokeObjectURL(url)
                             getDocumentAllDetail();
@@ -934,7 +896,7 @@
         if (bought == false)
             show_base_alert(-1, "Hãy mua tài liệu trước khi thực hiện tải xuống");
         else {
-            const result = await getData(baseURL + "/document/purchase?document_id=" + `{{document["id"]}}`, localStorage.token);
+            const result = await getData(baseURL + "/document/purchase?document_id=" + document_id, localStorage.token);
             if (result.code === 0) {
                 var currentDate = new Date();
                 var time_buy = new Date(result.data["date"])
@@ -951,7 +913,7 @@
                                     const url = window.URL.createObjectURL(blob);
                                     const a = document.createElement("a")
                                     a.href = url;
-                                    a.download = `{{document["document_name"]}}`
+                                    a.download = document_name
                                     a.click();
                                     window.URL.revokeObjectURL(url)
                                     getDocumentAllDetail();
@@ -970,7 +932,7 @@
                 }
                 else {
                     alert("Bạn đã hết thời gian tải xuống. Hãy thực hiện thanh toán để có thể tiếp tục tải xuống trong vòng 24h")
-                    show_confirm_document_payment(`{{document["document_name"]}}`, price, null);
+                    show_confirm_document_payment(document_name, price, null);
                 }
             }
             else {
@@ -980,7 +942,7 @@
     }
 
     function downloadDocument() {
-        if (`{{document["price"]}}` == 0)
+        if (price == 0)
             downloadDocFree();
         else
             downloadDocNotFree();
@@ -1099,7 +1061,7 @@
     }
 
     function shareOnFacebook() {
-        var link = baseURL + `/document/{{document["id"]}}`
+        var link = baseURL + `/document/` + document_id;
         const facebookIntentURL = "https://www.facebook.com/sharer/sharer.php";
         const contentQuery = `?u=${encodeURIComponent(link)}`;
         const shareURL =  facebookIntentURL + contentQuery;

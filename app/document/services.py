@@ -281,3 +281,13 @@ class DocumentsDataService():
             return results, 0, "Get stats success"
         except Exception as e:
             return None, -1, "Get stats fail " + str(e)
+        
+    def update_processing_status(self, status, document_id):
+        try:
+            documents = Documents.find_by_id_and_status(document_id)
+            documents.processing_status = status
+            
+            documents.save_to_db()
+            return documents, 0, "Update success"
+        except Exception as e:
+            return None, -1, "Update fail " + str(e)

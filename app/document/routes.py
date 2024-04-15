@@ -2,6 +2,9 @@ import os
 from flask import jsonify, render_template, request, redirect, json, send_file, send_from_directory
 from flask_jwt_extended import jwt_required
 from flask_login import current_user
+from app.ai import tasks
+from app.categories.services import CategoriesDataService
+from app.document import tasks as document_tasks
 from app.auth.forms import LoginForm, RegisterForm, ResetPasswordRequestForm
 from app.document import bp
 from app.document.email import send_report
@@ -129,6 +132,10 @@ def upload_s3():
         if document is not None:
             upload(f"upload_files/{uploadDocument.old_name.data}", DocumentS3.BUCKET, uploadDocument.document_name.data)
 
+            url = f"https://edushare-s3.s3.amazonaws.com/{document.document_name}"
+            tasks.page_pdf_and_build_vector_db.delay(url, document.document_name, document.id, current_user.id)
+            document_tasks.delete_wait_file.delay(uploadDocument.old_name.data)
+
             return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': None})
         else:
             return jsonify({'message': msg, 'code': -1, 'data': None})
@@ -196,8 +203,7 @@ def get_document_form(id):
         document["dislike"] = dislike
 
     return render_template('document/document_detail.html', form=register, formlogin=login, 
-                           formresetpw=resetpw, document=document)
-
+                        formresetpw=resetpw, document=document)
 
 @bp.route("/<int:id>/detail", methods=['GET'])
 @jwt_required()

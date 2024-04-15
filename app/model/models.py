@@ -324,6 +324,7 @@ class Documents(db.Model):
     creation_date = db.Column(db.DateTime, default=datetime.utcnow)
     modified_date = db.Column(db.DateTime, onupdate=datetime.utcnow)    
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
+    processing_status = db.Column(db.Integer, server_default='0')
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
         nullable=False)
     categories = db.relationship(
@@ -413,7 +414,7 @@ class Documents(db.Model):
     def get_month_stats_document(cls, _account_id, year):
         return cls.query.with_entities(extract('month', cls.creation_date), func.count())\
                     .order_by(cls.creation_date)\
-                    .filter(cls.account_id==_account_id, extract('year', cls.creation_date)==year, cls.status==True)\
+                    .filter(cls.account_id==_account_id, extract('year', cls.creation_date)==year, cls.status==True, cls.processing_status==1)\
                     .group_by(extract('month', cls.creation_date))\
                     .all()
     
@@ -421,7 +422,7 @@ class Documents(db.Model):
     def get_month_stats_all_document(cls, year):
         return cls.query.with_entities(extract('month', cls.creation_date), func.count())\
                     .order_by(cls.creation_date)\
-                    .filter(extract('year', cls.creation_date)==year, cls.status==True)\
+                    .filter(extract('year', cls.creation_date)==year, cls.status==True, cls.processing_status==1)\
                     .group_by(extract('month', cls.creation_date))\
                     .all()
     
@@ -429,7 +430,7 @@ class Documents(db.Model):
     def get_month_stats_view_document(cls, _account_id):
         return cls.query.with_entities(cls.document_name, cls.view_count)\
                     .order_by(desc(cls.view_count))\
-                    .filter(cls.account_id==_account_id, cls.status==True, cls.view_count > 0)\
+                    .filter(cls.account_id==_account_id, cls.status==True, cls.view_count > 0, cls.processing_status==1)\
                     .limit(5)\
                     .all()
     
@@ -437,17 +438,17 @@ class Documents(db.Model):
     def get_month_stats_download_document(cls, _account_id):
         return cls.query.with_entities(cls.document_name, cls.download_count)\
                     .order_by(desc(cls.download_count))\
-                    .filter(cls.account_id==_account_id, cls.status==True, cls.download_count > 0)\
+                    .filter(cls.account_id==_account_id, cls.status==True, cls.download_count > 0, cls.processing_status==1)\
                     .limit(5)\
                     .all()
 
     @classmethod
     def find_by_name(cls, _document_name):
-        return cls.query.filter_by(document_name=_document_name, status=True).first()
+        return cls.query.filter_by(document_name=_document_name, status=True, processing_status=1).first()
     
     @classmethod
     def find_all_new(cls, limit=None):
-        query = cls.query.filter(cls.status==True).order_by(desc(cls.creation_date)).join(Account).add_column(Account.fullname)
+        query = cls.query.filter(cls.status==True, cls.processing_status==1).order_by(desc(cls.creation_date)).join(Account).add_column(Account.fullname)
 
         if limit != None:
             query = query.limit(limit)
@@ -456,7 +457,7 @@ class Documents(db.Model):
     
     @classmethod
     def find_all_view(cls, limit=None):
-        query = cls.query.filter_by(status=True).order_by(desc(cls.view_count)).join(Account).add_column(Account.fullname)
+        query = cls.query.filter_by(status=True, processing_status=1).order_by(desc(cls.view_count)).join(Account).add_column(Account.fullname)
         if limit != None:
             query = query.limit(limit)
 
@@ -466,7 +467,7 @@ class Documents(db.Model):
     def find_all_saved(cls, _account_id, limit=None):
         query= cls.query.join(Evaluate, Evaluate.document_id==cls.id).\
             join(Account, Account.id == cls.account_id).\
-            filter(Evaluate.type=='save', Documents.status==True, Evaluate.account_id==_account_id).\
+            filter(Evaluate.type=='save', Documents.status==True, Evaluate.account_id==_account_id, Documents.processing_status==1).\
             add_columns(Account.fullname)
         
         if limit != None:
@@ -476,14 +477,14 @@ class Documents(db.Model):
     
     @classmethod
     def find_by_id_with_account(cls, _id):
-        return cls.query.join(Account).filter(cls.id==_id, cls.status==True).add_column(Account.fullname).first()
+        return cls.query.join(Account).filter(cls.id==_id, cls.status==True, cls.processing_status==1).add_column(Account.fullname).first()
     
     @classmethod
     def find_by_id_tuple_with_categories(cls, _id):
         return cls.query.\
             join(cls.categories, isouter=True).\
             with_entities(cls.id, cls.document_name, cls.price, cls.image, cls.description).\
-            filter(cls.id==_id, cls.status==True).\
+            filter(cls.id==_id, cls.status==True, cls.processing_status==1).\
             add_entity(Categories).\
             all()
     
@@ -492,29 +493,29 @@ class Documents(db.Model):
         return cls.query.\
             with_entities(cls.id, cls.document_name, cls.description, cls.view_count, cls.download_count, cls.price, cls.type, cls.account_id, cls.image).\
             join(Account).\
-            filter(cls.id==_id, cls.status==True).\
+            filter(cls.id==_id, cls.status==True, cls.processing_status==1).\
             add_columns(Account.fullname, Account.email).\
             first()
     
     @classmethod
     def find_by_id_and_status(cls, _id):
-        return cls.query.filter(cls.id==_id, cls.status==True).first()
+        return cls.query.filter(cls.id==_id, cls.status==True, cls.processing_status==1).first()
     
     @classmethod
     def find_by_id(cls, _id):
-        return cls.query.filter(cls.id==_id).first()
+        return cls.query.filter(cls.id==_id, cls.processing_status==1).first()
     
     @classmethod
     def find_by_account_id(cls, _account_id):
         return cls.query.\
             join(cls.evaluate, isouter=True).\
             with_entities(cls.id, cls.document_name, cls.view_count, cls.download_count, cls.creation_date, cls.price, cls.image ,Evaluate.type).\
-            filter(cls.account_id==_account_id, cls.status==True).\
+            filter(cls.account_id==_account_id, cls.status==True, cls.processing_status==1).\
             all()
     
     @classmethod
     def find_by_account_id_with_paginate(cls, _account_id, page, per_page, type, keyword):
-        query = cls.query.filter(cls.account_id==_account_id, cls.status==True)
+        query = cls.query.filter(cls.account_id==_account_id, cls.status==True, cls.processing_status==1)
             
         if type == "free":
             query = query.filter(cls.price==0)
@@ -530,7 +531,7 @@ class Documents(db.Model):
     def find_by_purchase(cls, _id, _account_id):
         return cls.query.join(Purchase, Purchase.document_id==cls.id).\
             join(Account, Account.id==Purchase.account_id).\
-            filter(Purchase.account_id==_account_id, cls.id==_id, cls.status==True).\
+            filter(Purchase.account_id==_account_id, cls.id==_id, cls.status==True, cls.processing_status==1).\
             order_by(desc(Purchase.date)).\
             add_columns(Account.fullname).\
             first()
@@ -539,7 +540,7 @@ class Documents(db.Model):
     def find_by_category(cls, _category_name, limit):
         return cls.query.join(DocumentCategories, DocumentCategories.document_id==cls.id).\
             join(Categories, Categories.id == DocumentCategories.category_id).\
-            filter(Categories.name==_category_name, cls.status==True).\
+            filter(Categories.name==_category_name, cls.status==True, cls.processing_status==1).\
             join(Account, Account.id==cls.account_id).\
             add_column(Account.fullname).\
             limit(limit).\
@@ -549,7 +550,7 @@ class Documents(db.Model):
     def find_by_category_with_paginate(cls, _category_name, page, per_page):
         return cls.query.join(DocumentCategories, DocumentCategories.document_id==cls.id).\
             join(Categories, Categories.id == DocumentCategories.category_id).\
-            filter(Categories.name==_category_name, cls.status==True).\
+            filter(Categories.name==_category_name, cls.status==True, cls.processing_status==1).\
             join(Account, Account.id==cls.account_id).\
             add_column(Account.fullname).\
             paginate(page=page, per_page=per_page) 
@@ -559,7 +560,7 @@ class Documents(db.Model):
         query =  cls.query.\
             join(Account).\
             add_column(Account.fullname).\
-            filter(cls.document_name.ilike('%' + value + '%') | Account.fullname.ilike('%' + value + '%'), cls.status==True)
+            filter(cls.document_name.ilike('%' + value + '%') | Account.fullname.ilike('%' + value + '%'), cls.status==True, cls.processing_status==1)
         
         if (sort == 1):
             query = query.order_by(desc(cls.download_count))
