@@ -134,6 +134,9 @@ class AIDataService():
         return False    
                 
     def page_pdf_and_build_vector_db(self, url, document_edu_name, document_id, user_id, api_key=None):
+        print(url)
+        print(document_edu_name)
+        print(document_id)
         if (self.check_document_valid_to_ask(document_id, user_id)):
             try:
                 if api_key is None:
