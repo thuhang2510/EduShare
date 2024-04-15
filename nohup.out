@@ -1,0 +1,73 @@
+[2024-04-16 00:22:40,948: DEBUG/MainProcess] | Worker: Preparing bootsteps.
+[2024-04-16 00:22:40,950: DEBUG/MainProcess] | Worker: Building graph...
+[2024-04-16 00:22:40,950: DEBUG/MainProcess] | Worker: New boot order: {Beat, Timer, Hub, Pool, Autoscaler, StateDB, Consumer}
+[2024-04-16 00:22:40,956: DEBUG/MainProcess] | Consumer: Preparing bootsteps.
+[2024-04-16 00:22:40,956: DEBUG/MainProcess] | Consumer: Building graph...
+[2024-04-16 00:22:40,965: DEBUG/MainProcess] | Consumer: New boot order: {Connection, Agent, Events, Heart, Mingle, Tasks, Control, Gossip, event loop}
+ 
+ -------------- celery@DESKTOP-SFBU341 v5.3.6 (emerald-rush)
+--- ***** ----- 
+-- ******* ---- Linux-5.15.146.1-microsoft-standard-WSL2-x86_64-with-glibc2.31 2024-04-16 00:22:40
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         app:0x7fc235141570
+- ** ---------- .> transport:   redis://localhost:6379//
+- ** ---------- .> results:     redis://localhost/
+- *** --- * --- .> concurrency: 8 (solo)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . app.ai.tasks.page_pdf_and_build_vector_db
+  . app.document.tasks.delete_wait_file
+  . celery.accumulate
+  . celery.backend_cleanup
+  . celery.chain
+  . celery.chord
+  . celery.chord_unlock
+  . celery.chunks
+  . celery.group
+  . celery.map
+  . celery.starmap
+
+[2024-04-16 00:22:40,974: DEBUG/MainProcess] | Worker: Starting Hub
+[2024-04-16 00:22:40,974: DEBUG/MainProcess] ^-- substep ok
+[2024-04-16 00:22:40,974: DEBUG/MainProcess] | Worker: Starting Pool
+[2024-04-16 00:22:40,975: DEBUG/MainProcess] ^-- substep ok
+[2024-04-16 00:22:40,975: DEBUG/MainProcess] | Worker: Starting Consumer
+[2024-04-16 00:22:40,975: DEBUG/MainProcess] | Consumer: Starting Connection
+[2024-04-16 00:22:40,975: WARNING/MainProcess] /home/thuhang/DoAn/EduShare/venv/lib/python3.10/site-packages/celery/worker/consumer/consumer.py:507: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2024-04-16 00:22:40,980: INFO/MainProcess] Connected to redis://localhost:6379//
+[2024-04-16 00:22:40,980: DEBUG/MainProcess] ^-- substep ok
+[2024-04-16 00:22:40,980: DEBUG/MainProcess] | Consumer: Starting Events
+[2024-04-16 00:22:40,981: WARNING/MainProcess] /home/thuhang/DoAn/EduShare/venv/lib/python3.10/site-packages/celery/worker/consumer/consumer.py:507: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2024-04-16 00:22:40,982: DEBUG/MainProcess] ^-- substep ok
+[2024-04-16 00:22:40,982: DEBUG/MainProcess] | Consumer: Starting Heart
+[2024-04-16 00:22:40,983: DEBUG/MainProcess] ^-- substep ok
+[2024-04-16 00:22:40,984: DEBUG/MainProcess] | Consumer: Starting Mingle
+[2024-04-16 00:22:40,984: INFO/MainProcess] mingle: searching for neighbors
+[2024-04-16 00:22:41,990: INFO/MainProcess] mingle: all alone
+[2024-04-16 00:22:41,991: DEBUG/MainProcess] ^-- substep ok
+[2024-04-16 00:22:41,991: DEBUG/MainProcess] | Consumer: Starting Tasks
+[2024-04-16 00:22:41,994: DEBUG/MainProcess] ^-- substep ok
+[2024-04-16 00:22:41,994: DEBUG/MainProcess] | Consumer: Starting Control
+[2024-04-16 00:22:41,998: DEBUG/MainProcess] ^-- substep ok
+[2024-04-16 00:22:41,998: DEBUG/MainProcess] | Consumer: Starting Gossip
+[2024-04-16 00:22:42,002: DEBUG/MainProcess] ^-- substep ok
+[2024-04-16 00:22:42,002: DEBUG/MainProcess] | Consumer: Starting event loop
+[2024-04-16 00:22:42,002: DEBUG/MainProcess] | Worker: Hub.register Pool...
+[2024-04-16 00:22:42,003: INFO/MainProcess] celery@DESKTOP-SFBU341 ready.
+[2024-04-16 00:22:42,003: DEBUG/MainProcess] basic.qos: prefetch_count->32
