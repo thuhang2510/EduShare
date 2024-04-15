@@ -477,7 +477,7 @@ class Documents(db.Model):
     
     @classmethod
     def find_by_id_with_account(cls, _id):
-        return cls.query.join(Account).filter(cls.id==_id, cls.status==True, cls.processing_status==1).add_column(Account.fullname).first()
+        return cls.query.join(Account).filter(cls.id==_id, cls.status==True).add_column(Account.fullname).first()
     
     @classmethod
     def find_by_id_tuple_with_categories(cls, _id):
@@ -499,7 +499,7 @@ class Documents(db.Model):
     
     @classmethod
     def find_by_id_and_status(cls, _id):
-        return cls.query.filter(cls.id==_id, cls.status==True, cls.processing_status==1).first()
+        return cls.query.filter(cls.id==_id, cls.status==True).first()
     
     @classmethod
     def find_by_id(cls, _id):
