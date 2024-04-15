@@ -55,6 +55,7 @@ class AIDataService():
         ), qdrant_exit
             
     def check_document_in_qdrant(self, client, document_edu_name):
+        print("check qdrant")
         collections = client.get_collections().collections
         collection_names = [collection.name for collection in collections]
 
@@ -132,6 +133,7 @@ class AIDataService():
         return False    
                 
     def page_pdf_and_build_vector_db(self, url, document_edu_name, document_id, user_id, api_key=None):
+        print("bd load")
         if (self.check_document_valid_to_ask(document_id, user_id)):
             try:
                 if api_key is None:
@@ -140,8 +142,11 @@ class AIDataService():
                 client = self.get_client()
                 qdrant_exit = self.check_document_in_qdrant(client, document_edu_name)
 
+                print("xong check")
+
                 if qdrant_exit is False:
                     docs = self.get_documents_from_web(url)
+                    print("xong convert document")
                     self.create_db(docs, document_edu_name, api_key)
                 return None, 0, "Tải tài liệu để đặt câu hỏi thành công"
             except RuntimeError:
