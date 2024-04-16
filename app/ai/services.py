@@ -133,26 +133,20 @@ class AIDataService():
             return True
         return False    
                 
-    def page_pdf_and_build_vector_db(self, url, document_edu_name, document_id, user_id, api_key=None):
-        print(url)
-        print(document_edu_name)
-        print(document_id)
-        if (self.check_document_valid_to_ask(document_id, user_id)):
-            try:
-                if api_key is None:
-                    api_key = os.getenv("OPENAI_API_KEY")
+    def page_pdf_and_build_vector_db(self, url, document_edu_name, api_key=None):
+        try:
+            if api_key is None:
+                api_key = os.getenv("OPENAI_API_KEY")
 
-                client = self.get_client()
-                qdrant_exit = self.check_document_in_qdrant(client, document_edu_name)
+            client = self.get_client()
+            qdrant_exit = self.check_document_in_qdrant(client, document_edu_name)
 
-                if qdrant_exit is False:
-                    docs = self.get_documents_from_web(url)
-                    self.create_db(docs, document_edu_name, api_key)
-                return None, 0, "Tải tài liệu để đặt câu hỏi thành công"
-            except RuntimeError:
-                return None, -1, "Tải tài liệu để đặt câu hỏi không thành công"
-        else:
-            return None, -1, "Bạn chưa thể đặt câu hỏi đối với tài liệu này"
+            if qdrant_exit is False:
+                docs = self.get_documents_from_web(url)
+                self.create_db(docs, document_edu_name, api_key)
+            return None, 0, "Tải tài liệu để đặt câu hỏi thành công"
+        except RuntimeError:
+            return None, -1, "Tải tài liệu để đặt câu hỏi không thành công"
 
     def chat_with_ai(self, ask, chat_history, document_edu_name, document_id, user_id, api_key=None):
         if (self.check_document_valid_to_ask(document_id, user_id)):

@@ -414,7 +414,7 @@ class Documents(db.Model):
     def get_month_stats_document(cls, _account_id, year):
         return cls.query.with_entities(extract('month', cls.creation_date), func.count())\
                     .order_by(cls.creation_date)\
-                    .filter(cls.account_id==_account_id, extract('year', cls.creation_date)==year, cls.status==True, cls.processing_status==1)\
+                    .filter(cls.account_id==_account_id, extract('year', cls.creation_date)==year, cls.status==True)\
                     .group_by(extract('month', cls.creation_date))\
                     .all()
     
@@ -422,7 +422,7 @@ class Documents(db.Model):
     def get_month_stats_all_document(cls, year):
         return cls.query.with_entities(extract('month', cls.creation_date), func.count())\
                     .order_by(cls.creation_date)\
-                    .filter(extract('year', cls.creation_date)==year, cls.status==True, cls.processing_status==1)\
+                    .filter(extract('year', cls.creation_date)==year, cls.status==True)\
                     .group_by(extract('month', cls.creation_date))\
                     .all()
     
@@ -444,7 +444,7 @@ class Documents(db.Model):
 
     @classmethod
     def find_by_name(cls, _document_name):
-        return cls.query.filter_by(document_name=_document_name, status=True, processing_status=1).first()
+        return cls.query.filter_by(document_name=_document_name, status=True).first()
     
     @classmethod
     def find_all_new(cls, limit=None):
@@ -476,7 +476,7 @@ class Documents(db.Model):
         return query.all()
     
     @classmethod
-    def find_by_id_with_account(cls, _id):
+    def find_by_id_with_account(cls, _id): #thêm argument processing_status
         return cls.query.join(Account).filter(cls.id==_id, cls.status==True).add_column(Account.fullname).first()
     
     @classmethod
@@ -503,7 +503,7 @@ class Documents(db.Model):
     
     @classmethod
     def find_by_id(cls, _id):
-        return cls.query.filter(cls.id==_id, cls.processing_status==1).first()
+        return cls.query.filter(cls.id==_id).first()
     
     @classmethod
     def find_by_account_id(cls, _account_id):

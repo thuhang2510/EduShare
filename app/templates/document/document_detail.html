@@ -18,7 +18,8 @@
                         <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()">Hỏi AI</a>
                     </div>
                 </nav>
-                <div id="infor-detail" class="px-4" style="width:100%; height:690px; overflow-y:scroll; scrollbar-width: none;">
+                <div id="infor-detail" class="px-4"
+                    style="width:100%; height:690px; overflow-y:scroll; scrollbar-width: none;">
                     <h3>{{ document["document_name"] }}</h3>
                     <p>
                         <span class="me-2">
@@ -97,10 +98,12 @@
                     </div>
                     <div class="p-2 bd-highlight">
                         <div class="dropdown">
-                            <button id="dropdown" type="button" class="btn btn-outline-secondary rounded-pill" data-bs-toggle="dropdown" aria-expanded="false"><i
-                                class="bi bi-share-fill" ></i></button>
+                            <button id="dropdown" type="button" class="btn btn-outline-secondary rounded-pill"
+                                data-bs-toggle="dropdown" aria-expanded="false"><i
+                                    class="bi bi-share-fill"></i></button>
                             <ul class="dropdown-menu" aria-labelledby="dropdown">
-                                <li><a class="dropdown-item" href="#" onclick="shareOnFacebook()">Chia sẻ trên facebook</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="shareOnFacebook()">Chia sẻ trên
+                                        facebook</a></li>
                                 <li><button class="dropdown-item copylink">Sao chép link</button></li>
                             </ul>
                         </div>
@@ -214,13 +217,19 @@
             <h3 class="text-center mb-3" style="color: rgb(2, 126, 176)">Bạn hãy chắc chắn khi báo xấu tài liệu này</h3>
             <div id="content-form-report" class="py-2">
                 <div class="mb-3">
-                    <label for="exampleFormControlTextarea1" class="form-label h5">Nội dung</label>
-                    <textarea id="form-report-content" class="form-control" id="exampleFormControlTextarea1"
-                        rows="3"></textarea>
+                    <label for="exampleFormControlTextarea1" class="form-label h5">Nội dung</label><strong
+                        style="color: red"> *</strong>
+                    <textarea id="form-report-content" class="form-control" id="exampleFormControlTextarea1" rows="3"
+                        required></textarea>
+                    <div id="input-content-report-error" class="invalid-feedback mb-1"></div>
                 </div>
                 <div class="mb-3">
-                    <label for="formFile" class="form-label h5">Tài liệu</label>
-                    <input class="form-control" type="file" id="form-report-file">
+                    <label for="formFile" class="form-label h5">Tài liệu</label><strong style="color: red"> *</strong>
+                    <div class="flex text-gray-400">
+                        <span>Tài liệu đính kèm không quá 5MB</span>
+                    </div>
+                    <input class="form-control" type="file" id="form-report-file" accept=".doc, .docx, .pdf" required>
+                    <div id="input-file-report-error" class="invalid-feedback mb-1"></div>
                 </div>
             </div>
             <div id="form-report-footer" class="text-center">
@@ -234,6 +243,28 @@
 {{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+<script type="text/JavaScript">
+    var message="NoRightClicking"; 
+    function defeatIE() {
+        if (document.all) {
+            (message);return false;
+        }
+    } 
+
+    function defeatNS(e) {
+        if (document.layers||(document.getElementById&&!document.all)) { 
+            if (e.which==2||e.which==3) {(message);return false;}
+        }
+    }
+
+    if (document.layers) {
+        document.captureEvents(Event.MOUSEDOWN);document.onmousedown=defeatNS;
+    } else{
+        document.onmouseup=defeatNS;document.oncontextmenu=defeatIE;
+    }
+    
+    document.oncontextmenu=new Function("return false") 
+</script>
 <script>
     const document_id = `{{ document["id"] }}`
     const document_name = `{{document["document_name"]}}`
@@ -262,7 +293,7 @@
     };
 
     async function getDocumentAllDetail() {
-        url = baseURL + "/document/" + document_id + "/detail";
+        var url = baseURL + "/document/" + document_id + "/detail";
 
         try {
             const result = await getData(url, localStorage.token);
@@ -271,8 +302,6 @@
                 btn_document_payment.style.visibility = "hidden"
                 var btn_download = document.getElementById("btn_download");
                 btn_download.innerHTML = `<i class="bi bi-download"></i> Tải xuống`;
-                nameFile = result.data["document_name"] + "." + result.data["type"];
-                price = result.data["price"];
                 bought = true;
                 document.getElementById("download_count").innerHTML = `<i class="bi bi-download"></i> ${result.data["download_count"]}`
                 initPdf();
@@ -431,7 +460,7 @@
                 if (bought == false && price > 0) {
                     show_base_alert(-1, "Hãy mua tài liệu trước để thực hiện chức năng này.");
                 }
-                else{
+                else {
                     document.getElementById("ai-detail").style.display = "block";
                     document.getElementById("infor-detail").style.display = "none";
 
@@ -470,7 +499,7 @@
         return chatDiv;
     }
 
-    async function getChatResponse(incomingChatDiv){
+    async function getChatResponse(incomingChatDiv) {
         const url = baseURL + "/ai/ask_ai";
 
         data = {
@@ -536,7 +565,7 @@
         getChatResponse(incomingChatDiv);
     }
 
-    function loading(){
+    function loading() {
         return `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
                 <div class="p-2 bd-highlight">
                     <div class="typing-animation">
@@ -559,7 +588,7 @@
                 </div>`
     }
 
-    function showAIResponse(response){
+    function showAIResponse(response) {
         html = loading();
         const incomingChatDiv = createElement(html, "incoming");
         incomingChatDiv.style.backgroundColor = "#f8f9fa";
@@ -590,11 +619,11 @@
         var chatContainer = document.getElementsByClassName("chat-container")[0];
         chatContainer.appendChild(outgoingChatDiv);
 
-        if (getAPIKEY(userText)){
+        if (getAPIKEY(userText)) {
             api_key = getAPIKEY(userText)
             showAIResponse("API_KEY của bạn đã được lưu. Nhưng khi thoát khỏi giao diện hỏi đáp thì API_KEY của bạn sẽ bị mất.");
         }
-        else{
+        else {
             if (number_ask >= 10 && api_key == null)
                 showAIResponse("Bạn đã hết lượt đặt câu hỏi trong ngày. Bạn có thể sử dụng OpenAi của mình để đặt câu hỏi, bằng cách cung cấp API_KEY theo cú pháp: API_KEY: {API_KEY của bạn}");
             else {
@@ -606,7 +635,7 @@
         }
     }
 
-    function getAPIKEY(text){
+    function getAPIKEY(text) {
         const apiKeyIndex = text.indexOf("API_KEY:");
 
         if (apiKeyIndex !== -1) {
@@ -864,7 +893,8 @@
             fetch(baseURL + "/document/" + document_id + "/download", {
                 headers: {
                     'Authorization': `Bearer ${localStorage.token}`
-                }})
+                }
+            })
                 .then(response => {
                     if (response.ok) {
                         updateCountDownloadAPI(number_download + 1, false);
@@ -906,7 +936,8 @@
                     fetch(baseURL + "/document/" + document_id + "/download", {
                         headers: {
                             'Authorization': `Bearer ${localStorage.token}`
-                        }})
+                        }
+                    })
                         .then(response => {
                             if (response.ok) {
                                 response.blob().then(blob => {
@@ -974,7 +1005,7 @@
     }
 
     async function clickRecharge() {
-        url = baseURL + "/api/v1/user-token"
+        var url = baseURL + "/api/v1/user-token"
 
         try {
             const result = await getData(url, localStorage.token);
@@ -1009,7 +1040,7 @@
     }
 
     async function clickConfirmPayment(documentId, amount, documentAccountId) {
-        url = baseURL + "/document/purchase"
+        var url = baseURL + "/document/purchase"
 
         data = {
             "document_id": documentId,
@@ -1036,27 +1067,55 @@
     }
 
     function clickCloseReport() {
+        resetFormResport();
         document.getElementById("form-report").style.visibility = "hidden";
     }
 
+    function resetFormResport() {
+        document.getElementById("form-report-file").classList.remove('is-invalid');
+        document.getElementById("input-file-report-error").innerHTML = "";
+        document.getElementById("form-report-content").classList.remove('is-invalid');
+        document.getElementById("input-content-report-error").innerHTML = "";
+    }
+
+    function validate_form_report() {
+        var result = true;
+
+        if (document.getElementById("form-report-content").value == "") {
+            document.getElementById("form-report-content").classList.add('is-invalid');
+            document.getElementById("input-content-report-error").innerHTML = "Nội dung báo cáo không được bỏ trống"
+            result = false;
+        }
+
+        if (document.getElementById("form-report-file").files[0].size > 5242880) {
+            document.getElementById("form-report-file").classList.add('is-invalid');
+            document.getElementById("input-file-report-error").innerHTML = "Kích thước tài liệu không quá 5MB"
+            result = false;
+        }
+
+        return result
+    }
+
     async function clickSendReport(document_id) {
-        url = baseURL + "/document/" + document_id + "/report"
+        var url = baseURL + "/document/" + document_id + "/report"
 
-        const data = new FormData();
-        data.append("content", document.getElementById("form-report-content").value)
-        data.append("file", document.getElementById("form-report-file").files[0]);
+        if (validate_form_report() == true) {
+            const data = new FormData();
+            data.append("content", document.getElementById("form-report-content").value)
+            data.append("file", document.getElementById("form-report-file").files[0]);
 
-        try {
-            const result = await postFormData(url, data, localStorage.token);
-            if (result.code === 0) {
-                show_base_alert(0, "Đã gửi báo cáo. Xin hãy đợi chúng tôi xử lý");
-                clickCloseReport();
+            try {
+                const result = await postFormData(url, data, localStorage.token);
+                if (result.code === 0) {
+                    show_base_alert(0, "Đã gửi báo cáo. Xin hãy đợi chúng tôi xử lý");
+                    clickCloseReport();
+                }
+                else {
+                    show_base_alert(-1, result.message);
+                }
+            } catch (error) {
+                console.log(error.message);
             }
-            else {
-                show_base_alert(-1, result.message);
-            }
-        } catch (error) {
-            console.log(error.message);
         }
     }
 
@@ -1064,23 +1123,23 @@
         var link = baseURL + `/document/` + document_id;
         const facebookIntentURL = "https://www.facebook.com/sharer/sharer.php";
         const contentQuery = `?u=${encodeURIComponent(link)}`;
-        const shareURL =  facebookIntentURL + contentQuery;
+        const shareURL = facebookIntentURL + contentQuery;
         window.open(shareURL, "_blank");
     }
 
-    var url = document.location.href;
+    var urlCopy = baseURL + `/document/` + document_id;
     var clipboard = new ClipboardJS('.copylink', {
-        text: function() {
-            return url;
+        text: function () {
+            return urlCopy;
         }
     });
 
-    clipboard.on('success', function(e) {
+    clipboard.on('success', function (e) {
         show_base_alert(0, "Đã sao chép");
         e.clearSelection();
     });
 
-    clipboard.on('error', function(e) {
+    clipboard.on('error', function (e) {
         show_base_alert(-1, "Không thể sao chép đường dẫn");
     });
 </script>

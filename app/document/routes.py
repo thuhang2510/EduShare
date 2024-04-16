@@ -64,7 +64,11 @@ def index():
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
     return render_template('document/upload_doc.html', title='Document',form=register, formlogin=login, formresetpw=resetpw)
-    
+
+ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'}
+def allowed_file(filename):
+   return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @bp.route("/upload-multi", methods=['POST'])
 @jwt_required()
 @uploader_permission.require(http_exception=403)
@@ -76,6 +80,9 @@ def upload_multi():
         if os.path.exists(file_path):
             return jsonify({'message': f'Tài liệu {f.filename} đã có trong tạm thời', 'code': -1, 'data': None})
         
+        if (allowed_file(f.filename) is False):
+            return jsonify({'message': f'Tài liệu {f.filename} không đúng định dạng được phép tải lên', 'code': -1, 'data': None})
+
         f.save(file_path)
         f.close()
 
@@ -133,7 +140,7 @@ def upload_s3():
             upload(f"upload_files/{uploadDocument.old_name.data}", DocumentS3.BUCKET, uploadDocument.document_name.data)
 
             url = f"https://edushare-s3.s3.amazonaws.com/{document.document_name}"
-            tasks.page_pdf_and_build_vector_db.delay(url, document.document_name, document.id, current_user.id)
+            tasks.page_pdf_and_build_vector_db.delay(url, document.document_name, document.id)
             document_tasks.delete_wait_file.delay(uploadDocument.old_name.data)
 
             return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': None})
@@ -322,6 +329,9 @@ def delete(document_id):
 @reporter_permission.require(http_exception=403)
 def report(document_id):
     files = request.files.getlist("file") 
+
+    if (allowed_file(files[0].filename) is False):
+        return jsonify({'message': f'Tài liệu {files[0].filename} không đúng định dạng được phép tải lên', 'code': -1, 'data': None})
 
     file_path = os.path.join("app/report_files", files[0].filename)
     files[0].save(file_path)
