@@ -46,9 +46,9 @@
                         </div>
                         </div>
                         <button class="btn my-4 px-5 py-2 fw-bold my-1" style="background-color: rgb(2, 126, 176); color: white;"  onclick="document.getElementById('fileInput').click()">Tải lên</button>
-                        <input type="file" id="fileInput" style="display: none;" onchange="changeFile()" accept=".doc, .docx, .pdf" multiple>
+                        <input type="file" id="fileInput" style="display: none;" onchange="changeFile()" accept=".docx, .pdf" multiple>
                         <div class="flex justify-between items-center text-gray-400">
-                            <span>Chấp nhận file định dạng: .doc, .docx và .pdf. Tài liệu không quá 20MB</span>
+                            <span>Chấp nhận file định dạng: .docx và .pdf.</span>
                         </div>
                         <div class="flex justify-between items-center text-gray-400">
                             <span>Tài liệu không quá 20MB</span>
@@ -124,7 +124,11 @@
         }
         
         for (let i = 0; i < files.length; i++) {
-            load(files[i]);
+            if (newFile.size > 20971520){
+                show_base_alert(-1, "Kích thước tài liệu không quá 20MB");
+            }
+            else
+                load(files[i]);
         }
 
         btn_after_send_file.style.display = 'inline';
@@ -191,7 +195,7 @@
                                             <h6 class="mb-0">Mô tả <strong style="color: red">*</strong></h6>
                                         </div>
                                         <div class="col-sm-9 text-secondary">
-                                            <input id="mota-${fileId}" type="text" class="form-control" value="">
+                                            <textarea id="mota-${fileId}" type="text" class="form-control" value=""></textarea>
                                             <div id="mota-${fileId}-error" class="invalid-feedback mb-1"></div>
                                         </div>
                                     </div>

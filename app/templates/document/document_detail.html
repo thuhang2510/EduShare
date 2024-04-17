@@ -706,12 +706,13 @@
     function createDocuments(document) {
         html = `<div class="row mt-3 mb-3" onclick="clickDetail(${document_id})" style="cursor: pointer">
                     <div class="col-2 pe-0">`
-        if (document["image"] != null)
+        
+        if (document["image"] != null && document["image"] !== "/static/images/")
             html += `<img src="${document["image"]}"
                                 alt="Generic placeholder image" class="img-fluid p-0"
                                 style="width: 70px; height: 70px; border-radius: 10px;">`
         else
-            html += `<img src="/static/images/anh11.png"
+            html += `<img src="/static/images/default_book.png"
                                     alt="Generic placeholder image" class="img-fluid p-0"
                                     style="width: 70px; height: 70px; border-radius: 10px;">`
         html += `   </div>  

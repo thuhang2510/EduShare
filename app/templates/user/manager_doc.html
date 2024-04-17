@@ -360,12 +360,13 @@
     function createDocumentsOfAll(document){
         html = `<div id="document-${document["id"]}" class="row mt-3 mb-3 p-3 border rounded" style="background-color: white; cursor: default">
                     <div class="col-2 pe-0">`
-                        if(document["image"] != null)
+
+                        if (document["image"] != null && document["image"] !== "/static/images/")
                             html += `<img src="${document["image"]}"
                                 alt="Generic placeholder image" class="img-fluid p-0"
                                 style="width: 100px; height: 120px; border-radius: 10px;">`
                         else
-                            html += `<img src="/static/images/anh11.png"
+                            html += `<img src="/static/images/default_book.png"
                                     alt="Generic placeholder image" class="img-fluid p-0"
                                     style="width: 100px; height: 120px; border-radius: 10px;">`
         html += `   </div>  
@@ -405,12 +406,12 @@
     function createDocumentsOfSave(document){
         html = `<div id="document-${document["id"]}" class="row mt-3 mb-3 p-3 border rounded" style="background-color: white; cursor: default">
                     <div class="col-2 pe-0">`
-                        if(document["image"] != null)
+                        if (document["image"] != null && document["image"] !== "/static/images/")
                             html += `<img src="${document["image"]}"
                                 alt="Generic placeholder image" class="img-fluid p-0"
                                 style="width: 100px; height: 120px; border-radius: 10px;">`
                         else
-                            html += `<img src="/static/images/anh11.png"
+                            html += `<img src="/static/images/default_book.png"
                                     alt="Generic placeholder image" class="img-fluid p-0"
                                     style="width: 100px; height: 120px; border-radius: 10px;">`
         html += `   </div>  
@@ -505,7 +506,7 @@
     }
 
     function appendDocument(document_id, document_name, price, image, categories, description) {
-        const html = `
+        var html = `
             <div class="app__file__content">
                 <div>
                     <div class="card">
@@ -513,10 +514,12 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div>
-                                        <div class="mb-4 d-flex justify-content-center">
-                                            <img id="selectedImage" src="${image}"
-                                            alt="example placeholder" style="width: 180px; height: 180px" />
-                                        </div>
+                                        <div class="mb-4 d-flex justify-content-center">`
+                                        if (document["image"] != null && document["image"] !== "/static/images/")                                
+                                            html+=`<img id="selectedImage" src="${image}" alt="example placeholder" style="width: 180px; height: 180px" />`
+                                        else
+                                            html+=`<img id="selectedImage" src="/static/images/default_book.png" alt="example placeholder" style="width: 180px; height: 180px" />`
+        html+=                         `</div>
                                         <div class="d-flex justify-content-center">
                                             <div class="btn btn-primary btn-rounded">
                                                 <label class="form-label text-white m-1" for="customFile">Chọn ảnh</label>
@@ -592,8 +595,13 @@
             </div>
             `;
 
-        getDanhMuc(`danhmuc`, null, categories[0]["id"])
-        getDanhMuc(`danhmuc2`, categories[1]["parent_id"], categories[1]["id"])
+        for (let i = 0; i <= 1; i++) {
+            if(categories[i]["parent_id"] == null)
+                getDanhMuc(`danhmuc`, null, categories[i]["id"])
+            else
+                getDanhMuc(`danhmuc2`, categories[i]["parent_id"], categories[i]["id"])
+        }
+        
         var number_page = document.getElementById("number_page");
         number_page.style.visibility = "hidden";
         
@@ -765,14 +773,14 @@
         var url = baseURL + "/document/" + document_id + "/delete";
 
         try {
-            const result = await deleteData(url. localStorage.token);
+            const result = await deleteData(url, localStorage.token);
             if (result.code === 0){
                 clickCloseConfirmDelete();
                 document.getElementById("document-" + result.data["id"]).style.display = "none";
                 show_base_alert(0, "Xóa tài liệu thành công");
             }
-
-            show_base_alert(-1, result.message);
+            else
+                show_base_alert(-1, result.message);
         } catch (error) {
             console.log(error.message);
         }
