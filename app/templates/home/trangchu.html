@@ -86,17 +86,16 @@
 {{ super() }}
 <script src="/static/js/all_document.js"></script>
 <script>
-
-    window.onload = function () {
-        getAllDocNew();
-        getAllDocView();
-        getAllDocSaved();
-        
+    window.onload = function () {        
         if (localStorage.token) {
             getUser();
         }
         else
             closeLogin();
+
+        getAllDocNew();
+        getAllDocView();
+        getAllDocSaved();
     };
 
     async function sendFormLogin() {
