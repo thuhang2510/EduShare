@@ -210,8 +210,11 @@
                     html += createDocumentsOfAll(result.data["items"][i])
                 }
                 divDeXuat.innerHTML = html
-                var number_page = document.getElementById("number_page");
-                number_page.innerHTML = showPage(result.data["page"], result.data["has_next"], result.data["has_prev"]);
+                
+                if (result.data["items"].length > 12){
+                    var number_page = document.getElementById("number_page");
+                    number_page.innerHTML = showPage(result.data["page"], result.data["has_next"], result.data["has_prev"]);
+                }
             }
         } catch (error) {
             console.log(error.message);
@@ -263,8 +266,11 @@
                     html += createDocumentsOfAll(result.data["items"][i])
                 }
                 div_documents.innerHTML = html
-                var number_page = document.getElementById("number_page");
-                number_page.innerHTML = showPage(result.data["page"], result.data["has_next"], result.data["has_prev"]);
+
+                if (result.data["items"].length > 12){
+                    var number_page = document.getElementById("number_page");
+                    number_page.innerHTML = showPage(result.data["page"], result.data["has_next"], result.data["has_prev"]);
+                }
             }
         } catch (error) {
             console.log(error.message);
@@ -292,8 +298,11 @@
                     html += createDocumentsOfAll(result.data["items"][i])
                 }
                 div_documents.innerHTML = html
-                var number_page = document.getElementById("number_page");
-                number_page.innerHTML = showPage(result.data["page"], result.data["has_next"], result.data["has_prev"]);
+
+                if (result.data["items"].length > 12){
+                    var number_page = document.getElementById("number_page");
+                    number_page.innerHTML = showPage(result.data["page"], result.data["has_next"], result.data["has_prev"]);
+                }
             }
         } catch (error) {
             console.log(error.message);

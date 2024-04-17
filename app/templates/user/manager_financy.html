@@ -295,8 +295,10 @@
                 html = showTransactions(resultGet.data["items"]);
                 table_view_transaction.innerHTML = html;
 
-                var number_page = document.getElementById("number_page");
-                number_page.innerHTML = showPage(resultGet.data["page"], resultGet.data["has_next"], resultGet.data["has_prev"], from_date, to_date, type, result);
+                if (resultGet.data["items"].length > 20){
+                    var number_page = document.getElementById("number_page");
+                    number_page.innerHTML = showPage(resultGet.data["page"], resultGet.data["has_next"], resultGet.data["has_prev"], from_date, to_date, type, result);
+                }
             }
             else {
                 show_base_alert(-1, resultGet.message);
@@ -312,8 +314,17 @@
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0) {
-                document.getElementById("total-revenue").innerHTML = parseInt(result.data["total_revenue"]).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                document.getElementById("total-deposits").innerHTML = parseInt(result.data["total_deposits"]).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                var total_revenue = result.data["total_revenue"];
+                var total_deposits = result.data["total_deposits"];
+
+                if(total_revenue == null)
+                    total_revenue = 0;
+
+                if(total_deposits == null)
+                    total_deposits = 0;
+                
+                document.getElementById("total-revenue").innerHTML = parseInt(total_revenue).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                document.getElementById("total-deposits").innerHTML = parseInt(total_deposits).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
             }
             else {
                 show_base_alert(-1, result.message);

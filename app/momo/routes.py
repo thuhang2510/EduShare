@@ -48,7 +48,7 @@ def momo():
     redirectUrl = request.json.get("redirectUrl")
 
     user_id = get_jwt_identity()
-    ipnUrl = "http://174.129.69.18/momo/sendmail/" + str(user_id)
+    ipnUrl = "http://54.221.26.25/momo/sendmail/" + str(user_id)
     
     amount = request.json.get("amount")
     orderId = str(uuid.uuid4())
