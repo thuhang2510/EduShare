@@ -25,7 +25,9 @@
                             <span id="base-profile-email" class="author-card-position"></span>
                         </div>
                     </div>
-                    <div class="ps-4" style="display: none;"><h6>Tài liệu: <span>0</span></h5></div>
+                    <div class="ps-4" style="display: none;">
+                        <h6>Tài liệu: <span>0</span></h5>
+                    </div>
                 </div>
                 <div class="wizard">
                     <nav class="list-group list-group-flush">
@@ -50,11 +52,15 @@
                     <div class="pe-3 ps-0 col-lg-5">
                         <div class="pt-3 p-3 rounded" style="background-color: white;">
                             <h5 class="mb-3">Thông tin số dư tài khoản</h5>
-                            <p class="mb-1" style="color: #999; font-weight: 700; font-size: .75rem;">SỐ DƯ TÀI KHOẢN</p>
-                            <p id="money-manager-financy" class="mb-1" style="color: rgb(2, 126, 176); font-size: 1.5rem;"></p>
-                            <p class="mb-1 mt-2" style="color: #999; font-weight: 700; font-size: .75rem;">TỔNG SỐ TIỀN ĐÃ NẠP</p>
+                            <p class="mb-1" style="color: #999; font-weight: 700; font-size: .75rem;">SỐ DƯ TÀI KHOẢN
+                            </p>
+                            <p id="money-manager-financy" class="mb-1"
+                                style="color: rgb(2, 126, 176); font-size: 1.5rem;"></p>
+                            <p class="mb-1 mt-2" style="color: #999; font-weight: 700; font-size: .75rem;">TỔNG SỐ TIỀN
+                                ĐÃ NẠP</p>
                             <p id="total-deposits" class="mb-1" style="color: rgb(2, 126, 176); font-size: 1.5rem;"></p>
-                            <p class="mb-1 mt-2" style="color: #999; font-weight: 700; font-size: .75rem;">TỔNG SỐ TIỀN KIẾM ĐƯỢC TỪ TÀI LIỆU</p>
+                            <p class="mb-1 mt-2" style="color: #999; font-weight: 700; font-size: .75rem;">TỔNG SỐ TIỀN
+                                KIẾM ĐƯỢC TỪ TÀI LIỆU</p>
                             <p id="total-revenue" class="mb-1" style="color: rgb(2, 126, 176); font-size: 1.5rem;"></p>
                         </div>
                     </div>
@@ -63,20 +69,92 @@
                             <h5>Thống kê doanh thu</h5>
                             <div class="d-flex flex-row bd-highlight mb-3 justify-content-end">
                                 <div class="pe-1 bd-highlight">
-                                    <input id="input_year_stat" class="date-own form-control" style="width: 100px;" type="text" placeholder="Nhập năm">
+                                    <input id="input_year_stat" class="date-own form-control" style="width: 100px;"
+                                        type="text" placeholder="Nhập năm">
                                 </div>
                                 <div class="bd-highlight">
-                                    <button type="button" class="btn btn-secondary" onclick="clickStats()">Thống kê</button>
+                                    <button type="button" class="btn btn-secondary" onclick="clickStats()">Thống
+                                        kê</button>
                                 </div>
-                            </div>  
+                            </div>
                             <canvas id="myChart"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="mt-3 p-3 rounded" style="background-color: white;">
-                    <h5>Lịch sử hoạt động số dư</h5>
+                    <div class="d-flex flex-row bd-highlight">
+                        <div class="mt-2 mb-2">
+                            <h5 class="me-4">Lịch sử hoạt động số dư</h5>
+                        </div>
+                        <div>
+                            <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Thêm bộ lọc
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" onclick="openSearchDateFinancy()">Ngày giao dịch</a></li>
+                                <li><a class="dropdown-item" onclick="openSearchTypeFinancy()">Loại giao dịch</a></li>
+                                <li><a class="dropdown-item" onclick="openSearchResultFinancy()">Kết quả giao dịch</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <form id="filter_form" method="GET" class="mb-2">
+                        <div class="d-flex justify-content-between bd-highlight">
+                            <table id="table-filters">
+                                <tr id="filter-date-financy" style="display: none;">
+                                    <td class="pe-3">
+                                        <a class="btn btn-secondary remove-filter" onclick="cancelFilterDate()">
+                                            <span class="close-icon">×</span>&nbsp;Ngày giao dịch
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex bd-highlight select2-container">
+                                            <div class="d-flex flex-row bd-highlight me-3">
+                                                <label class="me-2">Từ</label>
+                                                <input type="date" id="fromDate" name="fromdate" class="form-control">
+                                            </div>
+                                            <div class="d-flex flex-row bd-highlight">
+                                                <label class="me-2">Tới</label>
+                                                <input type="date" id="toDate" name="todate" class="form-control">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr id="filter-type-financy" class="form-horizontal" style="display: none;">
+                                    <td><a class="btn btn-secondary remove-filter" onclick="cancelFilterType()"><span
+                                                class="close-icon">×</span>&nbsp;Loại giao dịch</a></td>
+                                    <td>
+                                        <div class="select2-container filter-op" id="s2id_autogen3" style="width: 130px;">
+                                            <select id="input-filter-type" class="form-select" aria-label="Default select example">
+                                                <option value="all" selected>Tất cả</option>
+                                                <option value="Nạp tiền">Nạp tiền</option>
+                                                <option value="Mua tài liệu">Mua tài liệu</option>
+                                                <option value="Bán tài liệu">Bán tài liệu</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr id="filter-result-financy" class="form-horizontal" style="display: none;">
+                                    <td><a class="btn btn-secondary remove-filter" onclick="cancelFilterResult()"><span
+                                                class="close-icon">×</span>&nbsp;Kết quả</a></td>
+                                    <td>
+                                        <div class="select2-container filter-op" id="s2id_autogen3" style="width: 130px;">
+                                            <select id="input-filter-result" class="form-select" aria-label="Default select example">
+                                                <option value="all" selected>Tất cả</option>
+                                                <option value="0">Thành công</option>
+                                                <option value="-1">Thất bại</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div>
+                                <button id="click-filter-financy" type="button" class="btn btn-primary" style="display: none;" onclick="filterFinancy()">Áp dụng</button>
+                            </div>
+                        </div>
+                    </form>
                     <div class="table-responsive">
-                        <table id="table-view-transaction" class="table table-hover table-striped table-bordered">  
+                        <table id="table-view-transaction" class="table table-hover table-striped table-bordered">
                         </table>
                     </div>
 
@@ -93,9 +171,8 @@
 {{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    window.onload = function()
-    {
-        if(localStorage.token){
+    window.onload = function () {
+        if (localStorage.token) {
             getUser();
             getStats();
             getTransaction();
@@ -105,7 +182,72 @@
             window.location.href = "/api/v1"
     };
 
-    async function getUser(){
+    function existFilter() {
+        const table = document.querySelector("table");
+        const trElements = table.querySelectorAll("tr");
+
+        for (const tr of trElements) {
+            if (tr.style.display === "block") {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function openSearchDateFinancy(){
+        document.getElementById("filter-date-financy").style.display = "block";
+        document.getElementById("click-filter-financy").style.display = "block";
+    }
+
+    function openSearchTypeFinancy(){
+        document.getElementById("filter-type-financy").style.display = "block";
+        document.getElementById("click-filter-financy").style.display = "block";
+    }
+
+    function openSearchResultFinancy(){
+        document.getElementById("filter-result-financy").style.display = "block";
+        document.getElementById("click-filter-financy").style.display = "block";
+    }
+
+    function cancelFilterDate(){
+        document.getElementById("filter-date-financy").style.display = "none";
+        if(existFilter() == false)
+            document.getElementById("click-filter-financy").style.display = "none";
+
+        document.getElementById("toDate").value = "";
+        document.getElementById("fromDate").value = "";
+        filterFinancy();
+    }
+
+    function cancelFilterType(){
+        document.getElementById("filter-type-financy").style.display = "none";
+        if(existFilter() == false)
+            document.getElementById("click-filter-financy").style.display = "none";
+
+        document.getElementById("input-filter-type").value = "all";
+        filterFinancy();
+    }
+
+    function cancelFilterResult(){
+        document.getElementById("filter-result-financy").style.display = "none";
+        if(existFilter() == false)
+            document.getElementById("click-filter-financy").style.display = "none";
+
+        document.getElementById("input-filter-result").value = "all";
+        filterFinancy();
+    }
+
+    async function filterFinancy(){
+        var from_date = document.getElementById("fromDate").value;
+        var to_date = document.getElementById("toDate").value;
+        var type = document.getElementById("input-filter-type").value;
+        var result = document.getElementById("input-filter-result").value;
+        
+        getTransaction(1, from_date, to_date, type, result);
+    }
+
+    async function getUser() {
         var url = baseURL + "/api/v1/user-token"
 
         var base_profile_img = document.getElementById("base-profile-img")
@@ -118,7 +260,7 @@
 
         try {
             const result = await getData(url, localStorage.token);
-            if (result.code === 0){
+            if (result.code === 0) {
                 user.lg_fullname.innerHTML = result.data["fullname"];
                 user.email.innerHTML = result.data["email"];
                 user.ls_fullname.innerHTML = result.data["fullname"];
@@ -134,7 +276,7 @@
                 openLogin();
                 userCurrentId = result.data["id"]
             }
-            else{
+            else {
                 window.location.href = "/api/v1";
             }
         } catch (error) {
@@ -143,40 +285,37 @@
         }
     }
 
-    async function getTransaction(page=null){
-        var url = baseURL + "/user/transactions";
-
-        if(page)
-            url += "?page=" + page;
+    async function getTransaction(page = 1, from_date='', to_date='', type='all', result='all') {
+        var url = baseURL + "/user/transactions?page=" + page + "&from_date=" + from_date + "&to_date=" + to_date + "&type=" + type + "&result=" + result;
 
         try {
-            const result = await getData(url, localStorage.token);
-            if (result.code === 0){
+            const resultGet = await getData(url, localStorage.token);
+            if (resultGet.code === 0) {
                 var table_view_transaction = document.getElementById("table-view-transaction");
-                html = showTransactions(result.data["items"]);
+                html = showTransactions(resultGet.data["items"]);
                 table_view_transaction.innerHTML = html;
 
                 var number_page = document.getElementById("number_page");
-                number_page.innerHTML = showPage(result.data["page"], result.data["has_next"], result.data["has_prev"]);
+                number_page.innerHTML = showPage(resultGet.data["page"], resultGet.data["has_next"], resultGet.data["has_prev"], from_date, to_date, type, result);
             }
-            else{
-                show_base_alert(-1, result.message);
+            else {
+                show_base_alert(-1, resultGet.message);
             }
         } catch (error) {
             show_base_alert(-1, error.message);
         }
     }
 
-    async function getTotal(){
+    async function getTotal() {
         var url = baseURL + "/user/total";
 
         try {
             const result = await getData(url, localStorage.token);
-            if (result.code === 0){
+            if (result.code === 0) {
                 document.getElementById("total-revenue").innerHTML = parseInt(result.data["total_revenue"]).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 document.getElementById("total-deposits").innerHTML = parseInt(result.data["total_deposits"]).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
             }
-            else{
+            else {
                 show_base_alert(-1, result.message);
             }
         } catch (error) {
@@ -184,7 +323,7 @@
         }
     }
 
-    function showTransactions(transactions){
+    function showTransactions(transactions) {
         var html = `<tr>
                     <th class="col-2" scope="col">MÃ GIAO DỊCH</th>
                     <th scope="col">LOẠI GIAO DỊCH</th>
@@ -194,7 +333,7 @@
                     <th scope="col">SỐ DƯ TÀI KHOẢN</th>
                 </tr>`
 
-        for(let i = 0; i < transactions.length; ++i){
+        for (let i = 0; i < transactions.length; ++i) {
             html += `<tr>
                         <td>
                             <p class="mb-0">EduShare-${transactions[i]["id"]}</p>
@@ -203,29 +342,29 @@
                         <td>${transactions[i]["type"]}</td>
                         <td>${transactions[i]["information"]}</td>`
 
-            if(transactions[i]["result"] == 0)
+            if (transactions[i]["result"] == 0)
                 html += `<td>Thành công</td>`
             else
                 html += `<td>Thất bại</td>`
-                        
+
             html += `    <td class="text-nowrap">`
-            
-            if (transactions[i]["type"] == "Mua tài liệu"){
+
+            if (transactions[i]["type"] == "Mua tài liệu") {
                 html += `<span class="text-danger">
                             <i class="bi bi-caret-down-fill"></i><span>`
             }
-            else{
+            else {
                 html += `<span class="text-success">`
-                
-                if(transactions[i]["result"] == 0)
+
+                if (transactions[i]["result"] == 0)
                     html += `<i class="bi bi-caret-up-fill"></i><span>`
             }
 
-            if(transactions[i]["result"] == 0)
+            if (transactions[i]["result"] == 0)
                 html += `       ${transactions[i]["amount"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>   `
             else
                 html += `  -   `
-                html +=    `</span> 
+            html += `</span> 
                         </td>`
             html += `    <td>${transactions[i]["wallet_balance"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
                     </tr>`
@@ -234,27 +373,27 @@
         return html;
     }
 
-    function showPage(currency_page, has_next, has_prev){
+    function showPage(currency_page, has_next, has_prev, from_date, to_date, type, result) {
         var html = `<nav aria-label="Page navigation example">
                     <ul class="pagination">`
 
         if (has_prev)
             html += `<li class="page-item" style="cursor: pointer;">`
         else
-            html += `<li class="page-item disabled">`   
-        
-        html += `   <a class="page-link" onclick=clickPrev('${currency_page}') aria-label="Previous">
+            html += `<li class="page-item disabled">`
+
+        html += `   <a class="page-link" onclick="clickPrev('${currency_page}', '${from_date}', '${to_date}', '${type}', '${result}')" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                     </a>
                     </li>
                     <li class="page-item" style="cursor: pointer;"><a class="page-link" href="#">${currency_page}</a></li>`
-        
+
         if (has_next)
             html += `<li class="page-item" style="cursor: pointer;">`
         else
-            html += `<li class="page-item disabled">`   
+            html += `<li class="page-item disabled">`
 
-        html +=     `<a class="page-link" onclick=clickNext('${currency_page}') aria-label="Next">
+        html += `<a class="page-link" onclick="clickNext('${currency_page}', '${from_date}', '${to_date}', '${type}', '${result}')" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                     </li>
@@ -264,7 +403,7 @@
         return html;
     }
 
-    function convertDateTimeToGMT7(datetime){
+    function convertDateTimeToGMT7(datetime) {
         date = new Date(datetime)
 
         const formattedDate = date.toLocaleDateString('en-GB', {
@@ -282,34 +421,34 @@
         return `${formattedDate} ${formattedTime}`;
     }
 
-    function clickNext(currency_page){
-        getTransaction(parseInt(currency_page) + 1);
+    function clickNext(currency_page, from_date, to_date, type, result) {
+        getTransaction(parseInt(currency_page) + 1, from_date, to_date, type, result);
     }
 
-    function clickPrev(currency_page){
-        getTransaction(parseInt(currency_page) - 1);
+    function clickPrev(currency_page, from_date, to_date, type, result) {
+        getTransaction(parseInt(currency_page) - 1, from_date, to_date, type, result);
     }
 
-    async function getStats(year=null){
+    async function getStats(year = null) {
         var url = baseURL + "/user/stats";
 
-        if(year)
+        if (year)
             url += "?year=" + year;
 
         try {
             const result = await getData(url, localStorage.token);
-            if (result.code === 0){
+            if (result.code === 0) {
                 let labels = [];
                 let datas = [];
 
-                for(let i = 0; i < result.data.length; ++i){
+                for (let i = 0; i < result.data.length; ++i) {
                     labels.push("Tháng " + result.data[i]["month"]);
                     datas.push(result.data[i]["sum"]);
                 }
 
                 loadChart('line', labels, 'Thống kê doanh thu', datas);
             }
-            else{
+            else {
                 show_base_alert(-1, result.message);
             }
         } catch (error) {
@@ -317,33 +456,33 @@
         }
     }
 
-    function loadChart(type, labels, label_datasets, data_datasets){
+    function loadChart(type, labels, label_datasets, data_datasets) {
         let chartStatus = Chart.getChart("myChart");
         if (chartStatus != undefined) {
             chartStatus.destroy();
         }
 
         const chart = new Chart(document.getElementById('myChart'), {
-                        type: type,
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: label_datasets,
-                                data: data_datasets,
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: label_datasets,
+                    data: data_datasets,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     }
 
-    function clickStats(){
+    function clickStats() {
         var input_year_stat = document.getElementById('input_year_stat').value;
         getStats(input_year_stat);
     }

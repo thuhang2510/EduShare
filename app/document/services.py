@@ -229,9 +229,9 @@ class DocumentsDataService():
         except Exception as e:
             return None, -1, "Delete document fail"
     
-    def get_by_account_id_with_paginate(self, account_id, page, type, keyword):
+    def get_by_account_id_with_paginate(self, account_id, page, per_page, type, keyword):
         try:
-            documents = Documents.find_by_account_id_with_paginate(account_id, page, 20, type, keyword)
+            documents = Documents.find_by_account_id_with_paginate(account_id, page, per_page, type, keyword)
 
             if (documents != None):
                 return documents, 0, "Get document success"
@@ -239,6 +239,28 @@ class DocumentsDataService():
             return None, -1, "Get document fail"
         except Exception as e:
             return None, -1, "Get document fail"
+        
+    def get_processing_with_paginate(self, account_id, page, per_page):
+        try:
+            documents = Documents.get_processing(account_id, page, per_page)
+
+            if (documents != None):
+                return documents, 0, "Get documents success"
+            
+            return None, -1, "Get documents fail"
+        except Exception as e:
+            return None, -1, "Get documents fail"
+        
+    def get_process_fail_with_paginate(self, account_id, page, per_page):
+        try:
+            documents = Documents.get_process_fail(account_id, page, per_page)
+
+            if (documents != None):
+                return documents, 0, "Get documents success"
+            
+            return None, -1, "Get documents fail"
+        except Exception as e:
+            return None, -1, "Get documents fail"
         
     def get_month_stats_document(self, account_id, year):
         try:

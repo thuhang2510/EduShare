@@ -254,7 +254,7 @@ def get_all_document():
     page = request.args.get('page', 1, type=int)
     type = request.args.get('type', "all", type=str)
 
-    document, _, msg = DocumentsDataService().get_by_account_id_with_paginate(current_user.id, page, type, "")
+    document, _, msg = DocumentsDataService().get_by_account_id_with_paginate(current_user.id, page, 12, type, "")
 
     if document is not None:
         results = {
@@ -272,6 +272,62 @@ def get_all_document():
         results["items"] = []
 
         for item in document.items:
+            results["items"].append(item.to_dict_has_evaluate())
+        return jsonify({'message': 'Lấy tài liệu thành công', 'code': 0, 'data': results})
+
+    return jsonify({'message': msg, 'code': -1, 'data': None})
+
+@bp.route("/processing", methods=['GET'])
+@jwt_required()
+def get_processing():
+    page = request.args.get('page', 1, type=int)
+
+    documents, _, msg = DocumentsDataService().get_processing_with_paginate(current_user.id, page, 12)
+
+    if documents is not None:
+        results = {
+            "first": documents.first,
+            "has_next": documents.has_next,
+            "has_prev": documents.has_prev,
+            "last": documents.last,
+            "next_num": documents.next_num,
+            "page": documents.page,
+            "pages": documents.pages,
+            "prev_num": documents.prev_num,
+            "total": documents.total
+        }
+
+        results["items"] = []
+
+        for item in documents.items:
+            results["items"].append(item.to_dict_has_evaluate())
+        return jsonify({'message': 'Lấy tài liệu thành công', 'code': 0, 'data': results})
+
+    return jsonify({'message': msg, 'code': -1, 'data': None})
+
+@bp.route("/process_fail", methods=['GET'])
+@jwt_required()
+def get_process_fail():
+    page = request.args.get('page', 1, type=int)
+
+    documents, _, msg = DocumentsDataService().get_process_fail_with_paginate(current_user.id, page, 12)
+
+    if documents is not None:
+        results = {
+            "first": documents.first,
+            "has_next": documents.has_next,
+            "has_prev": documents.has_prev,
+            "last": documents.last,
+            "next_num": documents.next_num,
+            "page": documents.page,
+            "pages": documents.pages,
+            "prev_num": documents.prev_num,
+            "total": documents.total
+        }
+
+        results["items"] = []
+
+        for item in documents.items:
             results["items"].append(item.to_dict_has_evaluate())
         return jsonify({'message': 'Lấy tài liệu thành công', 'code': 0, 'data': results})
 

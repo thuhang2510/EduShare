@@ -8,7 +8,7 @@ load_dotenv(dotenv_path)
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'khong-doan-noi-dau'
     JWT_SECRET_KEY = 'super_secret'
-    ACCESS_EXPIRES = timedelta(hours=1)
+    ACCESS_EXPIRES = timedelta(hours=3)
     JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES
     
     SQLALCHEMY_DATABASE_URI = 'mysql://admin:damthuhang2010@testrds.cxmkaq0ig18s.us-east-1.rds.amazonaws.com/thu'

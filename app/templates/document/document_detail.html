@@ -292,6 +292,43 @@
         getDocLienQuan(`{{document["categories"][1]["name"]}}`);
     };
 
+    let firstFullName = ""
+
+    async function getUser() {
+        url = baseURL + "/api/v1/user-token"
+        var base_img = document.getElementById("base-img")
+
+        try {
+            const result = await getData(url, localStorage.token);
+            if (result.code === 0) {
+                user.lg_fullname.innerHTML = result.data["fullname"];
+                user.email.innerHTML = result.data["email"];
+                user.ls_fullname.innerHTML = result.data["fullname"];
+                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                base_img.innerHTML = result.data["fullname"][0];
+                firstFullName = result.data["fullname"][0];
+                openLogin();
+                userCurrentId = result.data["id"]
+
+                updateCountDownload(result);
+                updateCountAsk(result);
+            }
+            else if (result.code == -4) {
+                userCurrentId = null;
+                localStorage.setItem("token", "");
+                closeLogin();
+            }
+            else {
+                userCurrentId = null;
+                closeLogin();
+            }
+        } catch (error) {
+            console.log(error.message);
+            closeLogin();
+        }
+    }
+
     async function getDocumentAllDetail() {
         var url = baseURL + "/document/" + document_id + "/detail";
 
@@ -528,35 +565,15 @@
     }
 
     const showResponse = (response) => {
-        const html = `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+        const html = `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.PNG" class="rounded-circle" alt="chatbot-img" style="width: 40px; height: auto;"></div>
                         <div class="p-2 bd-highlight">
-                            <p class="mb-0" style="user-select: none;">${response}</p>
+                            <p class="mb-0">${response}</p>
                         </div>`
         return html;
     }
 
     const showTypingAnimation = () => {
-        const html = `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
-                        <div class="p-2 bd-highlight">
-                            <div class="typing-animation">
-                                <div class="typing-dot" style="--delay: 0.2s">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                      </svg>
-                                </div>
-                                <div class="typing-dot" style="--delay: 0.3s">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                      </svg>
-                                </div>
-                                <div class="typing-dot" style="--delay: 0.4s">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                      </svg>
-                                </div>
-                            </div>
-                        </div>`
-
+        const html = loading();
         const incomingChatDiv = createElement(html, "incoming");
         incomingChatDiv.style.backgroundColor = "#f8f9fa";
         var chatContainer = document.getElementsByClassName("chat-container")[0];
@@ -566,7 +583,7 @@
     }
 
     function loading() {
-        return `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.jpg" alt="chatbot-img" style="width: 35px; height: auto;"></div>
+        return `<div class="p-2 bd-highlight"><img src="/static/images/chatbot.PNG" class="rounded-circle" alt="chatbot-img" style="width: 40px; height: auto;"></div>
                 <div class="p-2 bd-highlight">
                     <div class="typing-animation">
                         <div class="typing-dot" style="--delay: 0.2s">
@@ -609,7 +626,11 @@
         userText = chatInput.value.trim();
 
         chatInput.value = "";
-        const html = `<div class="p-2 bd-highlight"><img src="/static/images/user.jpg" alt="user-img" style="width: 35px; height: auto;"></div>
+        const html = `<div class="p-2 bd-highlight">
+                        <div class="rounded-circle bg-secondary align-self-center d-flex justify-content-center align-items-center" style="width: 35px; height: 35px;">
+                            <span id="base-img" class="p text-white">${firstFullName}</span>
+                        </div>
+                    </div>
                     <div class="p-2 bd-highlight">
                         <p class="mb-0"></p>
                     </div>
@@ -683,7 +704,7 @@
     }
 
     function createDocuments(document) {
-        html = `<div class="row mt-3 mb-3" onclick="clickDetail(${document_id})">
+        html = `<div class="row mt-3 mb-3" onclick="clickDetail(${document_id})" style="cursor: pointer">
                     <div class="col-2 pe-0">`
         if (document["image"] != null)
             html += `<img src="${document["image"]}"

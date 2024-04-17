@@ -311,13 +311,13 @@
     }
 
     function showDocument(document) {
-        html = `<div class="carousel-item active" onclick="openDocumentDetail(${document["id"]})">
+        html = `<div class="carousel-item active" onclick="openDocumentDetail(${document["id"]})" style="cursor:pointer">
                     <div class="card">`
 
-        if (document["image"] != null)
-            html += `<div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px;"><img src="${document["image"]}" class="d-block img-detail" alt="..."> </div></div>`
+        if (document["image"] != null && document["image"] !== "/static/images/")
+            html += `<div class="img-wrapper"><div style="width: 140px; height:178px;position: absolute;top: 24px;"><img src="${document["image"]}" class="d-block img-detail" alt="..."> </div></div>`
         else
-            html += `<div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px"><img src="/static/images/anh11.png" class="d-block img-detail" alt="..."> </div></div>`
+            html += `<div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px"><img src="/static/images/default_book.png" class="d-block img-detail" alt="..."> </div></div>`
 
         html += `<div class="card-body">
                     <h5 class="card-title">${getOnlyFileName(document["document_name"])}</h5>

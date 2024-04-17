@@ -16,9 +16,9 @@ class TransactionDataService():
         except Exception as e:
             return None, -1, "Create transaction fail " + str(e)
         
-    def get_by_account_id_with_paginate(self, account_id, page, per_page):
+    def get_by_account_id_with_paginate(self, account_id, page, per_page, from_date, to_date, type, result):
         try:
-            transactions = Transaction.get_by_account_id_with_paginate(account_id, page, per_page)
+            transactions = Transaction.get_by_account_id_with_paginate(account_id, page, per_page, from_date, to_date, type, result)
 
             if(transactions is not None):
                 results = {

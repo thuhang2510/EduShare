@@ -121,8 +121,12 @@ def overview():
 @jwt_required()
 def get_transactions():
     page = request.args.get('page', 1, type=int)
+    from_date = request.args.get('from_date', '',type=str)
+    to_date = request.args.get('to_date', '',type=str)
+    type = request.args.get('type', 'all',type=str)
+    result = request.args.get('result', 'all',type=str)
 
-    transactions, code, msg = TransactionDataService().get_by_account_id_with_paginate(current_user.id, page, 20)
+    transactions, code, msg = TransactionDataService().get_by_account_id_with_paginate(current_user.id, page, 20, from_date, to_date, type, result)
 
     return jsonify({"message": msg, "code": code, "data": transactions})
 

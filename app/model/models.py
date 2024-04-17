@@ -176,10 +176,25 @@ class Transaction(db.Model):
         return format(self.amount, ',d')
     
     @classmethod
-    def get_by_account_id_with_paginate(cls, _account_id, page, per_page):
-        return cls.query.order_by(desc(cls.date))\
-                        .filter(cls.account_id == _account_id)\
-                        .paginate(page=page, per_page=per_page)
+    def get_by_account_id_with_paginate(cls, _account_id, page, per_page, from_date, to_date, _type, _result):
+        query = cls.query.order_by(desc(cls.date))\
+                        .filter(cls.account_id == _account_id)
+        
+        if from_date != '':
+            start_date = datetime.strptime(from_date, "%Y-%m-%d")
+            query = query.filter(cls.date >= start_date)
+
+        if to_date != '':
+            end_date = datetime.strptime(to_date, "%Y-%m-%d")
+            query = query.filter(cls.date <= end_date)
+
+        if _type != "all":
+            query = query.filter(cls.type.ilike(_type))
+
+        if _result != "all":
+            query = query.filter(cls.result == _result)
+
+        return query.paginate(page=page, per_page=per_page)
     
     @classmethod
     def get_month_stats_with_account_id(cls, _account_id, year):
@@ -484,7 +499,7 @@ class Documents(db.Model):
         return cls.query.\
             join(cls.categories, isouter=True).\
             with_entities(cls.id, cls.document_name, cls.price, cls.image, cls.description).\
-            filter(cls.id==_id, cls.status==True, cls.processing_status==1).\
+            filter(cls.id==_id, cls.status==True).\
             add_entity(Categories).\
             all()
     
@@ -555,6 +570,18 @@ class Documents(db.Model):
             add_column(Account.fullname).\
             paginate(page=page, per_page=per_page) 
     
+    @classmethod
+    def get_processing(cls, _account_id, page, per_page):
+        return cls.query.join(Account)\
+            .filter(cls.account_id==_account_id, cls.status==True, cls.processing_status==0)\
+            .paginate(page=page, per_page=per_page) 
+    
+    @classmethod
+    def get_process_fail(cls, _account_id, page, per_page):
+        return cls.query.join(Account)\
+            .filter(cls.account_id==_account_id, cls.status==True, cls.processing_status==-1)\
+            .paginate(page=page, per_page=per_page) 
+
     @classmethod
     def search(cls, page, per_page, value, sort, price, cat_id):
         query =  cls.query.\
