@@ -1007,7 +1007,7 @@
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0) {
-                if (result.data["coin"] < document["price"])
+                if (result.data["coin"] < price)
                     show_insufficient_funds();
                 else {
                     show_confirm_document_payment(document_name, price, result.data["coin"]);
