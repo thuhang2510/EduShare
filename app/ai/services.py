@@ -22,6 +22,7 @@ class AIDataService():
         text = '\n\n'.join([page.page_content for page in loader.load()])
         
         splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+            model_name="text-embedding-ada-002",
             chunk_size=300,
             chunk_overlap=20,
         )

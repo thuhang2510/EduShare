@@ -102,9 +102,15 @@
                     {% for document in documents.items %}
                         <div id="document-view-{{ document.id }}" class="row m-3 mb-3 p-3 border rounded" style="background-color: white; cursor: pointer;" onclick="turnToDocumentDetail('{{document.id}}')">
                             <div class="col-2 p-0">
-                                <img src="{{ document.image }}"
-                                            alt="Generic placeholder image" class="img-fluid p-0"
-                                            style="width: 100px; height: 120px; border-radius: 10px;">
+                                {% if (document["image"] != null and document["image"] != "/static/images/") %}
+                                    <img src="{{ document.image }}"
+                                                alt="Generic placeholder image" class="img-fluid p-0"
+                                                style="width: 100px; height: 120px; border-radius: 10px;">
+                                {% else %}
+                                    <img src="/static/images/default_book.png"
+                                    alt="Generic placeholder image" class="img-fluid p-0"
+                                    style="width: 100px; height: 120px; border-radius: 10px;">
+                                {% endif %}
                             </div>  
                             <div class="col-6 ps-0">
                                 <h4 class="m-0">{{ document.document_name | get_only_document_name }}</h4>

@@ -81,7 +81,7 @@ def get_view_user(account_id):
     type = request.args.get('type', "all", type=str)
 
     user, _, _ = UserDataService().get_by_id_tuple(account_id)
-    documents, _, _ = DocumentsDataService().get_by_account_id_with_paginate(account_id, page, type, "")
+    documents, _, _ = DocumentsDataService().get_by_account_id_with_paginate(account_id, page, 20, type, "")
 
     return render_template('user/profile_view_user.html',form=register, formlogin=login, account_id=account_id, type=type, 
                            formresetpw=resetpw, documents=documents, user=user)
@@ -96,7 +96,7 @@ def search_view_user(account_id):
     keyword = request.args.get('keyword', "", type=str)
 
     user, _, _ = UserDataService().get_by_id_tuple(account_id)
-    documents, _, _ = DocumentsDataService().get_by_account_id_with_paginate(account_id, page, "all", keyword)
+    documents, _, _ = DocumentsDataService().get_by_account_id_with_paginate(account_id, page, 20, "all", keyword)
 
     return render_template('user/profile_view_search_user.html',form=register, formlogin=login, account_id=account_id, keyword=keyword, 
                            formresetpw=resetpw, documents=documents, user=user)
