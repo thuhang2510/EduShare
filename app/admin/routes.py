@@ -108,8 +108,10 @@ class DocumentView(ModelView):
         )
 
     def _format_image(view, context, model, name):
-        if not model.image:
-            return ''
+        if not model.image or model.image == "/static/images":
+            return Markup(
+            '<img src="/static/images/default_book.png" width="90" height="90">' % model.image
+        )
 
         return Markup(
             '<img src="%s" width="90" height="90">' % model.image
@@ -212,6 +214,7 @@ class CategoryView(BaseView):
 
             category.save_to_db()
             flash("Tạo danh mục thành công")
+            categories_parent = Categories.find_all_parent()
 
         return self.render('/admin/categories/new.html', form=createCategory, category=category, categories_parent=categories_parent)
     

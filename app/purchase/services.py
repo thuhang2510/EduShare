@@ -18,7 +18,7 @@ class PurchaseDataService():
                 type = 'Mua tài liệu',
                 amount = amount,
                 result = 'Thành công',
-                account_id = account_id
+                account_id = current_user_id
             )
             buyer_transaction.wallet_balance = current_user.coin - int(amount)
             current_user.coin -= int(amount)

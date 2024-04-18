@@ -90,7 +90,11 @@
                         <b>Ảnh</b>
                     </td>
                     <td>
-                        <img src="{{document.image}}" width="90" height="90">
+                        {% if (document["image"] != null and document["image"] != "/static/images/") %}
+                            <img src="{{document.image}}" width="90" height="90">
+                        {% else %}
+                            <img src="/static/images/default_book.png" width="90" height="90">
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>

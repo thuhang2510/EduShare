@@ -78,7 +78,7 @@
                     <div id="btn-document-payment" class="p-2 bd-highlight" data-timebuy="">
                         {% if document["price"] > 0 %}
                         <button type="button" class="btn bg-success bg-gradient text-white rounded-pill"
-                            onclick="buyDocument(`{{ document['document_name'] }}`, `{{ document['price'] | numberFormat }}`)">Mua
+                            onclick="buyDocument(`{{ document['document_name'] }}`, `{{ document['price']}}`)">Mua
                             tài liệu</button>
                         {% endif %}
                     </div>
@@ -274,7 +274,7 @@
     let currentScale = 1.5;
     let currentPage = 1;
     let pageNumber = 0;
-    const price = `{{document["price"]}}`;
+    const price = parseInt(`{{document["price"]}}`);
     let bought = false;
 
     window.onload = function () {
@@ -401,7 +401,7 @@
                     divContext.appendChild(pdfCanvas);
 
                     if (price > 0 && i > (pdf.numPages / 100 * 20) && bought == false) {
-                        pdfCanvas.style.filter = "blur(5px)"
+                        pdfCanvas.style.filter = "blur(9px)"
                         let notify = document.createElement("div")
                         notify.style.position = "absolute";
                         notify.style.top = "50%";
@@ -704,7 +704,7 @@
     }
 
     function createDocuments(document) {
-        html = `<div class="row mt-3 mb-3" onclick="clickDetail(${document_id})" style="cursor: pointer">
+        html = `<div class="row mt-3 mb-3" onclick="clickDetail(${document["id"]})" style="cursor: pointer">
                     <div class="col-2 pe-0">`
         
         if (document["image"] != null && document["image"] !== "/static/images/")
@@ -995,6 +995,7 @@
     }
 
     function downloadDocument() {
+        alert("Các tài liệu bạn tải xuống chỉ được sử dụng với mục đích học tập, nghiên cứu. Không sử dụng với mục đích thương mại.");
         if (price == 0)
             downloadDocFree();
         else
@@ -1055,7 +1056,7 @@
         document.getElementById("form-confirm-payment").style.visibility = "visible"
         document.getElementById("content-form-confirm-payment").innerHTML = `<h5>Bạn đang thanh toán tài liệu</h5>
                                                                 <h4 style="color: rgb(2, 126, 176);"> ${document_name}</h4>
-                                                                <p>Giá bán: <span class="fw-bold"> ${price} đ</span></p>`
+                                                                <p>Giá bán: <span class="fw-bold"> ${price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} đ</span></p>`
 
         if (coin !== null)
             document.getElementById("content-form-confirm-payment").innerHTML += `<p>Số dư hiện tại của bạn: <span class="fw-bold">${coin.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span></p>`
