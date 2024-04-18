@@ -295,8 +295,12 @@
                 document.getElementById(fileId).style.display = 'none'
             }
             else{
+                var loader = document.querySelector(`#loading-${fileId}`);
                 loader.classList.remove("display");
                 loader.style.display = "none";
+
+                var btnSave = document.getElementById(`save-${fileId}`);
+                var btnDelete = document.getElementById(`delete-${fileId}`);
 
                 btnSave.style.display = "inline";
                 btnDelete.style.display = "inline";
@@ -363,8 +367,12 @@
                 window.location.replace(baseURL + "/api/v1")
             }
 
+            var loader = document.querySelector(`#loading-${fileId}`);
             loader.classList.remove("display");
             loader.style.display = "none";
+
+            var btnSave = document.getElementById(`save-${fileId}`);
+            var btnDelete = document.getElementById(`delete-${fileId}`);
             btnSave.style.display = "inline";
             btnDelete.style.display = "inline";
 
