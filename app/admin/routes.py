@@ -76,13 +76,13 @@ class DocumentView(ModelView):
     can_edit = True
     can_delete = False
     column_searchable_list = ('document_name', 'id')
-    column_list = ("id", "document_name", "type", "description",
-                    "price", "download_count", "view_count", "image", "status", "account")
+    column_list = ("id", "document_name", "type",
+                    "price", "download_count", "view_count", "processing_status", "status", "account", )
     column_details_list = ("id", "document_name", "type", "description",
                     "price", "download_count", "view_count", "image", "creation_date", "modified_date", "status", "account_id")
     column_labels = dict(document_name='Tên tài liệu', type='Loại', description='Mô tả',
                          price='Giá bán', download_count='SL tải', view_count='SL xem', image='Ảnh',
-                         creation_date='Ngày tạo', modified_date='Ngày cập nhật', status='Trạng thái', account='Tên tài khoản')
+                         creation_date='Ngày tạo', modified_date='Ngày cập nhật', status='Trạng thái', account='Tên tài khoản', processing_status='Xử lý')
     form_excluded_columns = ("price", "download_count", "view_count", "image", 
                              "creation_date", "modified_date", "categories", "evaluate", "purchase", "account")
     form_widget_args = {
@@ -106,9 +106,17 @@ class DocumentView(ModelView):
         return Markup(
             model.document_name.rsplit(".", 1)[0]
         )
+    
+    def _format_processing(view, context, model, name):
+        if model.processing_status:
+            return Markup('Thành công')
+        elif model.processing_status == -1:
+            return Markup('Thất bại')
+        else:
+            return Markup('Đang xử lý')
 
     def _format_image(view, context, model, name):
-        if not model.image or model.image == "/static/images":
+        if model.image == "/static/images/":
             return Markup(
             '<img src="/static/images/default_book.png" width="90" height="90">' % model.image
         )
@@ -137,7 +145,8 @@ class DocumentView(ModelView):
         'document_name': _format_document_name,
         'image': _format_image,
         'creation_date': _format_creation_date,
-        'modified_date': _format_modified_date
+        'modified_date': _format_modified_date, 
+        'processing_status': _format_processing
     } 
 
     def is_accessible(self):

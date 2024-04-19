@@ -146,7 +146,8 @@ class AIDataService():
                 docs = self.get_documents_from_web(url)
                 self.create_db(docs, document_edu_name, api_key)
             return None, 0, "Tải tài liệu để đặt câu hỏi thành công"
-        except RuntimeError:
+        except Exception as e:
+            print(str(e))
             return None, -1, "Tải tài liệu để đặt câu hỏi không thành công"
 
     def chat_with_ai(self, ask, chat_history, document_edu_name, document_id, user_id, api_key=None):
@@ -162,7 +163,8 @@ class AIDataService():
                 chat_history.append(AIMessage(content=response))
 
                 return response, 0, "Hỏi thành công"
-            except RuntimeError:
+            except Exception as e:
+                print(str(e))
                 return None, -1, "Hiện tại không thể hỏi được"
         else:
             return None, -1, "Bạn chưa thể đặt câu hỏi đối với tài liệu này"
