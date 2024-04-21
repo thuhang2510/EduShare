@@ -21,6 +21,17 @@
                 <div id="infor-detail" class="px-4"
                     style="width:100%; height:690px; overflow-y:scroll; scrollbar-width: none;">
                     <h3>{{ document["document_name"] }}</h3>
+                    <p>Tài liệu này được cấp phép theo: 
+                        {% if document["license"] == "all_license" %}
+                            <a href="#">Tất cả các quyền được bảo lưu</a>
+                        {% else %}
+                            <a href="#" style="display:inline-block;">{{ document["license"] }}
+                                {% for component in document["license"]|component_license %}
+                                    <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/{{component}}.svg?ref=chooser-v1" alt="">
+                                {% endfor %}
+                            </a>
+                        {% endif %}    
+                    </p>
                     <p>
                         <span class="me-2">
                             <i class="bi bi-eye"></i> {{ document["view_count"]}}
@@ -498,6 +509,7 @@
                     show_base_alert(-1, "Hãy mua tài liệu trước để thực hiện chức năng này.");
                 }
                 else {
+                    loadDocumentToAsk();
                     document.getElementById("ai-detail").style.display = "block";
                     document.getElementById("infor-detail").style.display = "none";
 
@@ -534,6 +546,16 @@
         chatDiv.classList.add("d-flex", "bd-highlight", "mb-3", "chat", className);
         chatDiv.innerHTML = html;
         return chatDiv;
+    }
+
+    async function loadDocumentToAsk(){
+        var url = baseURL + "/ai/load_doc";
+
+        try {
+            const result = await postData(url, null, localStorage.token);
+        } catch (error) {
+            console.log(error.message);
+        }
     }
 
     async function getChatResponse(incomingChatDiv) {

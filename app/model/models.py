@@ -340,6 +340,7 @@ class Documents(db.Model):
     modified_date = db.Column(db.DateTime, onupdate=datetime.utcnow)    
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
     processing_status = db.Column(db.Integer, server_default='0')
+    license = db.Column(db.String(50), nullable=False)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
         nullable=False)
     categories = db.relationship(
@@ -396,6 +397,7 @@ class Documents(db.Model):
             'view_count': document.view_count,
             'download_count': document.download_count,
             'price': document.price,
+            'license': document.license,
             'type': document.type,
             'account_id': document.account_id,
             'image': document.image,
@@ -407,7 +409,7 @@ class Documents(db.Model):
         return data
     
     def from_dict(self, data):
-        for field in ['document_name', 'description', 'price', 'type']:
+        for field in ['document_name', 'description', 'price', 'type', 'license']:
             if field in data:
                 setattr(self, field, data[field])
 
@@ -423,7 +425,6 @@ class Documents(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
-        db.session.refresh(self)
 
     @classmethod
     def get_month_stats_document(cls, _account_id, year):

@@ -75,6 +75,9 @@ def create_app(config_class=Config):
     from app.ai import bp as ai_bp
     app.register_blueprint(ai_bp, url_prefix='/ai')
 
+    from app.commitment import bp as commit_bp
+    app.register_blueprint(commit_bp, url_prefix='/commitment')
+
     return app
 
 from app.model import models

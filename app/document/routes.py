@@ -58,6 +58,10 @@ def count_evaluate(values):
 def format_datetime(date):
     return date.strftime("%d/%m/%Y %H:%M:%S")
 
+@bp.app_template_filter()
+def component_license(license_string):
+    return [component.strip().lower() for component in license_string.split(" ")]
+
 @bp.route("/upload", methods=["GET"])
 def index():
     register = RegisterForm(meta={'csrf': False})

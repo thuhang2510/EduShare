@@ -45,7 +45,7 @@
                             <h5>Chọn nút tải lên để chọn nhiều file từ máy tính của bạn</h5>                               
                         </div>
                         </div>
-                        <button class="btn my-4 px-5 py-2 fw-bold my-1" style="background-color: rgb(2, 126, 176); color: white;"  onclick="document.getElementById('fileInput').click()">Tải lên</button>
+                        <button class="btn my-4 px-5 py-2 fw-bold my-1" style="background-color: rgb(2, 126, 176); color: white;"  onclick="clickToUpload()">Tải lên</button>
                         <input type="file" id="fileInput" style="display: none;" onchange="changeFile()" accept=".docx, .pdf" multiple>
                         <div class="flex justify-between items-center text-gray-400">
                             <span>Chấp nhận file định dạng: .docx và .pdf.</span>
@@ -55,19 +55,116 @@
                         </div>
                     </div>
                 </div>
-                <h6 class="mb-4">Bằng cách tải tài liệu lên EduShare, bạn tuyên bố rằng bạn sở hữu bản quyền đối với tài liệu hoặc được chủ sở hữu bản quyền cho phép rõ ràng để sử dụng và tải tài liệu lên. 
-                    Bên cạnh đó, Bạn cam kết rằng chính bạn sẽ chịu hoàn toàn trách nghiệm đối với tài liệu đã tải lên</h6>
+                <h6 class="mb-4">Bằng cách tải tài liệu lên EduShare, bạn tuyên bố rằng bạn sở hữu bản quyền đối với tài liệu hoặc được chủ sở hữu bản quyền cho phép rõ ràng để sử dụng và tải tài liệu lên.</h6>
                 <div id="app__files">
                 </div>
             </div>
         </div>
     </div>
 </div> 
+<div id="form-notify-commit" class="d-flex align-items-center justify-content-center"
+    style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; z-index: 999; visibility: hidden;">
+    <div class="container d-flex justify-content-center" style="position: fixed;">
+        <div class="register bg-white col-xl-6 p-4 rounded-3">
+            <div class="d-flex justify-content-end">
+                <button id="close-form-login" type="button" class="btn-close text-right"
+                    onclick="clickCloseNotifyUpload()"></button>
+            </div>
+            <h3 class="text-center mb-3">Bản cam kết tự chịu trách nghiệm khi tải tài liệu lên</h3>
+            <div class="border border-secondary rounded py-2">
+                <div id="content-commit" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="10" class="px-3" style="height:400px;overflow-y:scroll; scrollbar-width:thin;">
+                </div>
+            </div>
+            <div class="text-end">
+                <input class="btn btn-outline-warning my-3 rounded-pill" name="submit" type="button" value="Không đồng ý" onclick="clickCloseNotifyUpload()">
+                <span class="me-2"></span>
+                <input class="btn btn-primary my-3 rounded-pill" name="submit" type="button" value="Đồng ý" onclick="clickAcceptCommit()">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="form-notify-ban" class="d-flex align-items-center justify-content-center"
+    style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; z-index: 999; visibility: hidden;">
+    <div class="container d-flex justify-content-center" style="position: fixed;">
+        <div class="register bg-white col-xl-6 p-4 rounded-3">
+            <div class="d-flex justify-content-end">
+                <button id="close-form-login" type="button" class="btn-close text-right"
+                    onclick="clickCloseNotifyBan()"></button>
+            </div>
+            <h3 class="text-center mb-3">Các tài liệu cấm đăng tải trên website EduShare</h3>
+            <div class="border border-secondary rounded py-2">
+                <div id="content-ban" data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="10" class="px-3" style="height:400px;overflow-y:scroll; scrollbar-width:thin;">
+                    <h6>1. Các tài liệu bị cấm</h6> 
+                    <h6>A. Tài Liệu tuyệt mật</h6>
+                    <ul>
+                        <li>Tài Liệu chiến lược an ninh quốc gia; kế hoạch phòng thủ đất nước; kế hoạch động viên đối phó với chiến tranh; các loại vũ khí, phương tiện có ý nghĩa quyết định khả năng phòng thủ đất nước: </li>
+                        <li>Các chủ trương, chính sách về đối nội, đối ngoại của Đảng Cộng sản Việt Nam và Nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam không công bố hoặc chưa công bố.</li>
+                        <li>Những tin của nước ngoài hoặc của tổ chức quốc tế chuyển giao cho Việt Nam mà Chính phủ xác định thuộc độ Tuyệt Mật.</li>
+                        <li>Tổ chức và hoạt động tình báo, phản gián do Chính Phủ quy định.</li>
+                        <li>Mật mã quốc gia.</li>
+                        <li>Dự trữ chiến lược quốc gia; các số liệu dự toán, quyết toán ngân sách nhà nước về những lĩnh vực chưa công bố; kế hoạch phát hành tiền, khóa an toàn của từng mẫu tiền và các loại giấy tờ có giá trị như tiền; phương án, kế hoạch thu đổi tiền chưa công bố;
+                        Khu vực, địa điểm cấm; tin, Tài Liệu khác mà Chính phủ xác định thuộc độ Tuyệt mật.</li>
+                    </ul>
+                    <h6>B. Tài Liệu tối mật</h6>
+                    <ul>
+                        <li>Các cuộc đàm phán và tiếp xúc cấp cao giữa nước ta với nước ngoài hoặc các tổ chức quốc tế về chính trị, quốc phòng, an ninh, đối ngoại, kinh tế, khoa học, công nghệ và các lĩnh vực khác chưa công bố.</li>
+                        <li>Những tin của nước ngoài hoặc của các tổ chức quốc tế chuyển giao cho Việt Nam mà Chính phủ xác định thuộc độ Tối mật;</li>
+                        <li>Tổ chức hoạt động, trang bị, phương án tác chiến của các đơn vị vũ trang nhân dân, trừ tổ chức và hoạt động được quy định tại khoản 3 Điều 5 của Pháp lệnh; phương án sản xuất, vận chuyển và cất giữ vũ khí; công trình quan trọng phòng thủ biên giới, vùng trời, vùng biển, hải đảo;</li>
+                        <li>Bản đồ quân sự; tọa độ điểm hạng I, hạng II nhà nước của mạng lưới quốc gia hoàn chỉnh cùng với các ghi chú điểm kèm theo.</li>
+                        <li>Vị trí và trị số độ cao các mốc chính của các trạm khí tượng, thủy văn, hải văn; số liệu độ cao và số không tuyệt đối của các mốc hải văn;</li>
+                        <li>Số lượng tiền in, phát hành; tiền dự trữ bằng đồng Việt Nam và ngoại tệ; các số liệu về bội chi, lạm phát tiền mặt chưa công bố; phương án giá các mặt hàng chiến lược thuộc Nhà nước quản lý chưa công bố;</li>
+                        <li>Nơi lưu giữ và số lượng kim loại quý hiếm, đá quý, ngoại hối và vật quý hiếm khác của Nhà nước;</li>
+                        <li>Công trình khoa học, phát minh, sáng chế, giải pháp hữu ích, bí quyết nghề nghiệp đặc biệt quan trọng đối với quốc phòng, an ninh, kinh tế, khoa học, công nghệ mà Nhà nước chưa công bố;</li>
+                        <li>Kế hoạch xuất khẩu, nhập khẩu các mặt hàng đặc biệt giữ vị trí trọng yếu trong việc phát triển và bảo vệ đất nước không công bố hoặc chưa công bố;</li>
+                    </ul>
+                    <h6>C. Tài Liệu liên quan đến hàng hóa, dịch vụ cấm quảng cáo</h6>
+                    <ul>
+                        <li>Hàng hóa, dịch vụ bị cấm kinh doanh;</li>
+                        <li>Rượu có nồng độ cồn từ 15 độ trở lên;</li>
+                        <li>Sản phẩm sữa thay thế sữa mẹ dùng cho trẻ dưới 24 tháng tuổi, sản phẩm dinh dưỡng bổ sung dùng cho trẻ dưới 06 tháng tuổi; bình bú và vú ngậm nhân tạo;</li>
+                        <li>Thuốc kê đơn; thuốc không kê đơn nhưng được cơ quan nhà nước có thẩm quyền khuyến cáo hạn chế sử dụng hoặc sử dụng có sự giám sát của thầy thuốc;</li>
+                        <li>Các loại sản phẩm, hàng hóa có tính chất kích dục;</li>
+                        <li>Các sản phẩm, hàng hóa, dịch vụ cấm quảng cáo khác do Chính phủ quy định khi có phát sinh trên thực tế.</li>
+                    </ul>    
+                    <h6>2. Quy định về Tải tài liệu lên</h6> 
+                    <h6>A. Danh mục</h6>
+                    <ul>
+                        <li>Tối thiểu phải chọn danh mục cấp 2</li>
+                    </ul>
+                    <h6>B. Mô tả</h6>
+                    <ul>
+                        <li>Mô tả ít nhất phải 200 ký tự</li>
+                    </ul>
+                    <h6>C. Giấy phép tài liệu</h6>
+                    <ul>
+                        <li>Lựa chọn giấy phép phù hợp, đúng với tài liệu đăng tải</li>
+                    </ul>
+                    <h6>4. Các biện pháp quản lý đối với các thông tin/ Tài liệu vi phạm bản quyền</h6>
+                    <dl>
+                        <dd>Trong trường hợp, Người Dùng/Thành Viên có phản ánh hoặc khiếu nại về Tài Liệu vi phạm bản quyền được đăng tải trên EduShare. 
+                            Nếu phản ánh hoặc khiếu nại được gửi kèm cùng các tài liệu/giấy tờ chứng minh phản ánh hoặc khiếu nại này là có căn cứ và chính xác. 
+                            Ban Quản trị EduShare tiến hành kiểm tra, rà soát các thông tin liên quan đến sự việc và xử lý như sau:</dd>
+                        <dd>- Vi phạm lần 1: xóa Tài Liệu vi phạm bản quyền và gửi mail cảnh cáo tới Thành Viên đăng tải Tài Liệu đó trong vòng 8 tiếng kể từ khi nhận được phản ánh/khiếu nại có căn cứ.</dd>
+                        <dd>- Vi phạm lần 2: xóa Tài Liệu vi phạm bản quyền và gửi mail cảnh cáo tới Thành Viên đăng tải Tài Liệu đó trong vòng 8 tiếng kể từ khi nhận được phản ánh/khiếu nại có căn cứ.</dd>
+                        <dd>- Vi phạm lần 3: xóa Tài Liệu vi phạm và xóa tài khoản Thành Viên.</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="text-end">
+                <input class="btn btn-outline-warning my-3 rounded-pill" name="submit" type="button" value="Không đồng ý" onclick="clickCloseNotifyBan()">
+                <span class="me-2"></span>
+                <input class="btn btn-primary my-3 rounded-pill" name="submit" type="button" value="Đồng ý" onclick="clickAcceptBan()">
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
 <script>
+    let acceptCommit = false;
+    let fullname = "";
     window.onload = function()
     {
         document.getElementById("upload").style.visibility = "hidden"
@@ -97,8 +194,9 @@
                 user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 openLogin();
-                document.getElementById("all-upload").style.visibility = "visible"
-                userCurrentId = result.data["id"]
+                document.getElementById("all-upload").style.visibility = "visible";
+                userCurrentId = result.data["id"];
+                fullname = result.data["fullname"];
             }
             else{
                 show_base_alert(-1, result.message);
@@ -108,6 +206,19 @@
         } catch (error) {
             console.log(error.message);
             document.getElementById("all-upload").style.visibility = "hidden"
+        }
+    }
+
+    function clickToUpload(){
+        if(acceptCommit == false){
+            var html_content_commit = content_commit();
+            var form_notify_commit = document.getElementById("form-notify-commit");
+            form_notify_commit.style.visibility = "visible";
+            document.getElementById("content-commit").innerHTML = html_content_commit;
+        }
+        else{
+            var form_notify_ban = document.getElementById("form-notify-ban");
+            form_notify_ban.style.visibility = "visible";
         }
     }
 
@@ -219,10 +330,41 @@
                                         </div>
                                     </div>
                                     <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Giấy phép <strong style="color: red">*</strong></h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            <div class="form-check text-start">
+                                                <input class="form-check-input" type="radio" id="all-license-${fileId}" onclick="clickAllLicense('${fileId}')" checked>
+                                                <label class="form-check-label" for="all-license-${fileId}">
+                                                    Tất cả quyền được bảo lưu
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <select id="license-cc-${fileId}" class="form-select" aria-label="Default select example" onchange="changeLicense('${fileId}')">
+                                                <option value="null" selected>Lựa chọn theo giấy phép CC</option>
+                                                <option value="CC BY">CC BY</option>
+                                                <option value="CC BY-sa">CC BY-SA</option>
+                                                <option value="CC BY-ND">CC BY-ND</option>
+                                                <option value="CC BY-NC">CC BY-NC</option>
+                                                <option value="CC BY-NC-SA">CC BY-NC-SA</option>
+                                                <option value="CC BY-NC-ND">CC BY-NC-ND</option>
+                                            </select>
+                                            <div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-3">
+                                        </div>
+                                        <div class="col-sm-9 text-secondary text-start">
+                                            <a href="#"> Xem thêm: Giấy phép tài liệu </a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="container d-flex align-items-center justify-content-center">
                                             <div class="d-flex">
-                                                <input id="delete-${fileId}" type="button" class="btn btn-primary px-4 btn-secondary me-2" value="Delete" onclick="deleteDocument('${getOnlyFileName(fileName)}', '${fileId}')">
-                                                <input id="save-${fileId}" type="button" class="btn btn-primary px-4" value="Save Changes" onclick="saveDocument('${fileId}', '${getOnlyFileName(fileName)}', '${type}')">
+                                                <input id="delete-${fileId}" type="button" class="btn btn-primary px-4 btn-secondary me-2" value="Xóa" onclick="deleteDocument('${getOnlyFileName(fileName)}', '${fileId}')">
+                                                <input id="save-${fileId}" type="button" class="btn btn-primary px-4" value="Lưu tài liệu" onclick="saveDocument('${fileId}', '${getOnlyFileName(fileName)}', '${type}')">
                                                 <div id="loading-${fileId}" class="loading"></div>
                                             <div>
                                         </div>
@@ -320,6 +462,17 @@
         btnDelete.style.display = "none";
     }
 
+    function getLicense(fileId){
+        const radio = document.getElementById(`all-license-${fileId}`);
+        const license_cc = document.getElementById(`license-cc-${fileId}`);
+
+        if (radio.checked) {
+            return "all_license";
+        }
+        
+        return license_cc.value;
+    }
+
     async function saveDocument(fileId, fileOldName, type){
         showLoading(fileId);
 
@@ -343,6 +496,7 @@
         formData.append('categories', JSON.stringify(arr));
         formData.append('type', type);
         formData.append('image', imageFile);
+        formData.append('license', getLicense(fileId));
 
         thu = fields_upload_file(fileId)
 
@@ -512,6 +666,86 @@
                 console.log(error.message);
             }
         }
+    }
+
+    function clickCloseNotifyUpload(){
+        var form_notify_commit = document.getElementById("form-notify-commit");
+        form_notify_commit.style.visibility = "hidden";
+    }
+
+    async function clickAcceptCommit(){
+        var form_notify_commit = document.getElementById("form-notify-commit");
+        form_notify_commit.style.visibility = "hidden";
+
+        var url = baseURL + "/commitment/pdf"
+
+        try {
+            const result = await postData(url, null, localStorage.token);
+            if(result.code === 0){
+                var form_notify_commit = document.getElementById("form-notify-ban");
+                form_notify_commit.style.visibility = "visible";
+
+                acceptCommit = true;
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    function getCurrentDate(){
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1;
+        var yyyy = today.getFullYear();
+        
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+        today = dd + '/' + mm + '/' + yyyy;
+        return today;
+    }
+
+    function content_commit(){
+        var html = `<p><strong>Tôi, ${fullname}, xác nhận rằng tôi đã đọc và hiểu các điều khoản và điều kiện của trang web này, bao gồm cả chính sách bản quyền.</strong></p>
+                    <p><strong>Tôi cam kết rằng tôi sẽ chỉ tải lên trang web này những tài liệu mà tôi có quyền tải lên.</strong>Tôi hiểu rằng tôi có thể bị truy tố về mặt pháp lý nếu tôi vi phạm luật bản quyền.</p>
+                    <p><strong>Tôi cũng cam kết rằng tôi sẽ không tải lên trang web này bất kỳ tài liệu nào có nội dung bất hợp pháp, khiêu dâm, thù hận hoặc mang tính xúc phạm.</strong> Tôi hiểu rằng tôi có thể bị cấm truy cập vào trang web này nếu tôi vi phạm các điều khoản và điều kiện này.</p>
+                    <p><strong>Tôi tự chịu trách nhiệm về tất cả các tài liệu mà tôi tải lên trang web này.</strong> Tôi hiểu rằng trang web này không chịu trách nhiệm về bất kỳ thiệt hại nào có thể phát sinh do việc tải lên tài liệu của tôi.</p>
+                    <p><strong>Tôi đồng ý bồi thường cho trang web này cho bất kỳ thiệt hại nào phát sinh do việc tải lên tài liệu của tôi.</strong></p>
+                    <p><strong>Bằng cách nhấp vào nút "Đồng ý", tôi xác nhận rằng tôi đã đọc, hiểu và chấp nhận bản cam kết này.</strong></p>
+                    <p><strong>Ngày: ${getCurrentDate()}</strong></p>
+                    <p><strong>Chữ ký:</strong></p>
+                    <p><strong>${fullname}</strong></p>`
+
+        return html;
+    }
+
+    function clickCloseNotifyBan(){
+        var form_notify_commit = document.getElementById("form-notify-ban");
+        form_notify_commit.style.visibility = "hidden";
+    }
+
+    async function clickAcceptBan(){
+        var form_notify_commit = document.getElementById("form-notify-ban");
+        form_notify_commit.style.visibility = "hidden";
+        document.getElementById('fileInput').click();
+    }
+
+    function clickAllLicense(fileId){
+        const radio = document.getElementById(`all-license-${fileId}`);
+        const license_cc = document.getElementById(`license-cc-${fileId}`);
+
+        if (radio.checked) {
+            license_cc.value = "null";
+        }
+    }
+
+    function changeLicense(fileId){
+        const radio = document.getElementById(`all-license-${fileId}`);
+        
+        radio.checked = false;        
     }
 </script>
 {% endblock %}

@@ -1,5 +1,4 @@
 import os
-from celery import shared_task
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
