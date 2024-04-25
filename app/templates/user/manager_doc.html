@@ -498,14 +498,14 @@
                 var divDeXuat = document.getElementById("all-document")
                 divDeXuat.innerHTML = appendDocument(result.data["id"], result.data["document_name"], 
                                     result.data["price"], result.data["image"], result.data["categories"], 
-                                    result.data["description"])
+                                    result.data["description"], result.data["license"])
             }
         } catch (error) {
             console.log(error.message);
         }
     }
 
-    function appendDocument(document_id, document_name, price, image, categories, description) {
+    function appendDocument(document_id, document_name, price, image, categories, description, license) {
         var html = `
             <div class="app__file__content">
                 <div>
@@ -515,7 +515,7 @@
                                 <div class="col-sm-3">
                                     <div>
                                         <div class="mb-4 d-flex justify-content-center">`
-                                        if (document["image"] != null && document["image"] !== "/static/images/")                                
+                                        if (image != null && image !== "/static/images/")                                
                                             html+=`<img id="selectedImage" src="${image}" alt="example placeholder" style="width: 180px; height: 180px" />`
                                         else
                                             html+=`<img id="selectedImage" src="/static/images/default_book.png" alt="example placeholder" style="width: 180px; height: 180px" />`
@@ -565,20 +565,94 @@
                                         <div class="col-sm-3">
                                             <h6 class="mb-0">Giá bán <strong style="color: red">*</strong></h6>
                                         </div>
-                                        <div class="col-sm-9 text-secondary">
+                                        <div class="col-sm-9">
                                             <select id="giaban" class="form-select" aria-label="Default select example" onchange="changeMoney()">
                                                 <option>Chọn giá bán</option>
-                                                <option value="free">Miễn phí</option>
-                                                <option value="20000">20.000 đ</option>
-                                                <option value="50000">50.000 đ</option>
-                                                <option value="100000">100.000 đ</option>
-                                                <option value="150000">150.000 đ</option>
-                                                <option value="200000">200.000 đ</option>
-                                                <option selected value="${price}">${price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</option>
-                                                <option value="option">Tự ra giá</option>
+                                                <option value="free"`
+                                                if (price == 0)    
+                                                    html += `selected`
+                                                html += `>Miễn phí</option>`
+                                                if (price != 0)    
+                                                    html += `<option selected value="${price}">${price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</option>`
+                                                html += `<option value="option">Tự ra giá</option>
                                             </select>
                                             <input id="option-money" type="text" class="form-control mt-2" value="" style="display: none">
                                             <div id="giaban-error" class="invalid-feedback mb-1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Giấy phép <strong style="color: red">*</strong></h6>
+                                        </div>
+                                        <div class="col-sm-9">`
+                                if (license == "all_license")    
+                                    html += `<div class="text-start">
+                                                <input type="radio" id="all-license" onclick="clickAllLicense()" checked>
+                                                <label class="form-check-label" for="all-license">
+                                                    Tất cả quyền được bảo lưu
+                                                </label>
+                                            </div>
+                                            <div class="text-start">
+                                                <select id="license-cc" class="form-select update-license" aria-label="Default select example" onchange="changeLicense()">
+                                                    <option value="null" selected>Lựa chọn theo giấy phép CC</option>
+                                                    <option value="CC BY">CC BY</option>
+                                                    <option value="CC BY-sa">CC BY-SA</option>
+                                                    <option value="CC BY-ND">CC BY-ND</option>
+                                                    <option value="CC BY-NC">CC BY-NC</option>
+                                                    <option value="CC BY-NC-SA">CC BY-NC-SA</option>
+                                                    <option value="CC BY-NC-ND">CC BY-NC-ND</option>
+                                                </select>
+                                            </div>`
+                                else{
+                                    html += `<div class="text-start">
+                                                <input type="radio" id="all-license" onclick="clickAllLicense()">
+                                                <label class="form-check-label" for="all-license">
+                                                    Tất cả quyền được bảo lưu
+                                                </label>
+                                            </div>
+                                            <div class="text-start">
+                                                <select id="license-cc" class="form-select update-license" aria-label="Default select example" onchange="changeLicense()">
+                                                    <option value="null">Lựa chọn theo giấy phép CC</option>
+                                                    <option value="CC BY" `
+                                                        if (license == "CC BY")
+                                                            html += `selected>`
+                                                        else
+                                                            html += `>`
+                                                        html += `CC BY</option>
+                                                    <option value="CC BY-SA" `
+                                                        if (license == "CC BY-SA")
+                                                            html += `selected>`
+                                                        else
+                                                            html += `>`
+                                                        html += `CC BY-SA</option>
+                                                    <option value="CC BY-ND" `
+                                                        if (license == "CC BY-ND")
+                                                            html += `selected>`
+                                                        else
+                                                            html += `>`
+                                                        html += `CC BY-ND</option>
+                                                    <option value="CC BY-NC" `
+                                                        if (license == "CC BY-NC")
+                                                            html += `selected>`
+                                                        else
+                                                            html += `>`
+                                                        html += `CC BY-NC</option>
+                                                    <option value="CC BY-NC-SA" `
+                                                        if (license == "CC BY-NC-SA")
+                                                            html += `selected>`
+                                                        else
+                                                            html += `>`
+                                                        html += `CC BY-NC-SA</option>
+                                                    <option value="CC BY-NC-ND" `
+                                                        if (license == "CC BY-NC-ND")
+                                                            html += `selected>`
+                                                        else
+                                                            html += `>`
+                                                        html += `CC BY-NC-ND</option>
+                                                </select>
+                                            </div>`
+                                }                                        
+                                html += `   <div id="update-license-error" class="invalid-feedback mb-1"></div>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -697,6 +771,10 @@
             categories: {
                 input: document.getElementById(`danhmuc`),
                 error: document.getElementById(`danhmuc-error`),
+            },
+            license: {
+                input: document.getElementsByClassName("update-license"),
+                error: document.getElementById(`update-license-error`),
             }
         };
     };
@@ -716,6 +794,7 @@
         formData.append('document_id', document_id);
         formData.append('description', document.getElementById(`mota`).value);
         formData.append('price', price);
+        formData.append('license', getLicense(document_id));
 
         var arr = {'categories': [document.getElementById(`danhmuc`).value, document.getElementById(`danhmuc2`).value]};
         formData.append('categories', JSON.stringify(arr));
@@ -728,8 +807,16 @@
             if (result.code === -2){
                 const errors = result.data;
                 Object.keys(errors).forEach((key) => {
-                    fields_update()[key]['input'].classList.add('is-invalid');
-                    fields_update()[key]['error'].innerHTML = errors[key][0];
+                    if (key != "license"){
+                        fields_update()[key]['input'].classList.add('is-invalid');
+                        fields_update()[key]['error'].innerHTML = errors[key][0];
+                    }
+                    else {
+                        fields_update()[key]['input'].forEach((input) => {
+                            input.classList.add('is-invalid');
+                        });
+                        fields_update()[key]['error'].innerHTML = errors[key][0];
+                    }
                 });
             }
             else if (result.code === -1){
@@ -815,6 +902,32 @@
 
     function clickReturn(){
         window.location.href = "/user/quan-ly-tai-lieu";
+    }
+
+    function clickAllLicense(){
+        const radio = document.getElementById('all-license');
+        const license_cc = document.getElementById('license-cc');
+
+        if (radio.checked) {
+            license_cc.value = "null";
+        }
+    }
+
+    function changeLicense(fileId){
+        const radio = document.getElementById(`all-license`);
+        
+        radio.checked = false;        
+    }
+
+    function getLicense(fileId){
+        const radio = document.getElementById(`all-license`);
+        const license_cc = document.getElementById(`license-cc`);
+
+        if (radio.checked) {
+            return "all_license";
+        }
+        
+        return license_cc.value;
     }
 
 </script>

@@ -492,14 +492,14 @@ class Documents(db.Model):
         return query.all()
     
     @classmethod
-    def find_by_id_with_account(cls, _id): #thêm argument processing_status
+    def find_by_id_with_account(cls, _id):
         return cls.query.join(Account).filter(cls.id==_id, cls.status==True).add_column(Account.fullname).first()
     
     @classmethod
     def find_by_id_tuple_with_categories(cls, _id):
         return cls.query.\
             join(cls.categories, isouter=True).\
-            with_entities(cls.id, cls.document_name, cls.price, cls.image, cls.description).\
+            with_entities(cls.id, cls.document_name, cls.price, cls.image, cls.description, cls.license).\
             filter(cls.id==_id, cls.status==True).\
             add_entity(Categories).\
             all()

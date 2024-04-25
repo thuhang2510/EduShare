@@ -167,6 +167,7 @@ class DocumentsDataService():
                                 "price": item[2], 
                                 "image": item[3],
                                 "description": item[4],
+                                "license": item[5],
                                 "categories": [categories.to_dict()]}
                 else:
                     results["categories"].append(categories.to_dict())
@@ -193,6 +194,7 @@ class DocumentsDataService():
             documents = Documents.find_by_id_and_status(document_id)
             documents.description = data['description']
             documents.price = data['price']
+            documents.license = data['license']
             
             if(direction_file != '/static/images/'):
                 documents.image = direction_file

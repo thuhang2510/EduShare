@@ -19,10 +19,18 @@ class UploadDocumentForm(FlaskForm):
         if document != None:
             raise ValidationError("Đã có tài liệu có tên " + document_name.data)
         
+    def validate_license(self, license):
+        if license.data is None or license.data == "null":
+            raise ValidationError("Giấy phép của tài liệu không được bỏ trống")
+        
 class UpdateDocumentForm(FlaskForm):
     document_id = IntegerField(validators=[DataRequired()])
-    description = StringField(validators=[DataRequired(), Length(min=200)])
-    price = StringField(validators=[DataRequired()])
-    categories = FieldList(StringField(validators=[DataRequired()]))
+    description = StringField(validators=[DataRequired("Mô tả không được để trống"), Length(min=200)])
+    price = StringField(validators=[DataRequired("Giá bán tài liệu không được để trống")])
+    categories = FieldList(StringField(validators=[DataRequired("Danh mục không được để trống")]))
     image = FileField()
-    license = StringField(validators=[DataRequired()])
+    license = StringField(validators=[DataRequired("Giấy phép của tài liệu không được để trống")])
+
+    def validate_license(self, license):
+        if license.data is None or license.data == "null":
+            raise ValidationError("Giấy phép của tài liệu không được bỏ trống")
