@@ -168,7 +168,6 @@
     window.onload = function()
     {
         document.getElementById("upload").style.visibility = "hidden"
-        document.getElementById("recharge").style.visibility = "hidden"
         document.getElementById("search").style.visibility = "hidden"
 
         if(localStorage.token){
@@ -189,10 +188,6 @@
             const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
-                user.email.innerHTML = result.data["email"];
-                user.ls_fullname.innerHTML = result.data["fullname"];
-                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 openLogin();
                 document.getElementById("all-upload").style.visibility = "visible";
                 userCurrentId = result.data["id"];
@@ -310,38 +305,13 @@
                                             <div id="mota-${fileId}-error" class="invalid-feedback mb-1"></div>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <div class="col-sm-3">
-                                            <h6 class="mb-0">Giá bán <strong style="color: red">*</strong></h6>
-                                        </div>
-                                        <div class="col-sm-9 text-secondary">
-                                            <select id="giaban-${fileId}" class="form-select" aria-label="Default select example" onchange="changeMoney('${fileId}')">
-                                                <option selected>Chọn giá bán</option>
-                                                <option value="free">Miễn phí</option>
-                                                <option value="20000">20.000VNĐ</option>
-                                                <option value="50000">50.000VNĐ</option>
-                                                <option value="100000">100.000VNĐ</option>
-                                                <option value="150000">150.000VNĐ</option>
-                                                <option value="200000">200.000VNĐ</option>
-                                                <option value="option">Tự ra giá</option>
-                                            </select>
-                                            <input id="option-money-${fileId}" type="text" class="form-control mt-2" value="" style="display: none">
-                                            <div id="giaban-${fileId}-error" class="invalid-feedback mb-1"></div>
-                                        </div>
-                                    </div>
                                     <div class="row">
                                         <div class="col-sm-3">
                                             <h6 class="mb-0">Giấy phép <strong style="color: red">*</strong></h6>
                                         </div>
                                         <div class="col-sm-9 text-secondary">
-                                            <div class="form-check text-start">
-                                                <input class="form-check-input" type="radio" id="all-license-${fileId}" onclick="clickAllLicense('${fileId}')" checked>
-                                                <label class="form-check-label" for="all-license-${fileId}">
-                                                    Tất cả quyền được bảo lưu
-                                                </label>
-                                            </div>
                                             <div>
-                                                <select id="license-cc-${fileId}" class="form-select" aria-label="Default select example" onchange="changeLicense('${fileId}')">
+                                                <select id="license-cc-${fileId}" class="form-select" aria-label="Default select example">
                                                 <option value="null" selected>Lựa chọn theo giấy phép CC</option>
                                                 <option value="CC BY">CC BY</option>
                                                 <option value="CC BY-sa">CC BY-SA</option>
@@ -415,10 +385,6 @@
                 input: document.getElementById(`mota-${fileId}`),
                 error: document.getElementById(`mota-${fileId}-error`),
             },
-            price: {
-                input: document.getElementById(`giaban-${fileId}`),
-                error: document.getElementById(`giaban-${fileId}-error`),
-            },
             categories: {
                 input: document.getElementById(`danhmuc-${fileId}`),
                 error: document.getElementById(`danhmuc-${fileId}-error`),
@@ -462,27 +428,10 @@
         btnDelete.style.display = "none";
     }
 
-    function getLicense(fileId){
-        const radio = document.getElementById(`all-license-${fileId}`);
-        const license_cc = document.getElementById(`license-cc-${fileId}`);
-
-        if (radio.checked) {
-            return "all_license";
-        }
-        
-        return license_cc.value;
-    }
-
     async function saveDocument(fileId, fileOldName, type){
         showLoading(fileId);
 
         var url = baseURL + '/document/upload-s3'
-
-        var price = document.getElementById(`giaban-${fileId}`).value;
-        var ipnOptionSelect = document.getElementById(`option-money-${fileId}`);
-        if(price === "option"){
-            price = ipnOptionSelect.value; 
-        }
 
         var customFile1 = document.getElementById(`customFile-${fileId}`);
 
@@ -490,13 +439,12 @@
         formData.append('old_name', fileOldName + "." + type);
         formData.append('document_name', document.getElementById(`name-doc-${fileId}`).value + "." + type);
         formData.append('description', document.getElementById(`mota-${fileId}`).value);
-        formData.append('price', price);
 
         var arr = {'categories': [document.getElementById(`danhmuc-${fileId}`).value, document.getElementById(`danhmuc2-${fileId}`).value]};
         formData.append('categories', JSON.stringify(arr));
         formData.append('type', type);
         formData.append('image', imageFile);
-        formData.append('license', getLicense(fileId));
+        formData.append('license', document.getElementById(`license-cc-${fileId}`).value);
 
         thu = fields_upload_file(fileId)
 
@@ -542,17 +490,6 @@
         parentId = danhmuc.options[danhmuc.selectedIndex].dataset.optionId;
         getDanhMuc(`danhmuc2-${fileId}`, parentId)
         document.getElementById(`danhmuc2-${fileId}`).style.display = 'block'
-    }
-
-    function changeMoney(fileId){
-        var value = document.getElementById(`giaban-${fileId}`).value;
-        var ipnOptionSelect = document.getElementById(`option-money-${fileId}`)
-        if(value === "option"){
-            ipnOptionSelect.style.display = 'block';
-        }
-        else{
-            ipnOptionSelect.style.display = 'none';
-        }
     }
 
     function addOptions(categories, danhMucId){
@@ -731,21 +668,6 @@
         var form_notify_commit = document.getElementById("form-notify-ban");
         form_notify_commit.style.visibility = "hidden";
         document.getElementById('fileInput').click();
-    }
-
-    function clickAllLicense(fileId){
-        const radio = document.getElementById(`all-license-${fileId}`);
-        const license_cc = document.getElementById(`license-cc-${fileId}`);
-
-        if (radio.checked) {
-            license_cc.value = "null";
-        }
-    }
-
-    function changeLicense(fileId){
-        const radio = document.getElementById(`all-license-${fileId}`);
-        
-        radio.checked = false;        
     }
 </script>
 {% endblock %}

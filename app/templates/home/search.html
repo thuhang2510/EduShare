@@ -70,25 +70,6 @@
                     </ul>
                 </div>
             </div> 
-            <div class="p-2 bd-highlight">
-                <div class="dropdown">
-                    <button class="btn dropdown-toggle" type="button" id="dropdownSell" data-sell='{{ is_sell }}' data-bs-toggle="dropdown" aria-expanded="false">
-                        Giá bán: 
-                        {% if is_sell == 0 %}
-                            Tất cả
-                        {% elif is_sell == 1 %}
-                            Miễn phí
-                        {% elif is_sell == 2 %}
-                            Mất phí
-                        {% endif %}
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownSell">
-                        <li><a class="dropdown-item" onclick="clickSell(0)">Tất cả</a></li>
-                        <li><a class="dropdown-item" onclick="clickSell(1)">Miễn phí</a></li>
-                        <li><a class="dropdown-item" onclick="clickSell(2)">Mất phí</a></li>
-                    </ul>
-                </div>
-            </div> 
         </div> 
         <p class="text-right mt-3">
             {{ documents.first }} - {{ documents.last }} trong {{documents.total}} kết quả
@@ -162,11 +143,6 @@
             const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
-                user.email.innerHTML = result.data["email"];
-                user.ls_fullname.innerHTML = result.data["fullname"];
-                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                base_img.innerHTML = result.data["fullname"][0];
                 openLogin();
                 userCurrentId = result.data["id"]
                 getAllDocSaved();
@@ -209,9 +185,6 @@
         if (cat_id != 0)
             url += "&cat_id=" + cat_id + "&cat_name=" + cat_name;
 
-        if (is_sell != 0)
-            url += "&is_sell=" + is_sell;
-
         if (page){
             url += "&page=" + page;
         }
@@ -226,11 +199,6 @@
 
     function clickCat(cat_id, cat_name){
         url = setUrl(`{{sort}}`, `{{is_sell}}`, cat_id, cat_name);
-        window.location.replace(url);
-    }
-
-    function clickSell(sell){
-        url = setUrl(`{{sort}}`, sell, `{{cat_id}}`, `{{cat_name}}`);
         window.location.replace(url);
     }
 

@@ -9,7 +9,6 @@ class UploadDocumentForm(FlaskForm):
     document_name = StringField(validators=[DataRequired("Tên tài liệu không được để trống")])
     description = StringField(validators=[DataRequired("Mô tả không được để trống"), Length(min=200)])
     type = StringField(validators=[DataRequired()])
-    price = StringField(validators=[DataRequired("Giá bán tài liệu không được để trống")])
     categories = FieldList(StringField(validators=[DataRequired("Danh mục không được để trống")]))
     image = FileField()
     license = StringField(validators=[DataRequired("Giấy phép của tài liệu không được để trống")])
@@ -26,7 +25,6 @@ class UploadDocumentForm(FlaskForm):
 class UpdateDocumentForm(FlaskForm):
     document_id = IntegerField(validators=[DataRequired()])
     description = StringField(validators=[DataRequired("Mô tả không được để trống"), Length(min=200)])
-    price = StringField(validators=[DataRequired("Giá bán tài liệu không được để trống")])
     categories = FieldList(StringField(validators=[DataRequired("Danh mục không được để trống")]))
     image = FileField()
     license = StringField(validators=[DataRequired("Giấy phép của tài liệu không được để trống")])

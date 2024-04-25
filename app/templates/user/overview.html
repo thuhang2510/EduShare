@@ -39,9 +39,6 @@
                         <a class="list-group-item" href="/user/quan-ly-tai-lieu">
                             <i class="bi bi-files"></i>Quản lý tài liệu
                         </a>
-                        <a class="list-group-item" href="/user/quan-ly-tai-chinh">
-                            <i class="bi bi-currency-dollar"></i>Quản lý tài chính
-                        </a>
                     </nav>
                 </div>
             </div>
@@ -108,18 +105,10 @@
         var base_profile_name = document.getElementById("base-profile-name")
         var base_profile_email = document.getElementById("base-profile-email")
 
-        var base_img = document.getElementById("base-img")
-
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
-                user.email.innerHTML = result.data["email"];
-                user.ls_fullname.innerHTML = result.data["fullname"];
-                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                base_img.innerHTML = result.data["fullname"][0];
-
                 base_profile_name.innerHTML = result.data["fullname"];
                 base_profile_email.innerHTML = result.data["email"]
                 base_profile_img.innerHTML = result.data["fullname"][0];

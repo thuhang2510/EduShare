@@ -44,11 +44,6 @@
                 </ul>
                 <ul class="nav navbar-nav ms-auto w-100 justify-content-end">
                     <li class="nav-item">
-                        <button id="recharge" class="btn px-3 my-1 fw-bold me-2 border-2" type="submit"
-                            style="color: rgb(2, 126, 176); border: 2px solid rgb(2, 126, 176);"
-                            onclick="clickRecharge()">Nạp tiền</button>
-                    </li>
-                    <li class="nav-item">
                         <button id="upload" class="btn me-3 px-4 fw-bold my-1" type="submit"
                             style="background-color: rgb(2, 126, 176); color: white;" onclick="clickUpload()">Tải
                             lên</button>
@@ -66,9 +61,6 @@
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarScrollingDropdown">
                             <li><a class="dropdown-item" href="/user/thong-tin-ca-nhan">Thông tin cá nhân</a></li>
                             <li><a class="dropdown-item" href="/user/quan-ly-tai-lieu">Quản lý tài liệu</a></li>
-                            <li><a class="dropdown-item" href="/user/quan-ly-tai-chinh">Quản lý tài chính</a></li>
-                            <li><a class="dropdown-item" href="#">Số dư: <span id="base-coin" class="mb-0"
-                                        style="color: #0d6efd;"></span></a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -195,52 +187,6 @@
             </div>
         </div>
     </div>
-
-    <div id="form-recharge" class="d-flex align-items-center justify-content-center"
-        style="height:100%; width:100vw; background-color:rgba(0, 0, 0, 0.2); position:fixed; top:0px; visibility:hidden; z-index: 999;">
-        <div class="container d-flex justify-content-center" style="position: fixed;">
-            <div class="register bg-white col-xl-5 p-4 rounded-3">
-                <div class="d-flex justify-content-end">
-                    <button id="close-form-recharge" type="button" class="btn-close text-right"
-                        onclick="clickCloseRecharge()"></button>
-                </div>
-                <h3 class="mb-3">Nạp tiền vào tài khoản</h3>
-                <h5 class="mb-2" style="color: #0d6efd;">Thanh toán qua ví MoMo</h5>
-                <select id="select-amount" class="form-select" aria-label="Default select example">
-                    <option selected>Lựa chọn số tiền cần nạp</option>
-                    <option value="20000">20.000VNĐ</option>
-                    <option value="50000">50.000VNĐ</option>
-                    <option value="100000">100.000VNĐ</option>
-                    <option value="150000">150.000VNĐ</option>
-                    <option value="200000">200.000VNĐ</option>
-                </select>
-                <input class="btn btn-primary w-100 my-3 rounded-pill" id="reset-password-submit"
-                    onclick="sendFormRecharge()" name="submit" type="button" value="Nạp tiền">
-            </div>
-            <div class="register bg-white p-3 rounded-3 col-xl-3"
-                style="z-index: 1; position:absolute; top:0px; left:922px">
-                <div class="d-flex flex-row bd-highlight mb-3">
-                    <div class="rounded-circle bg-secondary align-self-center d-flex justify-content-center align-items-center"
-                        style="width: 50px; height: 50px;">
-                        <span id="base-img" class="h5 text-white">H</span>
-                    </div>
-                    <div class="d-flex flex-column bd-highlight">
-                        <div id="ls-base-fullname" class="px-2 bd-highlight">
-                            <p class="mb-0" style="font-size: .98rem;"></p>
-                        </div>
-                        <div id="ls-base-email" class="px-2 bd-highlight">
-                            <p class="mb-0" style="font-size: .90rem;"></p>
-                        </div>
-                        <div class="px-2 bd-highlight"><a href="/user/quan-ly-tai-chinh" class="text-center" style="font-size: .90rem; cursor: pointer;">Lịch sử giao
-                                dịch</a></div>
-                    </div>
-                </div>
-                <hr>
-                <p class="mb-0" style="font-size: 15px;">Tài khoản: <span id="ls-base-coin" class="mb-0"
-                        style="color: #0d6efd;"></span></p>
-            </div>
-        </div>
-    </div>
     {% include('footer.html') %}
 </div>
 
@@ -251,7 +197,7 @@
     integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
     crossorigin="anonymous"></script>
 <script>
-    const baseURL = "http://127.0.0.1:5000"
+    const baseURL = "http://54.221.26.25"
 
     window.onload = function () {
         if (localStorage.token)
@@ -461,32 +407,21 @@
     }
 
     user = {
-        lg_fullname: document.getElementById("base-login-fullname"),
-        email: document.getElementById("ls-base-email"),
-        ls_fullname: document.getElementById("ls-base-fullname"),
-        coin: document.getElementById("ls-base-coin"),
-        base_coin: document.getElementById("base-coin")
+        lg_fullname: document.getElementById("base-login-fullname")
     }
 
     var userCurrentId = null;
 
     async function getUser() {
         url = baseURL + "/api/v1/user-token"
-        var base_img = document.getElementById("base-img")
 
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0) {
                 user.lg_fullname.innerHTML = result.data["fullname"];
-                user.email.innerHTML = result.data["email"];
-                user.ls_fullname.innerHTML = result.data["fullname"];
-                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                base_img.innerHTML = result.data["fullname"][0];
                 openLogin();
                 userCurrentId = result.data["id"]
 
-                updateCountDownload(result);
                 updateCountAsk(result);
             }
             else if (result.code == -4) {
@@ -502,33 +437,6 @@
             console.log(error.message);
             closeLogin();
         }
-    }
-
-    async function updateCountDownloadAPI(number_download, week_reset) {
-        data = {
-            "number_download": number_download,
-            "week_reset": week_reset
-        }
-
-        try {
-            const result = await postData("/user/upload-count-download", data, localStorage.token);
-            if (result.code == 0) {
-                user.lg_fullname.dataset.countdownload = number_download;
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
-    function updateCountDownload(result) {
-        var currentDate = new Date();
-        var datetime_week_reset = new Date(result.data["datetime_week_reset"])
-        datetime_week_reset = Math.abs(currentDate.getTime() - datetime_week_reset.getTime()) / (1000 * 60 * 60 * 24);
-        if (datetime_week_reset > 7) {
-            updateCountDownloadAPI(0, true)
-        }
-        else
-            user.lg_fullname.dataset.countdownload = result.data["number_download"]
     }
 
     async function updateCountAskAPI(number_ask, day_reset) {
@@ -605,49 +513,6 @@
                 show_base_alert(0, "Mật khẩu đã gửi tới mail của bạn. Chuyển sang trang đăng nhập");
                 turnToLogin();
                 resetValueInputOfFormResetPw();
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
-    async function clickRecharge() {
-        url = baseURL + "/api/v1/user-token"
-
-        try {
-            const result = await getData(url, localStorage.token);
-            if (result.code === 0) {
-                document.getElementById("form-recharge").style.visibility = "visible"
-            }
-            else {
-                show_base_alert(-1, "Hãy đăng nhập để thực hiện nạp tiền");
-                clickLogin();
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
-    function clickCloseRecharge() {
-        document.getElementById("form-recharge").style.visibility = "hidden"
-    }
-
-    async function sendFormRecharge() {
-        var url = baseURL + '/momo/callMoMo'
-
-        data = {
-            'amount': document.getElementById("select-amount").value,
-            'redirectUrl': window.location.href,
-            'token': localStorage.token
-        }
-
-        try {
-            const result = await postData(url, data, localStorage.token);
-            if (result.code === -1) {
-                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");
-            }
-            else {
-                window.location.replace(result.data);
             }
         } catch (error) {
             console.log(error.message);

@@ -51,9 +51,6 @@ def create_app(config_class=Config):
     from app.admin import bp as admin_bp
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
-    from app.momo import bp as momo_bp
-    app.register_blueprint(momo_bp, url_prefix='/momo')
-
     from app.document import bp as document_bp
     app.register_blueprint(document_bp, url_prefix='/document')
 
@@ -65,9 +62,6 @@ def create_app(config_class=Config):
 
     from app.evaluate import bp as evaluate_bp
     app.register_blueprint(evaluate_bp, url_prefix='/document/<int:document_id>/evaluate')
-
-    from app.purchase import bp as purchase_bp
-    app.register_blueprint(purchase_bp, url_prefix='/document/purchase')
 
     from app.search import bp as search_bp
     app.register_blueprint(search_bp, url_prefix='')

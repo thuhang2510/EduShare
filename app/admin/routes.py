@@ -7,7 +7,7 @@ from markupsafe import Markup
 from app import db, admin
 from app.admin.email import send_email_field, send_email_delete_doc
 from app.admin.forms import CreateCategoryForm, EditCategoryForm, EditDocumentForm
-from app.model.models import Account, Permission, Categories, Documents, Transaction
+from app.model.models import Account, Permission, Categories, Documents
 from app.admin import bp
 from app.auth.services import UserDataService
 
@@ -16,17 +16,16 @@ class AccountView(ModelView):
     can_create = False
     can_delete = False
     column_hide_backrefs = False
-    column_list = ('id', 'email', 'fullname', 'number', 'permission', 'coin', 
-                   'number_download', 'number_ask', 'violation_count', 'status')
+    column_list = ('id', 'email', 'fullname', 'number', 'permission', 'number_ask', 'violation_count', 'premium', 'status')
     column_searchable_list = ('email', 'fullname', 'number')
     page_size = 10
     column_labels = dict(number='Số điện thoại', fullname='Họ và tên', permission='Quyền truy cập', status='Trạng thái', 
-                         coin='Số tiền', number_download='SL tải', number_ask='SL hỏi', violation_count='SL vi phạm',
-                         address='Địa chỉ', datetime_day_reset='Ngày bắt đầu', datetime_week_reset='Tuần bắt đầu')
-    form_excluded_columns = ('password_hash', 'transaction', "evaluate", "purchase")
-    column_details_exclude_list = ('password_hash', "evaluate", "purchase")
-    column_details_list = ('id', 'email', 'fullname', 'number', 'permission', 'status', 'coin', 'address', 
-                   'number_download', 'number_ask', 'datetime_week_reset', 'datetime_day_reset', 'violation_count')
+                         number_ask='SL hỏi', violation_count='SL vi phạm', premium="Số ngày Vip",
+                         address='Địa chỉ', datetime_day_reset='Ngày bắt đầu', premium_start="Ngày bắt đầu gia hạn Vip")
+    form_excluded_columns = ('password_hash', 'transaction', "evaluate", "document")
+    column_details_exclude_list = ('password_hash', "evaluate", "document")
+    column_details_list = ('id', 'email', 'fullname', 'number', 'permission', 'status', 'address', 
+                   'number_ask', 'datetime_day_reset', 'violation_count', 'premium', 'premium_start')
     column_editable_list = ('fullname', 'permission', 'status')
     form_widget_args = {
         'email': {
@@ -84,7 +83,7 @@ class DocumentView(ModelView):
                          price='Giá bán', download_count='SL tải', view_count='SL xem', image='Ảnh',
                          creation_date='Ngày tạo', modified_date='Ngày cập nhật', status='Trạng thái', account='Tên tài khoản', processing_status='Xử lý')
     form_excluded_columns = ("price", "download_count", "view_count", "image", 
-                             "creation_date", "modified_date", "categories", "evaluate", "purchase", "account")
+                             "creation_date", "modified_date", "categories", "evaluate", "account")
     form_widget_args = {
         'document_name': {
             'readonly': True
@@ -269,26 +268,6 @@ class StatsView(BaseView):
     def index(self):
         return self.render('/admin/stats/index.html')
     
-    @expose("/stats-revenue")
-    def get_stats_revenue(self):
-        year = request.args.get('year', datetime.now().year, type=int)
-        revenue, code, msg = self._get_month_stats(year)
-
-        return jsonify({"message": msg, "code": code, "data": revenue})
-
-    def _get_month_stats(self, year):  
-        try:
-            transactions = Transaction.get_month_stats(year)
-            keys = ("month", "sum")
-            results = []
-            
-            for transaction in transactions:
-                results.append(dict(zip(keys, transaction)))
-            
-            return results, 0, "Get stats success"
-        except Exception as e:
-            return None, -1, "Get stats fail " + str(e)
-        
     @expose("/stats-upload-document")
     def get_stats_upload_document(self):
         year = request.args.get('year', datetime.now().year, type=int)
@@ -331,50 +310,10 @@ class StatsView(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
     
-class TransactionView(ModelView):
-    can_create = False
-    can_edit = False
-    can_delete = False
-    can_view_details = True
-    column_display_pk = True
-    column_filters = ('date', 'type', 'id', 'result')
-    column_labels = dict(information='Thông tin', type='Loại', amount='Số tiền',
-                         wallet_balance='Số dư tài khoản', result='Kết quả', account='Tài khoản',
-                         date='Ngày giao dịch', status='Trạng thái')
-    list_template = "/admin/list.html"
-    details_template = "/admin/detail.html"
-
-    def _format_date(view, context, model, name):
-        if not model.date:
-            return ''
-
-        return Markup(
-            model.date.strftime('%d-%m-%Y %H:%M:%S')
-        )
-    
-    def _format_result(view, context, model, name):
-        if model.result == 0:
-            result_show = "Thành công"
-        else:
-            result_show = "Thất bại"
-
-        return Markup(
-            result_show
-        )
-
-    column_formatters = {
-        'date': _format_date,
-        'result': _format_result
-    } 
-
-    def is_accessible(self):
-        return current_user.is_authenticated and any(obj.name == 'admin' for obj in current_user.permission)
-    
 admin.add_view(AccountView(Account, db.session, name="Người dùng"))
 admin.add_view(PermissionView(Permission, db.session, name="Quyền"))
 admin.add_view(DocumentView(Documents, db.session, name="Tài liệu"))
 admin.add_view(CategoryView(name="Danh mục", endpoint="categories"))
-admin.add_view(TransactionView(Transaction, db.session, name="Giao dịch"))
 admin.add_view(StatsView(name="Thống kê", endpoint="stats"))
 admin.add_view(LogoutView(name="Đăng xuất"))
 

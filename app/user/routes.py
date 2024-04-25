@@ -7,7 +7,6 @@ from app.user.forms import UpdateAccount, UpdatePassword
 from app.user import bp
 from app.user.services import UserDataService
 from app.document.services import DocumentsDataService
-from app.transaction.services import TransactionDataService
 
 @bp.route("/thong-tin-ca-nhan", methods=["GET"])
 def index():
@@ -117,27 +116,6 @@ def overview():
 
     return render_template('user/overview.html',form=register, formlogin=login, formresetpw=resetpw)
 
-@bp.route("/transactions")
-@jwt_required()
-def get_transactions():
-    page = request.args.get('page', 1, type=int)
-    from_date = request.args.get('from_date', '',type=str)
-    to_date = request.args.get('to_date', '',type=str)
-    type = request.args.get('type', 'all',type=str)
-    result = request.args.get('result', 'all',type=str)
-
-    transactions, code, msg = TransactionDataService().get_by_account_id_with_paginate(current_user.id, page, 20, from_date, to_date, type, result)
-
-    return jsonify({"message": msg, "code": code, "data": transactions})
-
-@bp.route("/stats")
-@jwt_required()
-def get_stats():
-    year = request.args.get('year', datetime.now().year, type=int)
-    transactions, code, msg = TransactionDataService().get_month_stats(current_user.id, year)
-
-    return jsonify({"message": msg, "code": code, "data": transactions})
-
 @bp.route("/stats-document")
 @jwt_required()
 def get_stats_document():
@@ -160,10 +138,20 @@ def get_stats_download_document():
 
     return jsonify({"message": msg, "code": code, "data": documents})
 
-@bp.route("/total")
+@bp.route("/user_premium")
 @jwt_required()
-def get_total():
-    total_deposits, _, _ = TransactionDataService().get_total(current_user.id, "Nạp tiền")
-    total_revenue, code, msg = TransactionDataService().get_total(current_user.id, "Bán tài liệu")
-
-    return jsonify({"message": msg, "code": code, "data": {"total_deposits": total_deposits, "total_revenue": total_revenue}})
+def get_user_premium():
+    if current_user.is_authenticated and current_user.premium > 0 and (datetime.now() - current_user.premium_start).days <= current_user.premium:
+        data = {
+            'id': current_user.id,
+            'fullname': current_user.fullname,
+            'email': current_user.email,
+            'number': current_user.number,
+            'address': current_user.address,
+            'datetime_day_reset': current_user.datetime_day_reset,
+            'number_ask': current_user.number_ask,
+            'premium': current_user.premium
+        }
+        return jsonify({'message': 'Lấy user premium thành công', 'code': 0, 'data': data})
+    
+    return jsonify({'message': 'User chưa premium', 'code': -1, 'data': None}) 

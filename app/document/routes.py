@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from flask import jsonify, render_template, request, redirect, json, send_file, send_from_directory
 from flask_jwt_extended import jwt_required
@@ -144,7 +145,7 @@ def upload_s3():
             upload(f"upload_files/{uploadDocument.old_name.data}", DocumentS3.BUCKET, uploadDocument.document_name.data)
 
             url = f"https://edushare-s3.s3.amazonaws.com/{document.document_name}"
-            tasks.page_pdf_and_build_vector_db.delay(url, document.document_name, document.id)
+            tasks.page_pdf_and_build_vector_db.delay(url, document.document_name, document.id, current_user.id)
             document_tasks.delete_wait_file.delay(uploadDocument.old_name.data)
 
             return jsonify({'message': 'Tải tài liệu lên thành công', 'code': 0, 'data': None})
@@ -251,6 +252,23 @@ def download_document(id):
     download(document_name, DocumentS3.BUCKET)
 
     return send_file(f"./download_files/{document_name}", mimetype="application/pdf")
+
+@bp.route("/<int:id>/download_premium", methods=["GET"])
+@jwt_required()
+@downloader_permission.require(http_exception=403)
+def download_document_premium(id):
+    if((current_user.premium != 0 and (datetime.now() - current_user.premium_start).days <= current_user.premium)):
+        document, code, msg = DocumentsDataService().update_download(id)
+
+        if not document:
+            return jsonify({'message': msg, 'code': -1, 'data': None})
+        
+        document_name = document["document_name"]
+        download(document_name, DocumentS3.BUCKET)
+
+        return send_file(f"./download_files/{document_name}", mimetype="application/pdf")
+    
+    return "no send", 403
 
 @bp.route("/", methods=['GET'])
 @jwt_required()

@@ -58,9 +58,6 @@
                         <a class="list-group-item active" href="/user/quan-ly-tai-lieu">
                             <i class="bi bi-files"></i>Quản lý tài liệu
                         </a>
-                        <a class="list-group-item" href="/user/quan-ly-tai-chinh">
-                            <i class="bi bi-currency-dollar"></i>Quản lý tài chính
-                        </a>
                     </nav>
                 </div>
             </div>
@@ -164,17 +161,10 @@
         var base_profile_name = document.getElementById("base-profile-name")
         var base_profile_email = document.getElementById("base-profile-email")
 
-        var base_img = document.getElementById("base-img")
-
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
-                user.email.innerHTML = result.data["email"];
-                user.ls_fullname.innerHTML = result.data["fullname"];
-                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                base_img.innerHTML = result.data["fullname"][0];
                 base_profile_name.innerHTML = result.data["fullname"];
                 base_profile_email.innerHTML = result.data["email"]
                 base_profile_img.innerHTML = result.data["fullname"][0];
@@ -373,11 +363,6 @@
                     <div class="col-6 ps-0">
                         <h4 class="m-0" onclick="openDocumentDetail(${document["id"]})" style="cursor:pointer">${getOnlyFileName(document["document_name"])}</h4>`
 
-        if (document["price"] > 0)
-            html += `<p class="mb-2" style="color: rgb(2, 126, 176);">Mất phí</p>`
-        else
-            html += `<p class="mb-2" style="color: rgb(2, 126, 176);">Miễn phí</p>`
-
         html += `       <div class="p-0 mb-1 bd-highlight">
                             <i class="bi bi-hand-thumbs-up me-1"></i><span class="me-3"> ${calculateLikePercentage(document["evaluate"])}%</span>
                             <i class="bi bi-eye me-1"></i><span> ${document["view_count"]}</span>
@@ -417,11 +402,6 @@
         html += `   </div>  
                     <div class="col-10 ps-0">
                         <h4 class="m-0" onclick="openDocumentDetail(${document["id"]})" style="cursor:pointer">${getOnlyFileName(document["document_name"])}</h4>`
-
-        if (document["price"] > 0)
-            html += `<p class="mb-2" style="color: rgb(2, 126, 176);">Mất phí</p>`
-        else
-            html += `<p class="mb-2" style="color: rgb(2, 126, 176);">Miễn phí</p>`
 
         html += `       <div class="p-0 mb-1 bd-highlight">
                             <i class="bi bi-hand-thumbs-up me-1"></i><span class="me-3"> ${calculateLikePercentage(document["evaluate"])}%</span>
@@ -496,8 +476,7 @@
             if (result.code === 0){
                 document.getElementById("label-document").innerHTML = "Chỉnh sửa thông tin tài liệu"
                 var divDeXuat = document.getElementById("all-document")
-                divDeXuat.innerHTML = appendDocument(result.data["id"], result.data["document_name"], 
-                                    result.data["price"], result.data["image"], result.data["categories"], 
+                divDeXuat.innerHTML = appendDocument(result.data["id"], result.data["document_name"], result.data["image"], result.data["categories"], 
                                     result.data["description"], result.data["license"])
             }
         } catch (error) {
@@ -505,7 +484,7 @@
         }
     }
 
-    function appendDocument(document_id, document_name, price, image, categories, description, license) {
+    function appendDocument(document_id, document_name, image, categories, description, license) {
         var html = `
             <div class="app__file__content">
                 <div>
@@ -563,25 +542,6 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-sm-3">
-                                            <h6 class="mb-0">Giá bán <strong style="color: red">*</strong></h6>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            <select id="giaban" class="form-select" aria-label="Default select example" onchange="changeMoney()">
-                                                <option>Chọn giá bán</option>
-                                                <option value="free"`
-                                                if (price == 0)    
-                                                    html += `selected`
-                                                html += `>Miễn phí</option>`
-                                                if (price != 0)    
-                                                    html += `<option selected value="${price}">${price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</option>`
-                                                html += `<option value="option">Tự ra giá</option>
-                                            </select>
-                                            <input id="option-money" type="text" class="form-control mt-2" value="" style="display: none">
-                                            <div id="giaban-error" class="invalid-feedback mb-1"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-sm-3">
                                             <h6 class="mb-0">Giấy phép <strong style="color: red">*</strong></h6>
                                         </div>
                                         <div class="col-sm-9">`
@@ -611,7 +571,7 @@
                                                 </label>
                                             </div>
                                             <div class="text-start">
-                                                <select id="license-cc" class="form-select update-license" aria-label="Default select example" onchange="changeLicense()">
+                                                <select id="license-cc" class="form-select update-license" aria-label="Default select example">
                                                     <option value="null">Lựa chọn theo giấy phép CC</option>
                                                     <option value="CC BY" `
                                                         if (license == "CC BY")
@@ -764,10 +724,6 @@
                 input: document.getElementById(`mota`),
                 error: document.getElementById(`mota-error`),
             },
-            price: {
-                input: document.getElementById(`giaban`),
-                error: document.getElementById(`giaban-error`),
-            },
             categories: {
                 input: document.getElementById(`danhmuc`),
                 error: document.getElementById(`danhmuc-error`),
@@ -784,17 +740,10 @@
 
         resetErrorInputOfFormUpdate();
 
-        var price = document.getElementById(`giaban`).value;
-        var ipnOptionSelect = document.getElementById(`option-money`);
-        if(price === "option"){
-            price = ipnOptionSelect.value; 
-        }
-
         const formData = new FormData();
         formData.append('document_id', document_id);
         formData.append('description', document.getElementById(`mota`).value);
-        formData.append('price', price);
-        formData.append('license', getLicense(document_id));
+        formData.append('license', document.getElementById(`license-cc`).value);
 
         var arr = {'categories': [document.getElementById(`danhmuc`).value, document.getElementById(`danhmuc2`).value]};
         formData.append('categories', JSON.stringify(arr));
@@ -903,32 +852,5 @@
     function clickReturn(){
         window.location.href = "/user/quan-ly-tai-lieu";
     }
-
-    function clickAllLicense(){
-        const radio = document.getElementById('all-license');
-        const license_cc = document.getElementById('license-cc');
-
-        if (radio.checked) {
-            license_cc.value = "null";
-        }
-    }
-
-    function changeLicense(fileId){
-        const radio = document.getElementById(`all-license`);
-        
-        radio.checked = false;        
-    }
-
-    function getLicense(fileId){
-        const radio = document.getElementById(`all-license`);
-        const license_cc = document.getElementById(`license-cc`);
-
-        if (radio.checked) {
-            return "all_license";
-        }
-        
-        return license_cc.value;
-    }
-
 </script>
 {% endblock %}

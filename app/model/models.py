@@ -5,8 +5,6 @@ from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.sql import extract
 
-from constant import TransactionChoices
-
 class AccountPermission(db.Model):
     __tablename__ = 'account_permission'
     id = db.Column(db.Integer(), primary_key=True)
@@ -23,20 +21,17 @@ class Account(UserMixin, db.Model):
     password_hash = db.Column(db.String(255))
     number = db.Column(db.String(11), unique=True, index=True, nullable=False)
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
-    coin = db.Column(db.Integer , server_default='0')
     address = db.Column(db.String(255))
-    number_download = db.Column(db.Integer, server_default='0')
-    datetime_week_reset = db.Column(db.DateTime, default=datetime.utcnow)
     number_ask = db.Column(db.Integer, server_default='0')
     datetime_day_reset = db.Column(db.DateTime, default=datetime.utcnow)
     violation_count = db.Column(db.Integer, server_default='0')
+    premium = db.Column(db.Integer, server_default='0')
+    premium_start = db.Column(db.DateTime, default=datetime.utcnow)
     permission = db.relationship(
         'Permission',
         secondary='account_permission',
         backref=db.backref('account', lazy='dynamic'))
-    transaction = db.relationship('Transaction', backref='account', lazy=True)
     evaluate = db.relationship('Evaluate', backref='account', lazy=True)
-    purchase = db.relationship('Purchase', backref='account', lazy=True)
     document = db.relationship('Documents', backref='account', lazy=True)
 
     def __repr__(self):
@@ -54,12 +49,10 @@ class Account(UserMixin, db.Model):
             'fullname': self.fullname,
             'address': self.address,
             'number': self.number,
-            'coin': self.coin,
             'number_ask': self.number_ask,
-            'number_download': self.number_download,
-            'datetime_week_reset': self.datetime_week_reset,
             'datetime_day_reset': self.datetime_day_reset,
-            'purchase': Purchase.list_to_dict(self.purchase)
+            'premium': self.premium,
+            'premium_start': self.premium_start
         }
         if include_email:
             data['email'] = self.email
@@ -92,7 +85,7 @@ class Account(UserMixin, db.Model):
     
     @classmethod
     def find_by_id_tuple(cls, _id):
-        return cls.query.with_entities(cls.id, cls.fullname, cls.email, cls.address, cls.coin).filter_by(id=_id, status=True).first()
+        return cls.query.with_entities(cls.id, cls.fullname, cls.email, cls.address).filter_by(id=_id, status=True).first()
 
     def save_to_db(self):
         db.session.add(self)
@@ -133,118 +126,6 @@ class Permission(db.Model):
     @classmethod
     def find_all(cls):
         return cls.query.all()
-
-class Transaction(db.Model):
-    __tablename__ = 'transaction'
-
-    id = db.Column(db.Integer, primary_key = True, index=True, autoincrement=True)
-    date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    information = db.Column(db.String(255), nullable=False)
-    type = db.Column(db.String(255), nullable=False)
-    amount = db.Column(db.Integer, nullable=False)
-    wallet_balance = db.Column(db.Integer, nullable=False)
-    result = db.Column(db.Integer, nullable=False)
-    status = db.Column(db.Boolean, nullable=False, server_default='1')
-    account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
-        nullable=False)
-    
-    def __init__(self, information, type, amount, result, account_id):
-        self.information = information
-        self.type = type
-        self.amount = amount
-        self.result = result
-        self.account_id = account_id
-
-    def set_datetime_from_timestamp(self, timestamp):
-        self.date = datetime.fromtimestamp(timestamp/1000.0)
-
-    def set_datetime(self, datetime):
-        self.date = datetime
-
-    def set_wallet_balance(self):
-        user = Account.find_by_id(self.account_id)
-
-        if self.type == TransactionChoices.RECHARGE.value or self.type == TransactionChoices.RECEIVE_MONEY.value:
-            self.wallet_balance = user.coin + self.amount
-        else:
-            self.wallet_balance = user.coin - self.amount
-
-    def get_datetime(self):
-        return self.date.strftime("%d-%m-%Y %H:%M:%S")
-    
-    def get_amount(self):
-        return format(self.amount, ',d')
-    
-    @classmethod
-    def get_by_account_id_with_paginate(cls, _account_id, page, per_page, from_date, to_date, _type, _result):
-        query = cls.query.order_by(desc(cls.date))\
-                        .filter(cls.account_id == _account_id)
-        
-        if from_date != '':
-            start_date = datetime.strptime(from_date, "%Y-%m-%d")
-            query = query.filter(cls.date >= start_date)
-
-        if to_date != '':
-            end_date = datetime.strptime(to_date, "%Y-%m-%d")
-            query = query.filter(cls.date <= end_date)
-
-        if _type != "all":
-            query = query.filter(cls.type.ilike(_type))
-
-        if _result != "all":
-            query = query.filter(cls.result == _result)
-
-        return query.paginate(page=page, per_page=per_page)
-    
-    @classmethod
-    def get_month_stats_with_account_id(cls, _account_id, year):
-        return cls.query.with_entities(extract('month', cls.date), func.sum(cls.amount))\
-                    .order_by(cls.date)\
-                    .filter(cls.account_id==_account_id, extract('year', cls.date)==year, cls.type != "Mua tài liệu", cls.result==0)\
-                    .group_by(extract('month', cls.date))\
-                    .all()
-    
-    @classmethod
-    def get_month_stats(cls, year):
-        return cls.query.with_entities(extract('month', cls.date), func.sum(cls.amount))\
-                    .order_by(cls.date)\
-                    .filter(extract('year', cls.date)==year, cls.type.like("Nhận hoa hồng"), cls.result==0)\
-                    .group_by(extract('month', cls.date))\
-                    .all()
-    
-    @classmethod
-    def get_total(cls, account_id, type):
-        return cls.query.with_entities(func.sum(cls.amount))\
-                    .filter(cls.account_id==account_id, cls.type==type, cls.result==0)\
-                    .scalar()
-    
-    def to_dict(self):
-        data = {
-            'id': self.id,
-            'date': self.date,
-            'information': self.information,
-            'type': self.type,
-            'status': self.status,
-            'amount': self.amount,
-            'wallet_balance': self.wallet_balance,
-            'result': self.result,
-            'account_id': self.account_id
-        }
-
-        return data
-
-    @classmethod
-    def list_to_dict(cls, transactions):
-        data = []
-
-        for transaction in transactions:
-            data.append(transaction.to_dict())
-
-        return data
-    
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
 
 class Categories(db.Model):
     __tablename__ = 'categories'
@@ -348,7 +229,6 @@ class Documents(db.Model):
         secondary='document_categories',
         backref=db.backref('documents', lazy='dynamic'))
     evaluate = db.relationship('Evaluate', backref='documents', lazy=True)
-    purchase = db.relationship('Purchase', backref='documents', lazy=True)
     
     def to_dict(self):
         data = {
@@ -362,8 +242,7 @@ class Documents(db.Model):
             'account_id': self.account_id,
             'image': self.image,
             'categories': Categories.list_to_dict(self.categories),
-            'evaluate': Evaluate.list_to_dict(self.evaluate),
-            'purchase': Purchase.list_to_dict(self.purchase)
+            'evaluate': Evaluate.list_to_dict(self.evaluate)
         }
 
         return data
@@ -544,15 +423,6 @@ class Documents(db.Model):
         return query.paginate(page=page, per_page=per_page) 
     
     @classmethod
-    def find_by_purchase(cls, _id, _account_id):
-        return cls.query.join(Purchase, Purchase.document_id==cls.id).\
-            join(Account, Account.id==Purchase.account_id).\
-            filter(Purchase.account_id==_account_id, cls.id==_id, cls.status==True, cls.processing_status==1).\
-            order_by(desc(Purchase.date)).\
-            add_columns(Account.fullname).\
-            first()
-    
-    @classmethod
     def find_by_category(cls, _category_name, limit):
         return cls.query.join(DocumentCategories, DocumentCategories.document_id==cls.id).\
             join(Categories, Categories.id == DocumentCategories.category_id).\
@@ -703,43 +573,3 @@ class Evaluate(db.Model):
         db.session.delete(self)
         db.session.commit()
     
-class Purchase(db.Model):
-    __tablename__ = 'purchase'
-
-    id = db.Column(db.Integer(), primary_key=True)
-    date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    status = db.Column(db.Boolean(), nullable=False, server_default='1')
-    amount = db.Column(db.Integer(), nullable=False)
-    document_id = db.Column(db.Integer(), db.ForeignKey(
-        'documents.id', ondelete='CASCADE'))
-    account_id = db.Column(db.Integer(), db.ForeignKey(
-        'account.id', ondelete='CASCADE'))
-    
-    def to_dict(self):
-        data = {
-            'id': self.id,
-            'date': self.date,
-            'document_id': self.document_id,
-            'account_id': self.account_id,
-            'amount': self.amount
-        }
-
-        return data
-    
-    @classmethod
-    def list_to_dict(cls, purchase):
-        data = []
-
-        for item in purchase:
-            data.append(item.to_dict())
-
-        return data
-    
-    @classmethod
-    def find(cls, _document_id, _account_id):
-        return cls.query.filter(cls.document_id==_document_id, cls.account_id==_account_id).order_by(desc(cls.date)).first()
-    
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-        db.session.refresh(self)

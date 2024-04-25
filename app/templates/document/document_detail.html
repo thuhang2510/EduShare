@@ -78,20 +78,8 @@
                     <div class="p-2 flex-grow-1 bd-highlight">
                         <button id="btn_download" type="button" class="btn rounded-pill fw-normal p-2 px-3 fs-6"
                             style="background-color: rgb(2, 126, 176); color: white;" onclick="downloadDocument()">
-                            <i class="bi bi-download"></i>
-                            {% if document["price"] > 0 %}
-                            Tải xuống ({{ document["price"] | numberFormat }} đ)
-                            {% else %}
-                            Tải xuống
-                            {% endif %}
+                            <i class="bi bi-download"></i> Tải xuống
                         </button>
-                    </div>
-                    <div id="btn-document-payment" class="p-2 bd-highlight" data-timebuy="">
-                        {% if document["price"] > 0 %}
-                        <button type="button" class="btn bg-success bg-gradient text-white rounded-pill"
-                            onclick="buyDocument(`{{ document['document_name'] }}`, `{{ document['price']}}`)">Mua
-                            tài liệu</button>
-                        {% endif %}
                     </div>
                     <div class="p-2 bd-highlight">
                         <button id="doc_like" type="button" class="btn btn-outline-success rounded-pill"
@@ -174,48 +162,6 @@
         </div>
     </div>
 </div>
-<div id="form-notify-payment" class="d-flex align-items-center justify-content-center"
-    style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
-    <div class="container d-flex justify-content-center" style="position: fixed;">
-        <div class="register bg-white col-xl-7 p-4 rounded-3">
-            <div class="d-flex justify-content-end">
-                <button id="close-form-login" type="button" class="btn-close text-right"
-                    onclick="clickCloseNotifyPayment()"></button>
-            </div>
-            <h3 class="text-center mb-3">Thông báo</h3>
-            <div class="border border-secondary rounded py-2 px-4">
-                <p><span class="fw-bold">Số dư trong tài khoản EduShare</span> của bạn <span
-                        class="text-danger fw-bold">không đủ</span> để mua tài liệu này.</p>
-                <p>Bạn cần nạp thêm vào tài khoản để tiếp tục.</p>
-                <p>Bạn có thể <span class="fw-bold">sử dụng số tiền dư </span>sau khi mua tài liệu này để <span
-                        class="fw-bold">mua các tài liệu về sau.</span></p>
-            </div>
-            <div>
-                <input class="btn btn-primary w-100 my-3 rounded-pill" name="submit" type="button"
-                    onclick="clickRecharge()" value="Nạp tiền">
-            </div>
-        </div>
-    </div>
-</div>
-<div id="form-confirm-payment" class="d-flex align-items-center justify-content-center"
-    style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
-    <div class="container d-flex justify-content-center" style="position: fixed;">
-        <div class="register bg-white col-xl-6 p-4 rounded-3">
-            <div class="d-flex justify-content-end">
-                <button id="close-form-login" type="button" class="btn-close text-right"
-                    onclick="clickCloseConfirmPayment()"></button>
-            </div>
-            <h3 class="text-center mb-3">Xác nhận thanh toán tài liệu</h3>
-            <div id="content-form-confirm-payment" class="border-top border-secondary py-2">
-            </div>
-            <div>
-                <input class="btn btn-primary w-100 my-3 rounded-pill" name="submit" type="button"
-                    onclick="clickConfirmPayment(`{{ document['id'] }}`, `{{ document['price'] }}`, `{{ document['account_id'] }}`)"
-                    value="Đồng ý">
-            </div>
-        </div>
-    </div>
-</div>
 
 <div id="form-report" class="d-flex align-items-center justify-content-center"
     style="height:100vh; width:100vw; background-color:rgba(0, 0, 0, 0.2); visibility: hidden; position:fixed; top:0px; z-index: 999;">
@@ -285,8 +231,6 @@
     let currentScale = 1.5;
     let currentPage = 1;
     let pageNumber = 0;
-    const price = parseInt(`{{document["price"]}}`);
-    let bought = false;
 
     window.onload = function () {
         if (localStorage.token) {
@@ -298,7 +242,7 @@
 
         document.getElementById("footer").style.display = "none";
 
-        initPdf();
+        initPdf(null);
         getDocDeXuat();
         getDocLienQuan(`{{document["categories"][1]["name"]}}`);
     };
@@ -306,23 +250,15 @@
     let firstFullName = ""
 
     async function getUser() {
-        url = baseURL + "/api/v1/user-token"
-        var base_img = document.getElementById("base-img")
+        var url = baseURL + "/api/v1/user-token"
 
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0) {
                 user.lg_fullname.innerHTML = result.data["fullname"];
-                user.email.innerHTML = result.data["email"];
-                user.ls_fullname.innerHTML = result.data["fullname"];
-                user.coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                user.base_coin.innerHTML = result.data["coin"].toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                base_img.innerHTML = result.data["fullname"][0];
                 firstFullName = result.data["fullname"][0];
                 openLogin();
-                userCurrentId = result.data["id"]
-
-                updateCountDownload(result);
+                userCurrentId = result.data["id"];
                 updateCountAsk(result);
             }
             else if (result.code == -4) {
@@ -341,19 +277,13 @@
     }
 
     async function getDocumentAllDetail() {
-        var url = baseURL + "/document/" + document_id + "/detail";
+        var url = baseURL + "/user/user_premium"
 
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0) {
-                var btn_document_payment = document.getElementById("btn-document-payment");
-                btn_document_payment.style.visibility = "hidden"
-                var btn_download = document.getElementById("btn_download");
-                btn_download.innerHTML = `<i class="bi bi-download"></i> Tải xuống`;
-                bought = true;
-                document.getElementById("download_count").innerHTML = `<i class="bi bi-download"></i> ${result.data["download_count"]}`
-                initPdf();
-
+                initPdf(result.data["id"]);
+                /*
                 if (result.data["evaluate"].length > 0) {
                     for (var i = 0; i < result.data["evaluate"].length; ++i) {
                         var type = result.data["evaluate"][i]["type"];
@@ -373,14 +303,14 @@
                             documentLike[0].classList.add("bi-bookmark-fill");
                         }
                     }
-                }
+                }*/
             }
         } catch (error) {
             console.log(error.message);
         }
     }
 
-    function initPdf() {
+    function initPdf(user_id) {
         if (pdfTT === null) {
             pdfTT = pdfjsLib.getDocument('https://edushare-s3.s3.amazonaws.com/' + nameFile);
         }
@@ -411,7 +341,7 @@
                     pdfCanvas.height = pageViewPort.height;
                     divContext.appendChild(pdfCanvas);
 
-                    if (price > 0 && i > (pdf.numPages / 100 * 20) && bought == false) {
+                    if (user_id == null && i > (pdf.numPages / 100 * 20)) {
                         pdfCanvas.style.filter = "blur(9px)"
                         let notify = document.createElement("div")
                         notify.style.position = "absolute";
@@ -500,37 +430,32 @@
     }
 
     async function clickAI() {
-        var url = baseURL + "/api/v1/user-token"
+        var url = baseURL + "/user/user_premium"
 
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0) {
-                if (bought == false && price > 0) {
-                    show_base_alert(-1, "Hãy mua tài liệu trước để thực hiện chức năng này.");
-                }
-                else {
-                    loadDocumentToAsk();
-                    document.getElementById("ai-detail").style.display = "block";
-                    document.getElementById("infor-detail").style.display = "none";
+                loadDocumentToAsk();
+                document.getElementById("ai-detail").style.display = "block";
+                document.getElementById("infor-detail").style.display = "none";
 
-                    var selectAI = document.getElementById("selectAI");
-                    selectAI.style.borderColor = "#f064fc";
-                    selectAI.style.borderBottom = "5px solid #f064fc";
-                    selectAI.style.color = "#f064fc"
+                var selectAI = document.getElementById("selectAI");
+                selectAI.style.borderColor = "#f064fc";
+                selectAI.style.borderBottom = "5px solid #f064fc";
+                selectAI.style.color = "#f064fc"
 
-                    var selectDetail = document.getElementById("selectDetail")
-                    selectDetail.style.borderColor = null;
-                    selectDetail.style.borderBottom = null;
-                    selectDetail.style.color = null;
+                var selectDetail = document.getElementById("selectDetail")
+                selectDetail.style.borderColor = null;
+                selectDetail.style.borderBottom = null;
+                selectDetail.style.color = null;
 
-                    var chatContainer = document.getElementsByClassName("chat-container")[0];
-                    chatContainer.innerHTML = "";
+                var chatContainer = document.getElementsByClassName("chat-container")[0];
+                chatContainer.innerHTML = "";
 
-                    showAIResponse("Bạn có thể đặt bất kỳ câu hỏi nào liên quan đến tài liệu này. Và hệ thống sẽ không lưu trữ lịch sử hỏi đáp.")
-                }
+                showAIResponse("Bạn có thể đặt bất kỳ câu hỏi nào liên quan đến tài liệu này. Và hệ thống sẽ không lưu trữ lịch sử hỏi đáp.")
             }
             else {
-                show_base_alert(-1, "Hãy đăng nhập để thực hiện chức năng này");
+                show_base_alert(-1, "Bạn không thể dùng tính năng này");
             }
         } catch (error) {
             console.log(error.message);
@@ -927,22 +852,14 @@
         }
     }
 
-    async function downloadDocFree() {
-        var lg_fullname = document.getElementById("base-login-fullname")
-        number_download = parseInt(lg_fullname.dataset.countdownload)
-
-        if (number_download >= 5)
-            show_base_alert(-1, "Tuần này bạn đã hết lượt tải cho tài liệu miễn phí");
-        else {
-            fetch(baseURL + "/document/" + document_id + "/download", {
+    async function downloadDocPremium(){
+        fetch(baseURL + "/document/" + document_id + "/download_premium", {
                 headers: {
                     'Authorization': `Bearer ${localStorage.token}`
                 }
             })
                 .then(response => {
                     if (response.ok) {
-                        updateCountDownloadAPI(number_download + 1, false);
-
                         response.blob().then(blob => {
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement("a")
@@ -950,7 +867,6 @@
                             a.download = document_name
                             a.click();
                             window.URL.revokeObjectURL(url)
-                            getDocumentAllDetail();
                         });
                     }
                     else if (response.status == 401 || response.status == 422) {
@@ -963,148 +879,13 @@
                         console.error('Có lỗi xảy ra khi tải xuống tệp');
                     }
                 })
-        }
-    }
-
-    async function downloadDocNotFree(documentId) {
-        if (bought == false)
-            show_base_alert(-1, "Hãy mua tài liệu trước khi thực hiện tải xuống");
-        else {
-            const result = await getData(baseURL + "/document/purchase?document_id=" + document_id, localStorage.token);
-            if (result.code === 0) {
-                var currentDate = new Date();
-                var time_buy = new Date(result.data["date"])
-                time_buy = Math.abs(currentDate.getTime() - time_buy.getTime()) / (1000 * 60 * 60);
-
-                if (time_buy < 24) {
-                    fetch(baseURL + "/document/" + document_id + "/download", {
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.token}`
-                        }
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                response.blob().then(blob => {
-                                    const url = window.URL.createObjectURL(blob);
-                                    const a = document.createElement("a")
-                                    a.href = url;
-                                    a.download = document_name
-                                    a.click();
-                                    window.URL.revokeObjectURL(url)
-                                    getDocumentAllDetail();
-                                });
-                            }
-                            else if (response.status == 401 || response.status == 422) {
-                                show_base_alert(-1, "Bạn cần đăng nhập để thực hiện chức năng này.");
-                            }
-                            else if (response.status == 403) {
-                                show_base_alert(-1, "Bạn không có quyền để sử dụng chức năng này.")
-                            }
-                            else {
-                                console.error('Có lỗi xảy ra khi tải xuống tệp');
-                            }
-                        })
-                }
-                else {
-                    alert("Bạn đã hết thời gian tải xuống. Hãy thực hiện thanh toán để có thể tiếp tục tải xuống trong vòng 24h")
-                    show_confirm_document_payment(document_name, price, null);
-                }
-            }
-            else {
-                show_base_alert(-1, "Có lỗi xảy ra hãy thử lại sau");
-            }
-        }
     }
 
     function downloadDocument() {
         alert("Các tài liệu bạn tải xuống chỉ được sử dụng với mục đích học tập, nghiên cứu. Không sử dụng với mục đích thương mại.");
-        if (price == 0)
-            downloadDocFree();
-        else
-            downloadDocNotFree();
+        downloadDocPremium()
     }
-
-    async function buyDocument(document_name, price) {
-        var url = baseURL + "/api/v1/user-token"
-
-        try {
-            const result = await getData(url, localStorage.token);
-            if (result.code === 0) {
-                if (result.data["coin"] < price)
-                    show_insufficient_funds();
-                else {
-                    show_confirm_document_payment(document_name, price, result.data["coin"]);
-                }
-            }
-            else {
-                show_base_alert(-1, "Hãy đăng nhập để thực hiện mua tài liệu");
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
-    function show_insufficient_funds() {
-        var form_notify_payment = document.getElementById("form-notify-payment");
-        form_notify_payment.style.visibility = "visible";
-    }
-
-    async function clickRecharge() {
-        var url = baseURL + "/api/v1/user-token"
-
-        try {
-            const result = await getData(url, localStorage.token);
-            if (result.code === 0) {
-                document.getElementById("form-recharge").style.visibility = "visible";
-                document.getElementById("form-notify-payment").style.visibility = "hidden";
-            }
-            else {
-                show_base_alert(-1, "Hãy đăng nhập để thực hiện nạp tiền");
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
-    function clickCloseNotifyPayment() {
-        document.getElementById("form-notify-payment").style.visibility = "hidden";
-    }
-
-    function clickCloseConfirmPayment() {
-        document.getElementById("form-confirm-payment").style.visibility = "hidden";
-    }
-
-    function show_confirm_document_payment(document_name, price, coin = null) {
-        document.getElementById("form-confirm-payment").style.visibility = "visible"
-        document.getElementById("content-form-confirm-payment").innerHTML = `<h5>Bạn đang thanh toán tài liệu</h5>
-                                                                <h4 style="color: rgb(2, 126, 176);"> ${document_name}</h4>
-                                                                <p>Giá bán: <span class="fw-bold"> ${price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} đ</span></p>`
-
-        if (coin !== null)
-            document.getElementById("content-form-confirm-payment").innerHTML += `<p>Số dư hiện tại của bạn: <span class="fw-bold">${coin.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span></p>`
-    }
-
-    async function clickConfirmPayment(documentId, amount, documentAccountId) {
-        var url = baseURL + "/document/purchase"
-
-        data = {
-            "document_id": documentId,
-            "amount": parseInt(amount),
-            "account_id": documentAccountId
-        }
-
-        const resultBuyDoc = await postData(url, data, localStorage.token);
-        if (resultBuyDoc.code === 0) {
-            clickCloseConfirmPayment();
-            document.getElementById("btn-document-payment").style.visibility = "hidden"
-            getDocumentAllDetail();
-            getUser();
-        }
-        else {
-            show_base_alert(-1, "Có lỗi xảy ra hãy thử lại sau");
-        }
-    }
-
+    
     function reportDocument(document_id) {
         document.getElementById("form-report").style.visibility = "visible";
         document.getElementById("form-report-footer").innerHTML = `<input class="btn btn-primary col-3 rounded" name="submit" type="button" onclick="clickSendReport('${document_id}')" value="Gửi">`;

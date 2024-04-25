@@ -73,3 +73,24 @@ class UserDataService():
             return user, 0, "Get user success"
         except Exception as e:
             return None, -1, "Get user fail " + str(e)
+        
+    def update_premium(self, id):
+        try:
+            user = Account.find_by_id(id)
+            
+            if user is None:
+                return None, -1, "Get user fail"
+            
+            if((datetime.now() - user.premium_start).days > user.premium):
+                user.premium = 0
+
+            if (user.premium == 0):
+                user.premium_start = datetime.now()
+            
+            user.premium += 14
+
+            user.save_to_db()
+            
+            return user.to_dict(True), 0, "Update premium success"
+        except Exception as e:
+            return None, -1, "Update premium fail " + str(e)
