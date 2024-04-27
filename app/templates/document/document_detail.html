@@ -227,7 +227,6 @@
     const document_name = `{{document["document_name"]}}`
     const type = `{{document["type"]}}`;
     const nameFile = document_name + `.` + type;
-    let pdfTT = null;
     let currentScale = 1.5;
     let currentPage = 1;
     let pageNumber = 0;
@@ -292,9 +291,7 @@
     }
 
     function initPdf() {
-        if (pdfTT === null) {
-            pdfTT = pdfjsLib.getDocument('https://edushare-s3.s3.amazonaws.com/' + nameFile);
-        }
+        var pdfTT = pdfjsLib.getDocument('https://edushare-s3.s3.amazonaws.com/' + nameFile);
 
         pdfTT.promise.then((pdf) => {
             let pdf_container = document.getElementById("pdf-container");

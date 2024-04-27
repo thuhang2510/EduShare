@@ -138,13 +138,13 @@
     async function getAllDocNew() {
         var loader = document.querySelector("#loading-new");
         loader.classList.add("display");
-        url = baseURL + "/document/get_all_new?limit=30"
+        var url = baseURL + "/document/get_all_new?limit=30"
 
         try {
             const result = await getData(url);
             if (result.code === 0) {
                 var carouselNewControls_carouselInner = document.querySelector("#carouselNewControls .carousel-inner")
-                html = "";
+                var html = "";
                 result.data.forEach(document => {
                     html += showDocument(document);
                 });
@@ -165,7 +165,7 @@
     }
 
     async function getAllDocSaved() {
-        url = baseURL + "/document/get_all_saved?limit=30"
+        var url = baseURL + "/document/get_all_saved?limit=30"
 
         try {
             const result = await getData(url, localStorage.token);
@@ -178,7 +178,7 @@
                                             </div>`
 
                 var carouselSavedControls_carouselInner = document.querySelector("#carouselSavedControls .carousel-inner")
-                html = "";
+                var html = "";
                 result.data.forEach(document => {
                     html += showDocument(document);
                 });
@@ -310,6 +310,7 @@
     }
 
     function showDocument(document) {
+        console.log(document);
         html = `<div class="carousel-item active" onclick="openDocumentDetail(${document["id"]})" style="cursor:pointer">
                     <div class="card">`
 
