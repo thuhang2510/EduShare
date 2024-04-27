@@ -231,6 +231,7 @@
     let currentScale = 1.5;
     let currentPage = 1;
     let pageNumber = 0;
+    let user_id = null;
 
     window.onload = function () {
         if (localStorage.token) {
@@ -242,7 +243,7 @@
 
         document.getElementById("footer").style.display = "none";
 
-        initPdf(null);
+        initPdf();
         getDocDeXuat();
         getDocLienQuan(`{{document["categories"][1]["name"]}}`);
     };
@@ -282,35 +283,15 @@
         try {
             const result = await getData(url, localStorage.token);
             if (result.code === 0) {
-                initPdf(result.data["id"]);
-                /*
-                if (result.data["evaluate"].length > 0) {
-                    for (var i = 0; i < result.data["evaluate"].length; ++i) {
-                        var type = result.data["evaluate"][i]["type"];
-                        if (type === "like") {
-                            var documentLike = document.getElementById("doc_like").getElementsByTagName("i")
-                            documentLike[0].classList.remove("bi-hand-thumbs-up");
-                            documentLike[0].classList.add("bi-hand-thumbs-up-fill");
-                        }
-                        else if (type === "dislike") {
-                            var documentLike = document.getElementById("doc_dislike").getElementsByTagName("i")
-                            documentLike[0].classList.remove("bi-hand-thumbs-down");
-                            documentLike[0].classList.add("bi-hand-thumbs-down-fill");
-                        }
-                        else {
-                            var documentLike = document.getElementById("doc_save").getElementsByTagName("i")
-                            documentLike[0].classList.remove("bi-bookmark");
-                            documentLike[0].classList.add("bi-bookmark-fill");
-                        }
-                    }
-                }*/
+                user_id = result.data["id"];
+                initPdf();
             }
         } catch (error) {
             console.log(error.message);
         }
     }
 
-    function initPdf(user_id) {
+    function initPdf() {
         if (pdfTT === null) {
             pdfTT = pdfjsLib.getDocument('https://edushare-s3.s3.amazonaws.com/' + nameFile);
         }

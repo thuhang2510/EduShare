@@ -76,12 +76,12 @@ class AIDataService():
 
         llm = ChatOpenAI(
             model='gpt-3.5-turbo',
-            temperature=0.3,
+            temperature=0,
             api_key=api_key
         )
 
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "Trả lời câu hỏi của user dựa trên context: {context}"),
+            ("system", "Trả lời câu hỏi của user chỉ dựa trên context này: {context}. Nếu không có trong context này, hãy thông báo Dữ liệu thông tin không đủ để trả lời."),
             MessagesPlaceholder(variable_name="chat_history"),
             ("user", "{input}")
         ])
