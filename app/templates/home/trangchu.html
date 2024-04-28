@@ -258,9 +258,10 @@
 
     function checkDocumentSaved(evaluate) {
         for (var data of evaluate) {
-            if (userCurrentId !== null && data["type"] === "save" && userCurrentId === data["account_id"])
+            if (userCurrentId !== null && data["type"] === "save" && userCurrentId === data["account_id"]){
                 console.log(evaluate);
                 return true;
+            }
         }
 
         return false;
