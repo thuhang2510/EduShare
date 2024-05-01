@@ -242,6 +242,7 @@
         if (localStorage.token) {
             getUser();
             getDocumentAllDetail();
+            getEvaluate();
         }
         else
             closeLogin();
@@ -952,5 +953,35 @@
     clipboard.on('error', function (e) {
         show_base_alert(-1, "Không thể sao chép đường dẫn");
     });
+
+    async function getEvaluate(){
+        var url = baseURL + "/document/" + document_id + "/evaluate";
+
+        try {
+            const result = await getData(url, localStorage.token);
+            if (result.code === 0) {
+                for (var i = 0; i < result.data.length; ++i){
+                    if(result.data[i]["type"] == "like"){
+                        var documentLike = document.getElementById("doc_like");
+                        documentLike.getElementsByTagName("i")[0].classList.remove("bi-hand-thumbs-up");
+                        documentLike.getElementsByTagName("i")[0].classList.add("bi-hand-thumbs-up-fill");
+                    }
+                    else if(result.data[i]["type"] == "dislike"){
+                        var documentDisLike = document.getElementById("doc_dislike");
+                        documentDisLike.getElementsByTagName("i")[0].classList.remove("bi-hand-thumbs-down");
+                        documentDisLike.getElementsByTagName("i")[0].classList.remove("bi-hand-thumbs-down-fill");
+                    }
+                    else if(result.data[i]["type"] == "save"){
+                        var documentSave = document.getElementById("doc_save");
+                        documentSave.getElementsByTagName("i")[0].classList.remove("bi-bookmark");
+                        documentSave.getElementsByTagName("i")[0].classList.add("bi-bookmark-fill");
+                    }
+                }
+
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
 </script>
 {% endblock %}
