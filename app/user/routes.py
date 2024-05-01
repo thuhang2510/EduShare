@@ -13,7 +13,7 @@ def index():
     register = RegisterForm(meta={'csrf': False})
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
-    return render_template('user/profile_user.html', title='User',form=register, formlogin=login, formresetpw=resetpw)
+    return render_template('user/profile_user.html', title='Thông tin cá nhân',form=register, formlogin=login, formresetpw=resetpw)
 
 @bp.route("/upload-account", methods=["POST"])
 @jwt_required()
@@ -68,7 +68,7 @@ def manager_document():
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
 
     type = request.args.get("type", "all", type=str)
-    return render_template('user/manager_doc.html', title='User',form=register, formlogin=login, formresetpw=resetpw, type=type)
+    return render_template('user/manager_doc.html', title='Quản lý tài liệu', form=register, formlogin=login, formresetpw=resetpw, type=type)
 
 @bp.route("/<account_id>-trang-ca-nhan")
 def get_view_user(account_id):
@@ -82,7 +82,7 @@ def get_view_user(account_id):
     user, _, _ = UserDataService().get_by_id_tuple(account_id)
     documents, _, _ = DocumentsDataService().get_by_account_id_with_paginate(account_id, page, 20, type, "")
 
-    return render_template('user/profile_view_user.html',form=register, formlogin=login, account_id=account_id, type=type, 
+    return render_template('user/profile_view_user.html', title= user[1] + " trang cá nhân", form=register, formlogin=login, account_id=account_id, type=type, 
                            formresetpw=resetpw, documents=documents, user=user)
 
 @bp.route("/search/<account_id>-trang-ca-nhan")
@@ -97,7 +97,7 @@ def search_view_user(account_id):
     user, _, _ = UserDataService().get_by_id_tuple(account_id)
     documents, _, _ = DocumentsDataService().get_by_account_id_with_paginate(account_id, page, 20, "all", keyword)
 
-    return render_template('user/profile_view_search_user.html',form=register, formlogin=login, account_id=account_id, keyword=keyword, 
+    return render_template('user/profile_view_search_user.html', title=user[1] + " trang cá nhân", form=register, formlogin=login, account_id=account_id, keyword=keyword, 
                            formresetpw=resetpw, documents=documents, user=user)
 
 @bp.route("/quan-ly-tai-chinh")
@@ -106,7 +106,7 @@ def manager_financy():
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
 
-    return render_template('user/manager_financy.html',form=register, formlogin=login, formresetpw=resetpw)
+    return render_template('user/manager_financy.html', title="Quản lý tài chính", form=register, formlogin=login, formresetpw=resetpw)
 
 @bp.route("/tong-quan")
 def overview():
@@ -114,7 +114,7 @@ def overview():
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
 
-    return render_template('user/overview.html',form=register, formlogin=login, formresetpw=resetpw)
+    return render_template('user/overview.html', title="Tổng quan", form=register, formlogin=login, formresetpw=resetpw)
 
 @bp.route("/stats-document")
 @jwt_required()

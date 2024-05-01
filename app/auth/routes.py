@@ -62,7 +62,9 @@ def get_user_by_token():
             'address': current_user.address,
             'datetime_day_reset': current_user.datetime_day_reset,
             'number_ask': current_user.number_ask,
-            'premium': current_user.premium
+            'premium': current_user.premium,
+            'premium_start': current_user.premium_start,
+            'cccd': current_user.cccd
         }
         return jsonify({'message': 'Lấy user thành công', 'code': 0, 'data': data})
     

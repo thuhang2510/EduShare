@@ -24,7 +24,7 @@ def get_all():
 
     categories, _, _ = CategoriesDataService().get_all_with_tuple()
 
-    return render_template('categories/all_categories.html', form=register, 
+    return render_template('categories/all_categories.html', title="Danh mục", form=register, 
                            formlogin=login, formresetpw=resetpw, categories=categories)
 
 @bp.route('/<category_name>')
@@ -36,5 +36,5 @@ def category_view(category_name):
     page = request.args.get('page', 1, type=int)
 
     documents, _, _ = DocumentsDataService().get_by_category_with_paginate(category_name, 15, page)
-    return render_template('categories/detail.html', form=register, 
+    return render_template('categories/detail.html', title="Danh mục " + category_name, form=register, 
                            formlogin=login, formresetpw=resetpw, documents=documents, category_name=category_name)

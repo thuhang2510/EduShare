@@ -14,6 +14,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 from langchain_community.vectorstores.qdrant import Qdrant
 from app.document.services import DocumentsDataService
+from app.user.services import UserDataService
 
 class AIDataService():
     def get_documents_from_web(self, url):
@@ -125,11 +126,6 @@ class AIDataService():
         data, code, _ = DocumentsDataService().get_by_id(document_id)
         
         if(code == 0):
-            if (data["price"] > 0):
-                data, code, msg = DocumentsDataService().get_by_purchase(document_id, user_id)
-                if (code == 0):
-                    return True
-                return False
             return True
         return False    
                 

@@ -1,12 +1,14 @@
-from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, ValidationError
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from app.model.models import Account
+
+import re
  
 class RegisterForm(FlaskForm):
     fullname = StringField('Tên đầy đủ', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
+    cccd = StringField('Căn cước công dân', validators=[DataRequired(), Length(1, 12)])
     number = StringField('Số điện thoại', validators=[DataRequired()])
     password = PasswordField('Mật khẩu', validators=[DataRequired(), EqualTo('repassword', message='Mật khẩu và Nhập lại mật khẩu phải khớp nhau')])
     repassword = PasswordField('Nhập lại mật khẩu', validators=[DataRequired()])
@@ -22,7 +24,18 @@ class RegisterForm(FlaskForm):
         if user is not None:
             raise ValidationError('Email này đã tồn tại')
         
+    def validate_cccd(self, cccd):
+        if(len(cccd.data) != 12):
+            raise ValidationError('Căn cước công dân phải đúng 12 số')
+        
+        pattern = r"^[0-9]$"
+        if(re.match(pattern, cccd.data) == False):
+            raise ValidationError('Căn cước công dân không hợp lệ')
 
+        user = Account.query.filter_by(cccd=cccd.data).first()
+        if user is not None:
+            raise ValidationError('Căn cước công dân này đã tồn tại')
+        
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
     password = PasswordField('Mật khẩu', validators=[DataRequired()])
