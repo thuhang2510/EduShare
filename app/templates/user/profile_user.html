@@ -22,8 +22,12 @@
                             <h4 id="base-profile-name" class="author-card-name text-lg"></h4>
                             <span id="base-profile-email" class="author-card-position"></span>
                         </div>
+                        <div id="icon-premium" class="ps-4" style="position: absolute; bottom: 10px; left: 50px; visibility: hidden;">
+                            <img src="/static/images/premium.png" style="height: 30px; width: 28px" />
+                        </div>
                     </div>
-                    <div class="ps-4" style="display: none;"><h6>Tài liệu: <span>0</span></h5></div>
+                    <div class="ps-4" id="account-premium-time">
+                    </div>
                 </div>
                 <div class="wizard">
                     <nav class="list-group list-group-flush">
@@ -69,6 +73,13 @@
                             <label for="account-phone">Số điện thoại</label>
                             <input class="form-control" type="text" id="account-phone" disabled="">
                             <div id="account-phone-error" class="invalid-feedback mb-1"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-2">
+                        <div class="form-group">
+                            <label for="account-phone">Căn cước công dân</label>
+                            <input class="form-control" type="text" id="account-cccd" disabled="">
+                            <div id="account-cccd-error" class="invalid-feedback mb-1"></div>
                         </div>
                     </div>
                     <div class="col-12">
@@ -143,6 +154,10 @@
         email: {
             input: document.getElementById("account-email"),
             error: document.getElementById("account-email-error"),
+        },
+        cccd: {
+            input: document.getElementById("account-cccd"),
+            error: document.getElementById("account-cccd-error"),
         }
     };
 
@@ -176,9 +191,20 @@
                 fields_account.address.input.value = result.data["address"];
                 fields_account.email.input.value = result.data["email"];
                 fields_account.number.input.value = result.data["number"];
+                fields_account.cccd.input.value = result.data["cccd"];
                 base_profile_name.innerHTML = result.data["fullname"];
                 base_profile_email.innerHTML = result.data["email"]
                 base_profile_img.innerHTML = result.data["fullname"][0];
+
+                var currentDate = new Date();
+                var premium_start = new Date(result.data["premium_start"])
+                const days = Math.floor((currentDate - premium_start) / (1000 * 60 * 60 * 24));
+
+                if(result.data["premium"] > 0 &&  days <= result.data["premium"]){
+                    document.getElementById("icon-premium").style.visibility = "visible";
+                    document.getElementById("account-premium-time").innerHTML = `Thời gian premium còn lại là ${result.data["premium"] - days} ngày`;
+                }
+                
                 openLogin();
                 userCurrentId = result.data["id"]
             }

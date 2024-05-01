@@ -4,7 +4,6 @@ from flask import jsonify, render_template, request, redirect, json, send_file, 
 from flask_jwt_extended import jwt_required
 from flask_login import current_user
 from app.ai import tasks
-from app.categories.services import CategoriesDataService
 from app.document import tasks as document_tasks
 from app.auth.forms import LoginForm, RegisterForm, ResetPasswordRequestForm
 from app.document import bp
@@ -68,7 +67,7 @@ def index():
     register = RegisterForm(meta={'csrf': False})
     login = LoginForm(meta={'csrf': False})
     resetpw = ResetPasswordRequestForm(meta={'csrf': False})
-    return render_template('document/upload_doc.html', title='Document',form=register, formlogin=login, formresetpw=resetpw)
+    return render_template('document/upload_doc.html', title='Tải tài liệu lên',form=register, formlogin=login, formresetpw=resetpw)
 
 ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'}
 def allowed_file(filename):
@@ -214,7 +213,7 @@ def get_document_form(id):
         document["save"] = save
         document["dislike"] = dislike
 
-    return render_template('document/document_detail.html', form=register, formlogin=login, 
+    return render_template('document/document_detail.html', title="" + document["document_name"], form=register, formlogin=login, 
                         formresetpw=resetpw, document=document)
 
 @bp.route("/<int:id>/detail", methods=['GET'])
@@ -421,4 +420,21 @@ def report(document_id):
     os.remove(file_path)
 
     return jsonify({'message': msg, 'code': code, 'data': data})
+
+@bp.route("/<document_id>/re_load", methods=['POST'])
+@jwt_required()
+def re_load(document_id):
+    try:
+        document, code, _ = DocumentsDataService().get_by_id(document_id)
+
+        if(code != 0):
+            return jsonify({'message': 'Tài liệu không tồn tại', 'code': 0, 'data': None}) 
+        
+        DocumentsDataService().update_processing_status(0, document["id"])
+        url = f"https://edushare-s3.s3.amazonaws.com/{document['document_name']}"
+        tasks.page_pdf_and_build_vector_db.delay(url, document['document_name'], document['id'], current_user.id)
+
+        return jsonify({'message': 'Đang xử lý tài liệu', 'code': 0, 'data': None})    
+    except Exception as e:
+        return jsonify({'message': 'Không thể xử lý tài liệu', 'code': -1, 'data': None})       
         

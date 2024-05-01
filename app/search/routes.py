@@ -26,3 +26,30 @@ def search_documents_route():
     return render_template('home/search.html', title='Tìm kiếm', form=register, 
                            formlogin=login, formresetpw=resetpw, categories=categories, 
                            documents=documents, query=query, sort=sort, is_sell=is_sell, cat_id=cat_id, cat_name=cat_name)
+
+@bp.route("/terms", methods=["GET"])
+def terms():
+    register = RegisterForm(meta={'csrf': False})
+    login = LoginForm(meta={'csrf': False})
+    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
+
+    return render_template('home/terms.html', title='Điều khoản sử dụng', form=register, 
+                           formlogin=login, formresetpw=resetpw)
+
+@bp.route("/privacy-policy", methods=["GET"])
+def privacy_policy():
+    register = RegisterForm(meta={'csrf': False})
+    login = LoginForm(meta={'csrf': False})
+    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
+
+    return render_template('home/privacy_policy.html', title='Chính sách bảo mật', form=register, 
+                           formlogin=login, formresetpw=resetpw)
+
+@bp.route("/about-us", methods=["GET"])
+def about_us():
+    register = RegisterForm(meta={'csrf': False})
+    login = LoginForm(meta={'csrf': False})
+    resetpw = ResetPasswordRequestForm(meta={'csrf': False})
+
+    return render_template('home/about_us.html', title='Giới thiệu về EduShare', form=register, 
+                           formlogin=login, formresetpw=resetpw)

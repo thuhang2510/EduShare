@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block app_content %}
+<div class="justify-content-center" style="width:100vw; min-height: 50%; position:relative; top:70px;">
+    <div class="container mt-2">
+        <h5 class="mb-4 pt-3"> Điều khoản sử dụng </h5>
+        <hr/>
+        <p>Các Điều khoản Sử dụng này áp dụng cho việc sử dụng Nền tảng của EduShare. Vui lòng đọc kỹ các Điều khoản Sử dụng này để đảm bảo rằng bạn nhận thức được các quyền và nghĩa vụ của mình khi sử dụng Nền tảng.</p>
+        <p>Các Điều khoản Sử dụng này, ngoài những điều khác, mô tả các khía cạnh sau của mối quan hệ giữa bạn và EduShare: </p>
+        <ul>
+            <li>Việc cung cấp Tài liệu Nghiên cứu (điều 6).</li>
+            <li>Các chức năng của Nền tảng (điều 3 - 5).</li>
+            <li>Việc sử dụng chức năng Hỏi AI (điều 7).</li>
+            <li>Thủ tục thông báo và gỡ bỏ (điều 12).</li>
+            <li>Giới hạn trách nhiệm của EduShare (điều 13).</li>
+        </ul> 
+        
+        <h6>Điều 1: Định nghĩa</h6>            
+        <p>Trong các Điều khoản Sử dụng này, các thuật ngữ được liệt kê dưới đây có ý nghĩa như sau:</p>
+        <p>1.1. AI: phần mềm sử dụng kỹ thuật trí tuệ nhân tạo để tạo ra câu trả lời cho các câu hỏi do Thành viên Premium gửi thông qua phần Hỏi AI.</p>
+        <p>1.2. Tài khoản Premium: Thành viên Premium ngoài thực hiện các chức năng của Thành viên thường thì Premium có thể thực hiện chức năng như Tải xuống và Hỏi AI</p>
+        <p>1.3. Thông tin cá nhân: Khi bạn đăng ký tài khoản, bạn sẽ tạo ra cuốn sổ tay này và có thể chỉnh sửa nó bất cứ lúc nào.</p>
+        <p>1.4. Thành viên / bạn: Người dùng Nền tảng.</p>
+        <p>1.5. Điều khoản sử dụng: các Điều khoản sử dụng này của EduShare.</p>
+        
+        <h6>Điều 2: Ứng dụng</h6>
+        <p>2.1. Các Điều khoản sử dụng này chi phối mọi hoạt động sử dụng Nền tảng. Bằng cách sử dụng Nền tảng, bạn chấp nhận các Điều khoản sử dụng này. Khả năng áp dụng của bất kỳ điều khoản và điều kiện nào khác đều bị loại trừ.</p>
+        <p>2.2. EduShare có quyền sửa đổi hoặc bổ sung các Điều khoản sử dụng này. Bạn có thể tìm thấy Điều khoản sử dụng cập nhật nhất trên Nền tảng. Trong trường hợp có sửa đổi hoặc bổ sung ảnh hưởng đáng kể đến quyền hoặc nghĩa vụ của bạn, EduShare sẽ lưu ý bạn về những thay đổi này trong quá trình sử dụng Nền tảng.</p>
+        <p>2.3. Trong trường hợp bạn tiếp tục sử dụng Nền tảng sau khi các Điều khoản sử dụng này đã được sửa đổi hoặc bổ sung, thì bạn chấp nhận Điều khoản sử dụng được sửa đổi hoặc bổ sung một cách không thể thay đổi. Nếu bạn không đồng ý với Điều khoản sử dụng được sửa đổi hoặc bổ sung, lựa chọn duy nhất bạn có là không sử dụng Nền tảng nữa</p>
+    
+        <h6>Điều 3: Tính sẵn có</h6>
+        <p>3.1. Bạn chấp nhận rằng Nền tảng chỉ chứa các chức năng và đặc điểm khác như được tìm thấy trên Nền tảng tại thời điểm sử dụng ("nguyên trạng"). EduShare loại trừ rõ ràng mọi đảm bảo, cam kết và bảo đảm rõ ràng và ngầm dưới bất kỳ hình thức nào, bao gồm nhưng không giới hạn đối với chất lượng, sự an toàn, tính hợp pháp, tính toàn vẹn và độ chính xác của Nền tảng, trừ khi có quy định rõ ràng khác trong Điều khoản sử dụng này.</p>
+        <p>3.2. Bạn chấp nhận rằng các chức năng của Nền tảng có thể thay đổi.</p>
+        <p>3.3. EduShare có quyền ngừng hoạt động Nền tảng (tạm thời) và/hoặc giảm mức sử dụng Nền tảng mà không cần thông báo trước và không có nghĩa vụ phải trả tiền bồi thường cho bạn, nếu theo ý kiến ​​của EduShare, điều này là cần thiết, chẳng hạn như đối với bảo trì Nền tảng.</p>
+        <p>3.4. EduShare không chịu trách nhiệm pháp lý hoặc có nghĩa vụ buộc Sinh viên phải bồi thường bằng bất kỳ cách nào cho bất kỳ thiệt hại nào phát sinh hoặc phát sinh từ việc trang web (tạm thời) không khả dụng.</p>
+        <p>3.5. EduShare có quyền thay đổi, thay đổi hoặc tắt Nền tảng vào bất kỳ lúc nào mà không phải chịu trách nhiệm pháp lý với bạn dưới bất kỳ hình thức nào. Nếu bạn không đồng ý với những thay đổi và/hoặc sửa đổi do EduShare thực hiện, biện pháp khắc phục duy nhất của bạn là ngừng sử dụng Nền tảng và xóa Hồ sơ của bạn.</p>
+    
+        <h6>Điều 4: Nền tảng</h6>
+        <p>4.1. EduShare cung cấp Nền tảng nơi Thành viên có thể trao đổi Tài liệu học tập.</p>
+        <p>4.2. Thông qua nền tảng, Thành viên có quyền truy cập vào hàng triệu Tài liệu Học tập do các Sinh viên khác đăng. EduShare không chịu bất kỳ trách nhiệm pháp lý nào đối với Tài liệu học tập do bạn hoặc các Thành viên khác cung cấp thông qua Nền tảng.</p>
+        <p>4.3. Nền tảng có thể chứa các liên kết đến các trang web của bên thứ ba không do EduShare sở hữu hoặc kiểm soát. EduShare không kiểm soát và không chịu trách nhiệm về nội dung, chính sách bảo mật hoặc thông lệ của bất kỳ trang web bên thứ ba nào.</p>
+    
+        <h6>Điều 5: Tài khoản premium</h6>
+        <p>5.1. Thành viêb có thể có được quyền truy cập Premium bằng cách đăng Tài liệu học tập lên Nền tảng.</p>
+        <p>5.2. Đối với mỗi tài liệu bạn đăng, bạn có thể kiếm được nhiều ngày truy cập Premium. Số ngày sẽ được thông báo qua Nền tảng.</p>
+
+        <h6>Điều 6: Tài liệu học tập</h6>
+        <p>6.1. Thông qua Nền tảng, Sinh viên có thể đăng Tài liệu học tập cho các khóa học và trường đại học mà họ đã chọn. Tài liệu nghiên cứu này sau đó có thể được xem và tải xuống bởi những người dùng khác.</p>
+        <p>6.2. Đối với mỗi bài đăng mới, bạn kiếm được quyền truy cập Premium miễn phí trong 14 ngày.</p>
+        <p>6.3. Cách thức đăng Tài liệu nghiên cứu lên Nền tảng cũng như các định dạng được phép đều được nêu trên Nền tảng.</p>
+        <p>6.4. Bạn hiểu và chấp nhận rằng bạn chịu trách nhiệm và chịu trách nhiệm về Tài liệu học tập mà bạn đăng trên Nền tảng. Bạn quyết định Tài liệu học tập nào bạn đăng trên Nền tảng. EduShare không chịu trách nhiệm pháp lý với bạn hoặc bất kỳ bên thứ ba nào về bất kỳ thiệt hại nào phát sinh từ hoặc liên quan đến Tài liệu nghiên cứu do bạn tạo và chia sẻ trong Nền tảng.</p>
+        <p>6.5. Bạn hiểu và chấp nhận rằng EduShare không và không có nghĩa vụ kiểm tra hoặc (lại) xem Tài liệu học tập của các Sinh viên khác. EduShare không biết và/hoặc không có ảnh hưởng hoặc liên quan đến Tài liệu học tập do Sinh viên đăng.</p>
+        <p>6.6. EduShare có quyền chuyển đổi Tài liệu học tập mà bạn đã tải lên sang tự động chèn hình mờ và/hoặc quảng cáo vào Tài liệu học tập.</p>
+        <p>6.7. Nếu bạn hoặc khách truy cập Nền tảng cho rằng Tài liệu nghiên cứu nhất định là bất hợp pháp, bạn có thể báo cáo điều này với EduShare. EduShare có quyền xóa Tài liệu học tập theo điều 14.</p>
+        <p>6.8. EduShare có quyền từ chối hoặc xóa Tài liệu nghiên cứu khỏi Nền tảng (ví dụ: nếu Tài liệu nghiên cứu được đề cập được báo cáo) và/hoặc di dời Tài liệu nghiên cứu mà không chấp nhận bất kỳ trách nhiệm hoặc trách nhiệm pháp lý nào đối với nội dung của nó, không chịu trách nhiệm về bất kỳ thiệt hại nào và không có nghĩa vụ phải bồi thường bất kỳ khoản nào.</p>
+    
+        <h6>Điều 7: Hỏi AI</h6>
+        <p>7.1. Để sử dụng chức năng Hỏi AI. Tài khoản của bạn phải là premium.</p>
+        <p>7.2. AI sẽ tạo ra Câu trả lời AI trong vòng vài giây. Tuy nhiên, EduShare không đảm bảo rằng Câu trả lời AI luôn được cung cấp trong khung thời gian này và không chịu trách nhiệm pháp lý về vấn đề này.</p>
+        <p>7.3. Bạn đồng ý chỉ sử dụng Hỏi & Đáp AI cho các mục đích (nghiên cứu) hợp pháp và hành động một cách liêm chính trong học thuật. Điều này có nghĩa là, ngoài những điều khác, bạn sẽ không lạm dụng phần Hỏi đáp AI cho mục đích gian lận và/hoặc bạn sẽ không sao chép Câu trả lời AI trực tiếp từ Nền tảng của chúng tôi và gửi chúng dưới dạng tác phẩm của riêng bạn.</p>
+        <p>7.4. Câu trả lời AI chỉ được sử dụng cho mục đích thông tin chung, không thay thế cho việc đánh giá trực tiếp hoặc tư vấn chuyên môn cụ thể. EduShare không chịu trách nhiệm về tính chính xác hoặc đầy đủ của Câu trả lời AI.</p>
+        <p>7.5. Bạn hiểu và chấp nhận rằng bạn chịu trách nhiệm và chịu trách nhiệm về các Câu hỏi nghiên cứu mà bạn gửi qua phần Hỏi đáp AI. EduShare không chịu trách nhiệm pháp lý với bạn hoặc bất kỳ bên thứ ba nào về bất kỳ thiệt hại nào phát sinh từ hoặc liên quan đến Câu hỏi nghiên cứu mà bạn gửi qua Hỏi đáp AI.</p>
+        <p>7.6. EduShare sẽ không lưu trữ bất kỳ cuộc hội thoại nào khi thoát khỏi giao diện Hỏi AI.</p>
+
+        <h6>Điều 8: Nghĩa vụ của bạn và việc sử dụng Nền tảng</h6>
+        <p>8.1. Bạn sẽ chỉ sử dụng Tài liệu học tập và/hoặc Câu trả lời AI được cung cấp trên Nền tảng của bạn như một công cụ hỗ trợ học tập và phù hợp với tính chính trực trong học tập.</p>
+        <p>8.2. Các tài liệu trên EduShare đều là các tài liệu mở. Có nghĩa là bạn có thể sử dụng các tài liệu nhưng phải tuân theo các giấy phép/ quyền của tài liệu đó.</p>
+        <p>8.3. EduShare có thể thay đổi quyền truy cập của bạn nếu điều này là cần thiết theo quan điểm của EduShare mà không dẫn đến bất kỳ trách nhiệm pháp lý nào.</p>
+
+        <h6 id="CC">Điều 9: Quyền sở hữu trí tuệ</h6>
+        <p>9.1. Chúng tôi tôn trọng quyền sở hữu trí tuệ của tác giả, nhà xuất bản và người sáng tạo và chúng tôi mong muốn Người dùng của mình tuân thủ tất cả các luật sở hữu trí tuệ hiện hành. Chính sách của chúng tôi là tuân thủ luật pháp Việt Nam và chấm dứt các chủ tài khoản liên tục vi phạm hoặc được cho là vi phạm nhiều lần quyền sở hữu trí tuệ.</p>
+        <p>9.2. Giấy phép Creative Commons chỉ có thể áp dụng cho các tác phẩm gốc hoặc các tác phẩm có nguồn gốc từ các tác phẩm khác trong phạm vi công cộng hoặc Creative Commons. Bất kỳ nỗ lực nào để áp dụng giấy phép Creative Commons cho tác phẩm có bản quyền của người khác đều là vi phạm bản quyền.</p>
+        <p><strong>EduShare hỗ trợ các giấy phép bản quyền sau:</strong></p>
+        <p><img src="https://s-f.scribdassets.com/images/static/copyright/cc/copyright.png" alt="Bản quyền" style="width: 96px;" class="me-3"><strong>Bản quyền. Đã đăng ký bản quyền</strong></p>
+        <p>Theo bản quyền truyền thống, không ai có thể sao chép, tái sử dụng, xây dựng hoặc chỉnh sửa tác phẩm của bạn theo bất kỳ cách nào mà không có sự cho phép rõ ràng của bạn.</p>
+        <p><img src="https://s-f.scribdassets.com/images/static/copyright/cc/cc-by.png" alt="CC BY" class="me-3" style="width: 96px;"><strong>Ghi công (CC BY)</strong></p>
+        <p>CC BY cho phép người khác phân phối, phối lại, tinh chỉnh và xây dựng dựa trên tác phẩm của bạn, thậm chí về mặt thương mại, miễn là họ ghi nhận bạn cho sáng tạo ban đầu. Đây là giấy phép phù hợp nhất được cung cấp. </p>
+        <p><img src="https://s-f.scribdassets.com/images/static/copyright/cc/cc-by-sa.png" alt="CC BY-SA" class="me-3" style="width: 96px;"><strong>Ghi công-Chia sẻ tương tự (CC BY-SA)</strong></p>
+        <p>CC BY-SA cho phép người khác phối lại, tinh chỉnh và xây dựng dựa trên tác phẩm của bạn ngay cả cho mục đích thương mại, miễn là họ ghi công bạn và cấp phép cho những sáng tạo mới của họ theo các điều khoản giống hệt nhau. Giấy phép này thường được so sánh với giấy phép phần mềm mã nguồn mở và miễn phí "copyleft". Tất cả các tác phẩm mới dựa trên tác phẩm của bạn sẽ có cùng giấy phép, vì vậy bất kỳ sản phẩm phái sinh nào cũng sẽ cho phép sử dụng thương mại. Đây là giấy phép được sử dụng bởi Wikipedia và được khuyến nghị cho các tài liệu sẽ được hưởng lợi từ việc kết hợp nội dung từ Wikipedia và các dự án được cấp phép tương tự.</p>
+        <p><img src="https://s-f.scribdassets.com/images/static/copyright/cc/cc-by-nd.png" alt="CC BY-ND" class="me-3" style="width: 96px;"><strong>Ghi công-NoDerivs (CC BY-ND)</strong></p>
+        <p>CC BY-ND cho phép phân phối lại, thương mại và phi thương mại, miễn là nó được chuyển giao không thay đổi và toàn bộ, với tín dụng cho bạn.</p>
+        <p><img src="https://s-f.scribdassets.com/images/static/copyright/cc/cc-by-nc.png" alt="CC BY-NC" class="me-3" style="width: 96px;"><strong>Ghi công-Phi thương mại (CC BY-NC)</strong></p>
+        <p>CC BY-NC cho phép người khác phối lại, chỉnh sửa và xây dựng dựa trên tác phẩm của bạn phi thương mại và mặc dù tác phẩm mới của họ cũng phải thừa nhận bạn và phi thương mại, họ không phải cấp phép cho các tác phẩm phái sinh của họ theo cùng một điều khoản.</p>
+        <p><img src="https://s-f.scribdassets.com/images/static/copyright/cc/cc-by-nc-sa.png" alt="CC BY-NC-SA" class="me-3" style="width: 96px;"><strong>Ghi công-Phi thương mại-Chia sẻ tương tự (CC BY-NC-SA)</strong></p>
+        <p>CC BY-NC-SA cho phép người khác phối lại, tinh chỉnh và xây dựng dựa trên tác phẩm của bạn phi thương mại, miễn là họ ghi công bạn và cấp phép cho những sáng tạo mới của họ theo các điều khoản giống hệt nhau.</p>
+        <p><img src="https://s-f.scribdassets.com/images/static/copyright/cc/cc-by-nc-nd.png" alt="CC BY-NC-ND" class="me-3" style="width: 96px;"><strong>	 Ghi công-Phi thương mại-NoDerivs (CC BY-NC-ND)</strong></p>
+        <p>CC BY-NC-ND là giấy phép hạn chế nhất trong số các giấy phép Creative Commons, chỉ cho phép người khác tải xuống tác phẩm của bạn và chia sẻ chúng với người khác miễn là họ ghi công bạn, nhưng họ không thể thay đổi chúng theo bất kỳ cách nào hoặc sử dụng chúng cho mục đích thương mại.</p>
+        <p><img src="https://s-f.scribdassets.com/images/static/copyright/cc/public-domain.png" alt="Phạm vi cộng đồng" class="me-3" style="width: 45px; height: 45px;"><strong>Phạm vi công cộng</strong></p>
+        <p>Phạm vi công cộng đề cập đến các tác phẩm sáng tạo mà bản quyền đã hết hạn hoặc bị tự nguyện tước bỏ. Hạn chế bản quyền không áp dụng cho các tác phẩm thuộc phạm vi công cộng. Nội dung trong phạm vi công cộng có thể được sao chép, thay đổi hoặc sử dụng lại bởi bất kỳ ai, bất cứ lúc nào.</p>
+        
+        <h6>Điều 10: Bồi thường và đảm bảo</h6>
+        <p>10.1. Bạn đồng ý không sử dụng Nền tảng theo cách vi phạm pháp luật, quyền của EduShare hoặc bên thứ ba, bao gồm quyền sở hữu trí tuệ và quyền riêng tư.</p>
+        <p>10.2. Bạn chịu trách nhiệm bồi thường cho EduShare nếu bạn vi phạm các Điều khoản sử dụng này và gây ra thiệt hại cho EduShare hoặc bên thứ ba.</p>
+        <p>10.3. EduShare không đảm bảo rằng Nền tảng luôn hoạt động hoàn hảo hoặc Tài liệu Nghiên cứu luôn chính xác và đầy đủ.</p>
+
+        <h6>Điều 11: Tải và chia sẻ tài liệu học tập</h6>
+        <p>11.1. Các tài liệu chỉ có thể tải được khi tài khoản của bạn là premium.</p>
+        <p>11.2. Tùy vào giấy phép tài liệu và bạn có quyền chia sẻ tài liệu khác nhau.</p>
+
+        <h6>Điều 12: Thông báo về tài liệu bị cho là vi phạm pháp luật và người vi phạm nhiều lần</h6>
+        <p>12.1. Bạn có thể báo cáo Tài liệu vi phạm Quyền Sở hữu trí tuệ của bạn cho EduShare.</p>
+        <p>12.1. Bạn cần cung cấp thông tin chứng minh bạn là chủ sở hữu Quyền Sở hữu trí tuệ và thông tin chứng minh tài liệu vi phạm.</p>
+        <p>12.1. EduShare sẽ xem xét thông báo của bạn trong 1 tuần và có thể xóa tài liệu vi phạm.</p>
+        <p>12.1. EduShare có quyền chấm dứt tài khoản của những người vi phạm Quyền Sở hữu trí tuệ nhiều lần.</p>
+
+        <h6>Điều 13: Trách nhiệm</h6>
+        <p>13.1. EduShare không chịu trách nhiệm pháp lý đối với thiệt hại phát sinh từ việc sử dụng Nền tảng.</p>
+        <p>13.2. Thành viên sẽ chịu hoàn toàn trách nhiệm đối với nội dung tài liệu đã tải lên.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+</script>
+{% endblock %}

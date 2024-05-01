@@ -135,8 +135,7 @@ class DocumentsDataService():
                                     "view_count": item[2], 
                                     "download_count": item[3], 
                                     "creation_date": item[4], 
-                                    "price": item[5], 
-                                    "image": item[6],
+                                    "image": item[5],
                                     "evaluate": [evaluate]})
                 else:
                     rea[indx][1].append(evaluate)
@@ -164,10 +163,9 @@ class DocumentsDataService():
                 if index == 0:
                     results = {"id": item[0], 
                                 "document_name": item[1].split(".")[0], 
-                                "price": item[2], 
-                                "image": item[3],
-                                "description": item[4],
-                                "license": item[5],
+                                "image": item[2],
+                                "description": item[3],
+                                "license": item[4],
                                 "categories": [categories.to_dict()]}
                 else:
                     results["categories"].append(categories.to_dict())
@@ -182,7 +180,7 @@ class DocumentsDataService():
         try:
             document = Documents.find_by_id_tuple_with_account(id)
             
-            keys = ('id', 'document_name', 'description', 'view_count', 'download_count', 'price', 'type', 'account_id', 'image', 'fullname', 'email')
+            keys = ('id', 'document_name', 'description', 'view_count', 'download_count', 'type', 'account_id', 'image', 'fullname', 'email')
             
             result = dict(zip(keys, document))
             return result, 0, "Get document success"
@@ -193,7 +191,6 @@ class DocumentsDataService():
         try:
             documents = Documents.find_by_id_and_status(document_id)
             documents.description = data['description']
-            documents.price = data['price']
             documents.license = data['license']
             
             if(direction_file != '/static/images/'):

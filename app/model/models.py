@@ -21,6 +21,7 @@ class Account(UserMixin, db.Model):
     password_hash = db.Column(db.String(255))
     number = db.Column(db.String(11), unique=True, index=True, nullable=False)
     status = db.Column(db.Boolean(), nullable=False, server_default='1')
+    cccd = db.Column(db.String(12), unique=True, index=True, nullable=False)
     address = db.Column(db.String(255))
     number_ask = db.Column(db.Integer, server_default='0')
     datetime_day_reset = db.Column(db.DateTime, default=datetime.utcnow)
@@ -59,7 +60,7 @@ class Account(UserMixin, db.Model):
         return data
     
     def from_dict(self, data, new_user=False):
-        for field in ['fullname', 'email', 'number', 'password_hash', 'address']:
+        for field in ['fullname', 'email', 'number', 'password_hash', 'address', 'cccd']:
             if field in data:
                 setattr(self, field, data[field])
                 
@@ -212,7 +213,6 @@ class Documents(db.Model):
     document_name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(5), nullable=False)
     description = db.Column(db.String(255), nullable=False)
-    price = db.Column(db.Integer, server_default='0', nullable=False)
     download_count = db.Column(db.Integer, server_default='0')
     view_count = db.Column(db.Integer, server_default='0')
     image = db.Column(db.String(255))
@@ -237,7 +237,6 @@ class Documents(db.Model):
             'description': self.description,
             'view_count': self.view_count,
             'download_count': self.download_count,
-            'price': self.price,
             'type': self.type,
             'account_id': self.account_id,
             'image': self.image,
@@ -254,7 +253,6 @@ class Documents(db.Model):
             'description': self.description,
             'view_count': self.view_count,
             'download_count': self.download_count,
-            'price': self.price,
             'type': self.type,
             'account_id': self.account_id,
             'creation_date': self.creation_date,
@@ -275,7 +273,6 @@ class Documents(db.Model):
             'description': document.description,
             'view_count': document.view_count,
             'download_count': document.download_count,
-            'price': document.price,
             'license': document.license,
             'type': document.type,
             'account_id': document.account_id,
@@ -288,7 +285,7 @@ class Documents(db.Model):
         return data
     
     def from_dict(self, data):
-        for field in ['document_name', 'description', 'price', 'type', 'license']:
+        for field in ['document_name', 'description', 'type', 'license']:
             if field in data:
                 setattr(self, field, data[field])
 
@@ -378,7 +375,7 @@ class Documents(db.Model):
     def find_by_id_tuple_with_categories(cls, _id):
         return cls.query.\
             join(cls.categories, isouter=True).\
-            with_entities(cls.id, cls.document_name, cls.price, cls.image, cls.description, cls.license).\
+            with_entities(cls.id, cls.document_name, cls.image, cls.description, cls.license).\
             filter(cls.id==_id, cls.status==True).\
             add_entity(Categories).\
             all()
@@ -386,7 +383,7 @@ class Documents(db.Model):
     @classmethod
     def find_by_id_tuple_with_account(cls, _id):
         return cls.query.\
-            with_entities(cls.id, cls.document_name, cls.description, cls.view_count, cls.download_count, cls.price, cls.type, cls.account_id, cls.image).\
+            with_entities(cls.id, cls.document_name, cls.description, cls.view_count, cls.download_count, cls.type, cls.account_id, cls.image).\
             join(Account).\
             filter(cls.id==_id, cls.status==True, cls.processing_status==1).\
             add_columns(Account.fullname, Account.email).\
@@ -404,18 +401,13 @@ class Documents(db.Model):
     def find_by_account_id(cls, _account_id):
         return cls.query.\
             join(cls.evaluate, isouter=True).\
-            with_entities(cls.id, cls.document_name, cls.view_count, cls.download_count, cls.creation_date, cls.price, cls.image ,Evaluate.type).\
+            with_entities(cls.id, cls.document_name, cls.view_count, cls.download_count, cls.creation_date, cls.image ,Evaluate.type).\
             filter(cls.account_id==_account_id, cls.status==True, cls.processing_status==1).\
             all()
     
     @classmethod
     def find_by_account_id_with_paginate(cls, _account_id, page, per_page, type, keyword):
         query = cls.query.filter(cls.account_id==_account_id, cls.status==True, cls.processing_status==1)
-            
-        if type == "free":
-            query = query.filter(cls.price==0)
-        elif type == "pay_fees":
-            query = query.filter(cls.price>0)
 
         if keyword != "":
             query = query.filter(cls.document_name.ilike('%' + keyword + '%'))
@@ -454,7 +446,7 @@ class Documents(db.Model):
             .paginate(page=page, per_page=per_page) 
 
     @classmethod
-    def search(cls, page, per_page, value, sort, price, cat_id):
+    def search(cls, page, per_page, value, sort, cat_id):
         query =  cls.query.\
             join(Account).\
             add_column(Account.fullname).\
@@ -464,11 +456,6 @@ class Documents(db.Model):
             query = query.order_by(desc(cls.download_count))
         elif (sort == 2):
             query = query.order_by(desc(cls.view_count))
-
-        if price == 1:
-            query = query.filter(cls.price == 0)
-        elif price == 2:
-            query = query.filter(cls.price > 0)
 
         if cat_id != 0:
             query = query.join(DocumentCategories, DocumentCategories.document_id==cls.id).\
@@ -546,7 +533,6 @@ class Evaluate(db.Model):
             'description': document.description,
             'view_count': document.view_count,
             'download_count': document.download_count,
-            'price': document.price,
             'fullname': fullname_account
         }
 

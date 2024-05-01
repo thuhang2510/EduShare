@@ -13,25 +13,31 @@
                 <nav class="navbar navbar-expand-lg px-3">
                     <div class="container-md">
                         <a id="selectDetail" class="navbar-brand col-6 text-center" onclick="clickInfoDetail()"
-                            style="color: rgb(2, 126, 176); border-color: rgb(2, 126, 176); border-bottom: 5px solid rgb(2, 126, 176);">Thông
+                            style="cursor: pointer; color: rgb(2, 126, 176); border-color: rgb(2, 126, 176); border-bottom: 5px solid rgb(2, 126, 176);">Thông
                             tin</a>
-                        <a id="selectAI" class="navbar-brand col-6 text-center" onclick="clickAI()">Hỏi AI</a>
+                        <a id="selectAI" class="navbar-brand col-6 text-center" style="cursor: pointer;" onclick="clickAI()">Hỏi AI</a>
                     </div>
                 </nav>
                 <div id="infor-detail" class="px-4"
                     style="width:100%; height:690px; overflow-y:scroll; scrollbar-width: none;">
                     <h3>{{ document["document_name"] }}</h3>
-                    <p>Tài liệu này được cấp phép theo: 
-                        {% if document["license"] == "all_license" %}
-                            <a href="#">Tất cả các quyền được bảo lưu</a>
-                        {% else %}
-                            <a href="#" style="display:inline-block;">{{ document["license"] }}
-                                {% for component in document["license"]|component_license %}
-                                    <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/{{component}}.svg?ref=chooser-v1" alt="">
-                                {% endfor %}
-                            </a>
-                        {% endif %}    
-                    </p>
+                    <div>
+                        <p>Tài liệu này được cấp phép theo: 
+                            <a href="/terms#CC" style="display:inline-block;">
+                                {% if document["license"] == "Copyright" %}
+                                    <img style="height:40px!important;margin-left:3px;vertical-align:text-center;" src="https://s-f.scribdassets.com/images/static/copyright/cc/copyright.png" alt="Giấp phép truyền thống">
+                                {% elif document["license"] == "Public" %}
+                                    <img style="height:40px!important;margin-left:3px;vertical-align:text-center;" src="https://s-f.scribdassets.com/images/static/copyright/cc/public-domain.png" alt="Phạm vi công cộng">
+                                {% else %}
+                                    {% for component in document["license"]|component_license %}
+                                        {% if component != 'cc'%}
+                                            <img style="height:40px!important;margin-left:3px;vertical-align:text-center;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/{{component}}.png" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </a>  
+                        </p>
+                    </div>
                     <p>
                         <span class="me-2">
                             <i class="bi bi-eye"></i> {{ document["view_count"]}}
@@ -433,7 +439,7 @@
                 showAIResponse("Bạn có thể đặt bất kỳ câu hỏi nào liên quan đến tài liệu này. Và hệ thống sẽ không lưu trữ lịch sử hỏi đáp.")
             }
             else {
-                show_base_alert(-1, "Bạn không thể dùng tính năng này");
+                show_base_alert(-1, "Hãy lên tài khoản premium để thực hiện tính năng này.");
             }
         } catch (error) {
             console.log(error.message);
@@ -838,6 +844,7 @@
             })
                 .then(response => {
                     if (response.ok) {
+                        alert("Các tài liệu bạn tải xuống cần thực hiện theo giấy phép của tài liệu.");
                         response.blob().then(blob => {
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement("a")
@@ -851,7 +858,7 @@
                         show_base_alert(-1, "Bạn cần đăng nhập để thực hiện chức năng này.");
                     }
                     else if (response.status == 403) {
-                        show_base_alert(-1, "Bạn không có quyền để sử dụng chức năng này.")
+                        show_base_alert(-1, "Tài khoản của bạn cần lên premium để thực hiện tính năng này.")
                     }
                     else {
                         console.error('Có lỗi xảy ra khi tải xuống tệp');
@@ -860,7 +867,6 @@
     }
 
     function downloadDocument() {
-        alert("Các tài liệu bạn tải xuống chỉ được sử dụng với mục đích học tập, nghiên cứu. Không sử dụng với mục đích thương mại.");
         downloadDocPremium()
     }
     

@@ -18,7 +18,11 @@
             {% for document in documents.items %}
             <div class="carousel-item mb-5" style="cursor: pointer;" onclick="openDocumentDetail('{{document[0].id}}')">
                 <div class="card">
-                    <div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px"><img src="{{ document[0].image }}" class="d-block img-detail" alt="..."> </div></div>
+                    {% if document[0].image == null or document[0].image == "/static/images/" %}
+                        <div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px"><img src="/static/images/default_book.png" class="d-block img-detail" alt="..."> </div></div>
+                    {% else %}
+                        <div class="img-wrapper"><div style="width: 140px; height:174px;position: absolute;top: 24px"><img src="{{ document[0].image }}" class="d-block img-detail" alt="..."> </div></div>
+                    {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ document[0].document_name | get_only_document_name }}</h5>
                         <p class="card-text">Được thêm bởi {{ document[1] }}</p>

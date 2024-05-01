@@ -38,14 +38,18 @@
                     <div class="author-card-cover"></div>
                     <div class="author-card-profile">
                         <div class="author-card-avatar text-center bg-secondary">
-                            <span id="base-profile-img" class="h4 text-white"></span>
+                            <span id="base-profile-img" class="h4 text-white">H</span>
                         </div>
                         <div class="author-card-details">
                             <h4 id="base-profile-name" class="author-card-name text-lg"></h4>
                             <span id="base-profile-email" class="author-card-position"></span>
                         </div>
+                        <div id="icon-premium" class="ps-4" style="position: absolute; bottom: 10px; left: 50px; visibility: hidden;">
+                            <img src="/static/images/premium.png" style="height: 30px; width: 28px" />
+                        </div>
                     </div>
-                    <div class="ps-4" style="display: none;"><h6>Tài liệu: <span>0</span></h5></div>
+                    <div class="ps-4" id="account-premium-time">
+                    </div>
                 </div>
                 <div class="wizard">
                     <nav class="list-group list-group-flush">
@@ -77,6 +81,8 @@
                         <a id="document_saved" href="/user/quan-ly-tai-lieu?type=saved" class="nav-link">Tài liệu được lưu</a>
                     </li>
                 </ul>
+                <p class="text-right mt-3" id="page-result">
+                </p>
                 <div id="loading" class="loading mt-3"></div>
                 <div id="all-document">
                 </div>
@@ -168,6 +174,16 @@
                 base_profile_name.innerHTML = result.data["fullname"];
                 base_profile_email.innerHTML = result.data["email"]
                 base_profile_img.innerHTML = result.data["fullname"][0];
+
+                var currentDate = new Date();
+                var premium_start = new Date(result.data["premium_start"])
+                const days = Math.floor((currentDate - premium_start) / (1000 * 60 * 60 * 24));
+
+                if(result.data["premium"] > 0 &&  days <= result.data["premium"]){
+                    document.getElementById("icon-premium").style.visibility = "visible";
+                    document.getElementById("account-premium-time").innerHTML = `Thời gian premium còn lại là ${result.data["premium"] - days} ngày`;
+                }
+
                 openLogin();
                 userCurrentId = result.data["id"]
             }
@@ -196,6 +212,12 @@
 
                 var divDeXuat = document.getElementById("all-document")
                 var html = "";
+
+                if(result.data["total"] > 0){
+                    var page_result = document.getElementById("page-result");
+                    page_result.innerHTML = `${result.data["first"]} - ${result.data["last"]} trong ${result.data["total"]} kết quả`;
+                }
+
                 for (var i = 0; i < result.data["items"].length; ++i){
                     html += createDocumentsOfAll(result.data["items"][i])
                 }
@@ -252,8 +274,14 @@
 
                 var div_documents = document.getElementById("all-document")
                 var html = "";
+
+                if(result.data["total"] > 0){
+                    var page_result = document.getElementById("page-result");
+                    page_result.innerHTML = `${result.data["first"]} - ${result.data["last"]} trong ${result.data["total"]} kết quả`;
+                }
+
                 for (var i = 0; i < result.data["items"].length; ++i){
-                    html += createDocumentsOfAll(result.data["items"][i])
+                    html += createDocumentsOfWait(result.data["items"][i])
                 }
                 div_documents.innerHTML = html
 
@@ -284,8 +312,14 @@
 
                 var div_documents = document.getElementById("all-document")
                 var html = "";
+
+                if(result.data["total"] > 0){
+                    var page_result = document.getElementById("page-result");
+                    page_result.innerHTML = `${result.data["first"]} - ${result.data["last"]} trong ${result.data["total"]} kết quả`;
+                }
+
                 for (var i = 0; i < result.data["items"].length; ++i){
-                    html += createDocumentsOfAll(result.data["items"][i])
+                    html += createDocumentsOfFail(result.data["items"][i])
                 }
                 div_documents.innerHTML = html
 
@@ -418,6 +452,97 @@
         return html;
     }
 
+    function createDocumentsOfFail(document){
+        html = `<div id="document-${document["id"]}" class="row mt-3 mb-3 p-3 border rounded" style="background-color: white; cursor: default">
+                    <div class="col-2 pe-0">`
+
+                        if (document["image"] != null && document["image"] !== "/static/images/")
+                            html += `<img src="${document["image"]}"
+                                alt="Generic placeholder image" class="img-fluid p-0"
+                                style="width: 100px; height: 120px; border-radius: 10px;">`
+                        else
+                            html += `<img src="/static/images/default_book.png"
+                                    alt="Generic placeholder image" class="img-fluid p-0"
+                                    style="width: 100px; height: 120px; border-radius: 10px;">`
+        html += `   </div>  
+                    <div class="col-6 ps-0">
+                        <h4 class="m-0" onclick="openDocumentDetail(${document["id"]})" style="cursor:pointer">${getOnlyFileName(document["document_name"])}</h4>`
+
+        html += `       <div class="p-0 mb-1 bd-highlight">
+                            <i class="bi bi-hand-thumbs-up me-1"></i><span class="me-3"> ${calculateLikePercentage(document["evaluate"])}%</span>
+                            <i class="bi bi-eye me-1"></i><span> ${document["view_count"]}</span>
+                        </div>
+                        <div class="d-flex flex-row bd-highlight mb-3">
+                            <div onclick="clickDelete('${document["document_name"]}', '${document["id"]}', '${convertDateTimeToGMT7(document["creation_date"])}')" style="cursor: pointer">
+                                <i class="bi bi-trash"></i><span class="me-4"> Xóa</span>
+                            </div>
+                            <div onclick="clickReLoad(${document["id"]})" style="cursor: pointer">
+                                <i class="bi bi-arrow-clockwise"></i><span> Xử lý lại</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 ps-0">
+                        <p class="text-end">Ngày tải lên: ${convertDateTimeToGMT7(document["creation_date"])}</p>
+                    </div>
+                </div>`
+
+        return html;
+    }
+
+    function createDocumentsOfWait(document){
+        html = `<div id="document-${document["id"]}" class="row mt-3 mb-3 p-3 border rounded" style="background-color: white; cursor: default">
+                    <div class="col-2 pe-0">`
+
+                        if (document["image"] != null && document["image"] !== "/static/images/")
+                            html += `<img src="${document["image"]}"
+                                alt="Generic placeholder image" class="img-fluid p-0"
+                                style="width: 100px; height: 120px; border-radius: 10px;">`
+                        else
+                            html += `<img src="/static/images/default_book.png"
+                                    alt="Generic placeholder image" class="img-fluid p-0"
+                                    style="width: 100px; height: 120px; border-radius: 10px;">`
+        html += `   </div>  
+                    <div class="col-6 ps-0">
+                        <h4 class="m-0" onclick="openDocumentDetail(${document["id"]})" style="cursor:pointer">${getOnlyFileName(document["document_name"])}</h4>`
+
+        html += `       <div class="p-0 mb-1 bd-highlight">
+                            <i class="bi bi-hand-thumbs-up me-1"></i><span class="me-3"> ${calculateLikePercentage(document["evaluate"])}%</span>
+                            <i class="bi bi-eye me-1"></i><span> ${document["view_count"]}</span>
+                        </div>
+                        <div class="d-flex flex-row bd-highlight mb-3">
+                            <div onclick="clickDelete('${document["document_name"]}', '${document["id"]}', '${convertDateTimeToGMT7(document["creation_date"])}')" style="cursor: pointer">
+                                <i class="bi bi-trash"></i><span class="me-4"> Xóa</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 ps-0">
+                        <p class="text-end">Ngày tải lên: ${convertDateTimeToGMT7(document["creation_date"])}</p>
+                    </div>
+                </div>`
+
+        return html;
+    }
+
+    async function clickReLoad(document_id){
+        var url = baseURL + "/document/" + document_id + "/re_load"
+
+        try {
+            const result = await postData(url, null, localStorage.token);
+            if (result.code === -1){
+                show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");    
+            }
+            else if(result.code === 0){
+                show_base_alert(0, "Tài liệu đang được xử lý");
+            }
+            else{
+                show_base_alert(-1, "Hãy đăng nhập trước")
+                window.location.replace(baseURL + "/api/v1")
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
     function getOnlyFileName(fileName){
         return fileName.split('.').slice(0, -1).join('.')
     }
@@ -545,73 +670,61 @@
                                             <h6 class="mb-0">Giấy phép <strong style="color: red">*</strong></h6>
                                         </div>
                                         <div class="col-sm-9">`
-                                if (license == "all_license")    
-                                    html += `<div class="text-start">
-                                                <input type="radio" id="all-license" onclick="clickAllLicense()" checked>
-                                                <label class="form-check-label" for="all-license">
-                                                    Tất cả quyền được bảo lưu
-                                                </label>
-                                            </div>
-                                            <div class="text-start">
-                                                <select id="license-cc" class="form-select update-license" aria-label="Default select example" onchange="changeLicense()">
-                                                    <option value="null" selected>Lựa chọn theo giấy phép CC</option>
-                                                    <option value="CC BY">CC BY</option>
-                                                    <option value="CC BY-sa">CC BY-SA</option>
-                                                    <option value="CC BY-ND">CC BY-ND</option>
-                                                    <option value="CC BY-NC">CC BY-NC</option>
-                                                    <option value="CC BY-NC-SA">CC BY-NC-SA</option>
-                                                    <option value="CC BY-NC-ND">CC BY-NC-ND</option>
-                                                </select>
-                                            </div>`
-                                else{
-                                    html += `<div class="text-start">
-                                                <input type="radio" id="all-license" onclick="clickAllLicense()">
-                                                <label class="form-check-label" for="all-license">
-                                                    Tất cả quyền được bảo lưu
-                                                </label>
-                                            </div>
-                                            <div class="text-start">
-                                                <select id="license-cc" class="form-select update-license" aria-label="Default select example">
-                                                    <option value="null">Lựa chọn theo giấy phép CC</option>
-                                                    <option value="CC BY" `
-                                                        if (license == "CC BY")
+                                
+                                html += `
+                                        <div class="text-start">
+                                            <select id="update-license" class="form-select update-license" aria-label="Default select example">
+                                                <option value="null">Lựa chọn theo giấy phép CC</option>
+                                                <option value="Copyright" `
+                                                    if (license == "Copyright")
                                                             html += `selected>`
                                                         else
                                                             html += `>`
-                                                        html += `CC BY</option>
-                                                    <option value="CC BY-SA" `
-                                                        if (license == "CC BY-SA")
-                                                            html += `selected>`
-                                                        else
-                                                            html += `>`
-                                                        html += `CC BY-SA</option>
-                                                    <option value="CC BY-ND" `
-                                                        if (license == "CC BY-ND")
-                                                            html += `selected>`
-                                                        else
-                                                            html += `>`
-                                                        html += `CC BY-ND</option>
-                                                    <option value="CC BY-NC" `
-                                                        if (license == "CC BY-NC")
-                                                            html += `selected>`
-                                                        else
-                                                            html += `>`
-                                                        html += `CC BY-NC</option>
-                                                    <option value="CC BY-NC-SA" `
-                                                        if (license == "CC BY-NC-SA")
-                                                            html += `selected>`
-                                                        else
-                                                            html += `>`
-                                                        html += `CC BY-NC-SA</option>
-                                                    <option value="CC BY-NC-ND" `
-                                                        if (license == "CC BY-NC-ND")
-                                                            html += `selected>`
-                                                        else
-                                                            html += `>`
-                                                        html += `CC BY-NC-ND</option>
-                                                </select>
-                                            </div>`
-                                }                                        
+                                                        html += `Bản quyền truyền thống</option>
+                                                <option value="CC BY" `
+                                                    if (license == "CC BY")
+                                                        html += `selected>`
+                                                    else
+                                                        html += `>`
+                                                    html += `CC BY</option>
+                                                <option value="CC BY-SA" `
+                                                    if (license == "CC BY-SA")
+                                                        html += `selected>`
+                                                    else
+                                                        html += `>`
+                                                    html += `CC BY-SA</option>
+                                                <option value="CC BY-ND" `
+                                                    if (license == "CC BY-ND")
+                                                        html += `selected>`
+                                                    else
+                                                        html += `>`
+                                                    html += `CC BY-ND</option>
+                                                <option value="CC BY-NC" `
+                                                    if (license == "CC BY-NC")
+                                                        html += `selected>`
+                                                    else
+                                                        html += `>`
+                                                    html += `CC BY-NC</option>
+                                                <option value="CC BY-NC-SA" `
+                                                    if (license == "CC BY-NC-SA")
+                                                        html += `selected>`
+                                                    else
+                                                        html += `>`
+                                                    html += `CC BY-NC-SA</option>
+                                                <option value="CC BY-NC-ND" `
+                                                    if (license == "CC BY-NC-ND")
+                                                        html += `selected>`
+                                                    else
+                                                        html += `>`
+                                                    html += `CC BY-NC-ND</option>
+                                                <option value="Public" `
+                                                    if (license == "Public")
+                                                        html += `selected>`
+                                                    else
+                                                        html += `>`
+                                                    html += `Phạm vi công cộng</option>
+                                            </select>
+                                        </div>`
                                 html += `   <div id="update-license-error" class="invalid-feedback mb-1"></div>
                                         </div>
                                     </div>
@@ -729,7 +842,7 @@
                 error: document.getElementById(`danhmuc-error`),
             },
             license: {
-                input: document.getElementsByClassName("update-license"),
+                input: document.getElementById("update-license"),
                 error: document.getElementById(`update-license-error`),
             }
         };
@@ -743,7 +856,7 @@
         const formData = new FormData();
         formData.append('document_id', document_id);
         formData.append('description', document.getElementById(`mota`).value);
-        formData.append('license', document.getElementById(`license-cc`).value);
+        formData.append('license', document.getElementById(`update-license`).value);
 
         var arr = {'categories': [document.getElementById(`danhmuc`).value, document.getElementById(`danhmuc2`).value]};
         formData.append('categories', JSON.stringify(arr));

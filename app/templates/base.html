@@ -108,6 +108,11 @@
                         <div id="email-error" class="invalid-feedback mb-1"></div>
                     </div>
                     <div class="form-group">
+                        {{ form.cccd.label }} <strong style="color: red">*</strong>
+                        {{ form.cccd(class_="form-control rounded-4 my-1", id_="cccd") }}
+                        <div id="cccd-error" class="invalid-feedback mb-1"></div>
+                    </div>
+                    <div class="form-group">
                         {{ form.password.label }} <strong style="color: red">*</strong>
                         {{ form.password(class_="form-control rounded-4 my-1", id_="password") }}
                         <div id="password-error" class="invalid-feedback mb-1"></div>
@@ -292,6 +297,10 @@
         repassword: {
             input: document.getElementById("repassword"),
             error: document.getElementById("repassword-error"),
+        },
+        cccd: {
+            input: document.getElementById("cccd"),
+            error: document.getElementById("cccd-error"),
         }
     };
 
@@ -306,7 +315,8 @@
             'number': fields_register.number.input.value,
             'email': fields_register.email.input.value,
             'password': fields_register.password.input.value,
-            'repassword': fields_register.repassword.input.value
+            'repassword': fields_register.repassword.input.value,
+            'cccd': fields_register.cccd.input.value
         }
 
         try {
@@ -458,10 +468,9 @@
     function updateCountAsk(result) {
         var currentDate = new Date();
         var datetime_day_reset = new Date(result.data["datetime_day_reset"])
-        var date_ask_reset = datetime_day_reset.getDate()
-        var date_current = currentDate.getDate()
+        const days = Math.floor((currentDate - datetime_day_reset) / (1000 * 60 * 60 * 24));
 
-        if (date_current > date_ask_reset) {
+        if (days > 0) {
             updateCountAskAPI(0, true)
         }
         else
