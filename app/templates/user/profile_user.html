@@ -228,7 +228,8 @@
             const result = await postData(url, data, localStorage.token);
             if (result.code === 0){
                 user.lg_fullname.innerHTML = result.data["fullname"];
-                user.ls_fullname.innerHTML = result.data["fullname"];
+                var base_profile_name = document.getElementById("base-profile-name")
+                base_profile_name.innerHTML = result.data["fullname"];
                 fields_account.fullname.input.value = result.data["fullname"];
                 fields_account.address.input.value = result.data["address"];
                 show_base_alert(0, result.message)
