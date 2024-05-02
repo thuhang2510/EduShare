@@ -114,7 +114,7 @@ class DocumentsDataService():
         
     def search_documents(self, page, query, sort, price, cat_id):
         try:
-            documents = Documents.search(page, 25, query, sort, price, cat_id)
+            documents = Documents.search(page, 25, query, sort, cat_id)
             
             return documents, 0, "Get document success"
         except Exception as e:

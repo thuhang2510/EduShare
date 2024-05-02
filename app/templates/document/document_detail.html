@@ -969,7 +969,7 @@
                     else if(result.data[i]["type"] == "dislike"){
                         var documentDisLike = document.getElementById("doc_dislike");
                         documentDisLike.getElementsByTagName("i")[0].classList.remove("bi-hand-thumbs-down");
-                        documentDisLike.getElementsByTagName("i")[0].classList.remove("bi-hand-thumbs-down-fill");
+                        documentDisLike.getElementsByTagName("i")[0].classList.add("bi-hand-thumbs-down-fill");
                     }
                     else if(result.data[i]["type"] == "save"){
                         var documentSave = document.getElementById("doc_save");

@@ -212,11 +212,14 @@
 
                 var divDeXuat = document.getElementById("all-document")
                 var html = "";
+                var page_result = document.getElementById("page-result");
 
                 if(result.data["total"] > 0){
-                    var page_result = document.getElementById("page-result");
+                    page_result.style.visibility = "visible";
                     page_result.innerHTML = `${result.data["first"]} - ${result.data["last"]} trong ${result.data["total"]} kết quả`;
                 }
+                else
+                    page_result.style.visibility = "hidden";
 
                 for (var i = 0; i < result.data["items"].length; ++i){
                     html += createDocumentsOfAll(result.data["items"][i])
@@ -274,11 +277,14 @@
 
                 var div_documents = document.getElementById("all-document")
                 var html = "";
+                var page_result = document.getElementById("page-result");
 
                 if(result.data["total"] > 0){
-                    var page_result = document.getElementById("page-result");
+                    page_result.style.visibility = "visible";
                     page_result.innerHTML = `${result.data["first"]} - ${result.data["last"]} trong ${result.data["total"]} kết quả`;
                 }
+                else
+                    page_result.style.visibility = "hidden";
 
                 for (var i = 0; i < result.data["items"].length; ++i){
                     html += createDocumentsOfWait(result.data["items"][i])
@@ -312,11 +318,14 @@
 
                 var div_documents = document.getElementById("all-document")
                 var html = "";
+                var page_result = document.getElementById("page-result");
 
                 if(result.data["total"] > 0){
-                    var page_result = document.getElementById("page-result");
+                    page_result.style.visibility = "visible";
                     page_result.innerHTML = `${result.data["first"]} - ${result.data["last"]} trong ${result.data["total"]} kết quả`;
                 }
+                else
+                    page_result.style.visibility = "hidden";
 
                 for (var i = 0; i < result.data["items"].length; ++i){
                     html += createDocumentsOfFail(result.data["items"][i])
@@ -466,7 +475,7 @@
                                     style="width: 100px; height: 120px; border-radius: 10px;">`
         html += `   </div>  
                     <div class="col-6 ps-0">
-                        <h4 class="m-0" onclick="openDocumentDetail(${document["id"]})" style="cursor:pointer">${getOnlyFileName(document["document_name"])}</h4>`
+                        <h4 class="m-0" style="cursor:pointer">${getOnlyFileName(document["document_name"])}</h4>`
 
         html += `       <div class="p-0 mb-1 bd-highlight">
                             <i class="bi bi-hand-thumbs-up me-1"></i><span class="me-3"> ${calculateLikePercentage(document["evaluate"])}%</span>
@@ -503,7 +512,7 @@
                                     style="width: 100px; height: 120px; border-radius: 10px;">`
         html += `   </div>  
                     <div class="col-6 ps-0">
-                        <h4 class="m-0" onclick="openDocumentDetail(${document["id"]})" style="cursor:pointer">${getOnlyFileName(document["document_name"])}</h4>`
+                        <h4 class="m-0" style="cursor:pointer">${getOnlyFileName(document["document_name"])}</h4>`
 
         html += `       <div class="p-0 mb-1 bd-highlight">
                             <i class="bi bi-hand-thumbs-up me-1"></i><span class="me-3"> ${calculateLikePercentage(document["evaluate"])}%</span>
@@ -532,6 +541,7 @@
                 show_base_alert(-1, "Có lỗi xảy ra vui lòng thử lại sau");    
             }
             else if(result.code === 0){
+                getAllDocumentProcessFail();
                 show_base_alert(0, "Tài liệu đang được xử lý");
             }
             else{
@@ -730,7 +740,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="text-secondary text-end">
-                                            <input id="save" type="button" class="btn px-4" value="Quay lại" onclick="clickReturn()">
+                                            <input id="return" type="button" class="btn px-4" value="Quay lại" onclick="clickReturn()">
                                             <input id="save" type="button" class="btn btn-primary px-4" value="Lưu thay đổi" onclick="saveDocument('${document_id}')">
                                         </div>
                                     </div>
@@ -926,6 +936,7 @@
             if (result.code === 0){
                 clickCloseConfirmDelete();
                 document.getElementById("document-" + result.data["id"]).style.display = "none";
+                //getAllDocumentByUser();
                 show_base_alert(0, "Xóa tài liệu thành công");
             }
             else
@@ -939,7 +950,7 @@
         var url = baseURL + `/document/${document_id}/evaluate?type=save`;
 
         try {
-            const result = await postData(url, localStorage.token);
+            const result = await postData(url, null, localStorage.token);
             if (result.code === -1){
                 show_base_alert(-1, result.message);
             }
