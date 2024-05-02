@@ -28,13 +28,17 @@ class RegisterForm(FlaskForm):
         if(len(cccd.data) != 12):
             raise ValidationError('Căn cước công dân phải đúng 12 số')
         
-        pattern = r"^[0-9]$"
-        if(re.match(pattern, cccd.data) == False):
+        pattern =r"^[0-9]{12}$"
+        if( not re.match(pattern, cccd.data)):
             raise ValidationError('Căn cước công dân không hợp lệ')
 
         user = Account.query.filter_by(cccd=cccd.data).first()
         if user is not None:
             raise ValidationError('Căn cước công dân này đã tồn tại')
+        
+    def validate_password(self, password):
+        if(len(password.data) < 6):
+            raise ValidationError('Mật khẩu phải có độ dài hơn 6 ký tự')
         
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
